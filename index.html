@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>QuizMaster | Secure MCQ Exam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 32px 28px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .quiz-header p {
+            color: rgba(255,255,255,0.85);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .quiz-body {
+            padding: 32px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 28px;
+            line-height: 1.3;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .option {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            background: #eef2ff;
+            border-color: #818cf8;
+            transform: translateX(6px);
+        }
+
+        .option input {
+            width: 20px;
+            height: 20px;
+            margin-right: 16px;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+
+        .option label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: #4f46e5;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+
+        .nav-btn.prev {
+            background: #475569;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.02);
+            background: #6366f1;
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 24px;
+        }
+
+        .result-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+
+        .result-item {
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .result-item.correct {
+            background: #dcfce7;
+            border-left: 6px solid #22c55e;
+        }
+
+        .result-item.wrong {
+            background: #fee2e2;
+            border-left: 6px solid #ef4444;
+        }
+
+        .auth-container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .auth-container input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .auth-container button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            margin: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-body { padding: 20px; }
+            .question-text { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h1>📝 QuizMaster</h1>
+        <p>Secure online examination system</p>
+    </div>
+    <div class="quiz-body" id="quiz">
+        <div style="text-align:center; padding:40px;">Loading test...</div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

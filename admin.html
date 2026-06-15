@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin – MCQ Manager</title>
+    <style>
+        * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', monospace; }
+        body { background: #1e1e2f; margin: 0; padding: 20px; color: #eee; }
+        .container { max-width: 1200px; margin: auto; background: #2d2d44; border-radius: 24px; padding: 24px; }
+        h1, h2 { margin-top: 0; }
+        .tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid #444; padding-bottom: 12px; }
+        .tab-btn { background: #3b3b5c; border: none; padding: 10px 20px; border-radius: 40px; cursor: pointer; font-weight: bold; color: #ccc; }
+        .tab-btn.active { background: #7c3aed; color: white; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        textarea, input, select { width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 12px; border: none; background: #1e1e2e; color: #eee; }
+        textarea { font-family: monospace; height: 300px; }
+        button { background: #7c3aed; border: none; padding: 12px 24px; border-radius: 40px; font-weight: bold; color: white; cursor: pointer; }
+        button:hover { background: #9b5cff; }
+        .question-card { background: #1e1e2e; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .status { margin-top: 16px; padding: 12px; border-radius: 12px; background: #1e1e2e; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .flex-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        hr { border-color: #444; margin: 20px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📚 MCQ Question Manager</h1>
+    <p><strong>Only you see this page.</strong> Update questions in your GitHub repo.</p>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="json">📋 Paste JSON</button>
+        <button class="tab-btn" data-tab="manual">✍️ Manual Entry</button>
+        <button class="tab-btn" data-tab="api">🌐 API Import</button>
+    </div>
+
+    <!-- Tab 1: JSON Paste -->
+    <div id="jsonTab" class="tab-pane active">
+        <label>🔑 GitHub Token (classic, <code>repo</code> scope)</label>
+        <input type="password" id="token" placeholder="github_pat_xxxxxx">
+        <label>📦 Full JSON (must include "tests" and "questions" keys)</label>
+        <textarea id="jsonData" placeholder='{"tests":{"english-grammar-01":"quiz123"},"questions":[{"testId":"english-grammar-01","question":"...","options":[...],"correct":"...","explanation":"..."}]}'></textarea>
+        <button id="saveJsonBtn">💾 Save to GitHub</button>
+    </div>
+
+    <!-- Tab 2: Manual Entry -->
+    <div id="manualTab" class="tab-pane">
+        <label>🔑 GitHub Token</label>
+        <input type="password" id="manualToken" placeholder="github_pat_xxxxxx">
+        <div id="questionsList"></div>
+        <button id="addQuestionBtn">+ Add New Question</button>
+        <button id="saveManualBtn" style="margin-left:12px;">💾 Save All</button>
+        <div id="manualStatus"></div>
+    </div>
+
+    <!-- Tab 3: API Import -->
+    <div id="apiTab" class="tab-pane">
+        <label>🔑 GitHub Token</label>
+        <input type="password" id="apiToken" placeholder="github_pat_xxxxxx">
+        <label>🌍 API Endpoint (returns JSON array of questions)</label>
+        <input type="text" id="apiUrl" placeholder="https://api.example.com/questions">
+        <label>🔐 API Key (optional, Bearer or header)</label>
+        <input type="password" id="apiKey" placeholder="Bearer xyz...">
+        <button id="fetchApiBtn">Fetch & Overwrite</button>
+        <div id="apiPreview"></div>
+    </div>
+
+    <div id="globalStatus" class="status"></div>
+</div>
+
+<script>
+    const REPO_OWNER = 'vinayd180-web';
+    const REPO_NAME = 'MCQ-quiz';
+    const FILE_PATH = 'questions.json';
+    const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${FILE_PATH}`;
+
+    let currentFullData = { tests: {}, questions: [] };
+
+    async function loadCurrentData() {
+        try {
+            const res = await fetch(RAW_URL + '?t=' + Date.now());
+            if (res.ok) currentFullData = await res.json();
+            else currentFullData = { tests: {}, questions: [] };
+        } catch(e) { currentFullData = { tests: {}, questions: [] }; }
+        return currentFullData;
+    }
+
+    async function saveToGitHub(token, data) {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+        let sha = null;
+        try {
+            const getRes = await fetch(url, { headers: { Authorization: `token ${token}` } });
+            if (getRes.ok) sha = (await getRes.json()).sha;
+        } catch(e) {}
+        const body = { message: 'Update via admin', content, branch: 'main' };
+        if (sha) body.sha = sha;
+        const putRes = await fetch(url, {
+            method: 'PUT',
+            headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!putRes.ok) throw new Error((await putRes.json()).message);
+        return true;
+    }
+
+    function showStatus(msg, isError, target='globalStatus') {
+        const div = document.getElementById(target);
+        div.innerHTML = `<span class="${isError ? 'error' : 'success'}">${msg}</span>`;
+        setTimeout(() => { if (div.innerHTML === `<span class="${isError ? 'error' : 'success'}">${msg}</span>`) div.innerHTML = ''; }, 5000);
+    }
+
+    // ---- TAB 1: JSON ----
+    document.getElementById('saveJsonBtn').onclick = async () => {
+        const token = document.getElementById('token').value.trim();
+        if (!token) return showStatus('❌ GitHub token required', true);
+        let data;
+        try {
+            data = JSON.parse(document.getElementById('jsonData').value);
+            if (!data.tests || !data.questions) throw new Error('Missing "tests" or "questions" key');
+        } catch(e) { return showStatus('❌ Invalid JSON: '+e.message, true); }
+        try {
+            await saveToGitHub(token, data);
+            showStatus('✅ Saved successfully!');
+            document.getElementById('jsonData').value = JSON.stringify(data, null, 2);
+        } catch(err) { showStatus('❌ '+err.message, true); }
+    };
+
+    // ---- TAB 2: MANUAL ----
+    let manualQuestions = [];
+    let manualTests = {};
+
+    async function loadManualData() {
+        const full = await loadCurrentData();
+        manualTests = full.tests || {};
+        manualQuestions = [...(full.questions || [])];
+        renderManualForm();
+    }
+
+    function renderManualForm() {
+        const container = document.getElementById('questionsList');
+        let html = `<h3>Test Passwords</h3>`;
+        for (let [tid, pwd] of Object.entries(manualTests)) {
+            html += `<div><input type="text" placeholder="testId" value="${tid}" class="testid-field" data-oldtid="${tid}"> 
+                     <input type="text" placeholder="password" value="${pwd}" class="pwd-field" data-oldtid="${tid}">
+                     <button class="removeTestBtn" data-tid="${tid}">Remove Test</button></div>`;
+        }
+        html += `<button id="addTestBtn">+ Add Test</button><hr><h3>Questions</h3>`;
+        manualQuestions.forEach((q, idx) => {
+            html += `<div class="question-card" data-idx="${idx}">
+                <input type="text" placeholder="testId" value="${escapeHtml(q.testId||'')}" class="q-testid">
+                <textarea placeholder="Question text" class="q-text">${escapeHtml(q.question||'')}</textarea>
+                <input type="text" placeholder="Options (comma separated)" value="${escapeHtml(q.options ? q.options.join(',') : '')}" class="q-options">
+                <input type="text" placeholder="Correct answer" value="${escapeHtml(q.correct||'')}" class="q-correct">
+                <textarea placeholder="Explanation" class="q-explanation">${escapeHtml(q.explanation||'')}</textarea>
+                <button class="removeQuestionBtn" data-idx="${idx}">Remove</button>
+                <hr>
+            </div>`;
+        });
+        container.innerHTML = html;
+        // attach events
+        document.querySelectorAll('.testid-field, .pwd-field').forEach(el => {
+            el.addEventListener('change', (e) => {
+                const oldTid = el.dataset.oldtid;
+                if (el.classList.contains('testid-field')) {
+                    const newTid = el.value;
+                    if (oldTid && oldTid !== newTid) {
+                        manualTests[newTid] = manualTests[oldTid];
+                        delete manualTests[oldTid];
+                        el.dataset.oldtid = newTid;
+                        // update questions with this testId
+                        manualQuestions.forEach(q => { if (q.testId === oldTid) q.testId = newTid; });
+                    }
+                } else if (el.classList.contains('pwd-field')) {
+                    manualTests[oldTid] = el.value;
+                }
+            });
+        });
+        document.querySelectorAll('.removeTestBtn').forEach(btn => {
+            btn.onclick = () => { delete manualTests[btn.dataset.tid]; loadManualData(); };
+        });
+        document.getElementById('addTestBtn')?.addEventListener('click', () => {
+            const newId = prompt('Enter new testId');
+            if (newId) { manualTests[newId] = ''; loadManualData(); }
+        });
+        document.querySelectorAll('.removeQuestionBtn').forEach(btn => {
+            btn.onclick = () => { manualQuestions.splice(parseInt(btn.dataset.idx),1); renderManualForm(); };
+        });
+        document.querySelectorAll('.q-testid, .q-text, .q-options, .q-correct, .q-explanation').forEach(field => {
+            field.addEventListener('change', (e) => {
+                const card = field.closest('.question-card');
+                const idx = parseInt(card.dataset.idx);
+                if (field.classList.contains('q-testid')) manualQuestions[idx].testId = field.value;
+                else if (field.classList.contains('q-text')) manualQuestions[idx].question = field.value;
+                else if (field.classList.contains('q-options')) manualQuestions[idx].options = field.value.split(',').map(s=>s.trim());
+                else if (field.classList.contains('q-correct')) manualQuestions[idx].correct = field.value;
+                else if (field.classList.contains('q-explanation')) manualQuestions[idx].explanation = field.value;
+            });
+        });
+    }
+
+    document.getElementById('addQuestionBtn').onclick = () => {
+        manualQuestions.push({ testId: 'new-test', question: '', options: ['','','',''], correct: '', explanation: '' });
+        renderManualForm();
+    };
+    document.getElementById('saveManualBtn').onclick = async () => {
+        const token = document.getElementById('manualToken').value.trim();
+        if (!token) return showStatus('❌ GitHub token required', true, 'manualStatus');
+        const fullData = { tests: manualTests, questions: manualQuestions };
+        try {
+            await saveToGitHub(token, fullData);
+            showStatus('✅ Saved all changes', false, 'manualStatus');
+            loadManualData();
+        } catch(err) { showStatus('❌ '+err.message, true, 'manualStatus'); }
+    };
+
+    // ---- TAB 3: API Import ----
+    document.getElementById('fetchApiBtn').onclick = async () => {
+        const apiUrl = document.getElementById('apiUrl').value.trim();
+        if (!apiUrl) return showStatus('❌ API URL required', true);
+        const apiKey = document.getElementById('apiKey').value.trim();
+        const headers = {};
+        if (apiKey) headers['Authorization'] = apiKey;
+        try {
+            const res = await fetch(apiUrl, { headers });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            let imported = await res.json();
+            // assume imported is an array of questions (must have testId, question, options, correct)
+            if (!Array.isArray(imported)) throw new Error('Response is not an array');
+            const token = document.getElementById('apiToken').value.trim();
+            if (!token) return showStatus('❌ GitHub token required', true);
+            // preserve existing tests? we'll overwrite completely with imported questions and default tests
+            const testIds = [...new Set(imported.map(q => q.testId).filter(Boolean))];
+            const newTests = {};
+            testIds.forEach(tid => { newTests[tid] = ''; });
+            const newFull = { tests: newTests, questions: imported };
+            await saveToGitHub(token, newFull);
+            showStatus(`✅ Imported ${imported.length} questions and saved.`, false);
+            document.getElementById('apiPreview').innerHTML = `<pre>${JSON.stringify(imported,null,2)}</pre>`;
+        } catch(err) { showStatus('❌ Import error: '+err.message, true); }
+    };
+
+    function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tabName = btn.dataset.tab;
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(tabName+'Tab').classList.add('active');
+            if (tabName === 'manual') loadManualData();
+            if (tabName === 'json') loadCurrentData().then(d => document.getElementById('jsonData').value = JSON.stringify(d, null, 2));
+        });
+    });
+    loadCurrentData().then(d => document.getElementById('jsonData').value = JSON.stringify(d, null, 2));
+</script>
+</body>
+</html>
