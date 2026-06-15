@@ -3,7 +3,7 @@ let answers = {};
 let current = 0;
 
 // Your backend API (Render)
-const API = "https://mcq-backend-5zf2.onrender.com/questions";
+const API = "https://mcq-backend-ygix.onrender.com/questions";
 
 // Test ID (change per class/test)
 let testId = "heat-01";
