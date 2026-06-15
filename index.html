@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MCQ Quiz App</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #333;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: white;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+}
+
+.btn-primary:hover {
+  background: #3730a3;
+}
+
+.option {
+  display: block;
+  padding: 10px;
+  margin: 8px 0;
+  background: #f3f4f6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option:hover {
+  background: #ddd;
+}
+
+.option.selected {
+  background: #4f46e5;
+  color: white;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+#result {
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.progress {
+  margin: 10px 0;
+  color: white;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+  <h1>MCQ Quiz App</h1>
+</div>
+
+<div class="card">
+
+  <input id="name" placeholder="Enter Your Name">
+
+  <button class="btn-primary" onclick="startTest()">Start Test</button>
+
+  <div class="progress" id="progress"></div>
+
+  <div id="quiz"></div>
+
+  <div class="nav">
+    <button class="btn-secondary" onclick="prevQ()">Previous</button>
+    <button class="btn-primary" onclick="nextQ()">Next</button>
+  </div>
+
+  <button class="btn-primary" onclick="submitTest()">Submit Test</button>
+
+  <div id="result"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let questions = [];
+let answers = {};
+let current = 0;
+let testId = "heat-01";
+
+const API = "https://mcq-backend-5zf2.onrender.com/questions";
+
+function startTest() {
+  fetch(API + "?testId=" + testId)
+    .then(res => res.json())
+    .then(data => {
+      questions = data;
+      current = 0;
+      showQuestion();
+    });
+}
+
+function showQuestion() {
+  if (!questions.length) return;
+
+  let q = questions[current];
+
+  document.getElementById("progress").innerText =
+    `Question ${current + 1} / ${questions.length}`;
+
+  let html = `
+    <h3>${q.question}</h3>
+  `;
+
+  q.options.forEach(opt => {
+    let selected = answers[current] === opt ? "selected" : "";
+    html += `<div class="option ${selected}" onclick="selectAns('${opt}')">
+      ${opt}
+    </div>`;
+  });
+
+  document.getElementById("quiz").innerHTML = html;
+}
+
+function selectAns(opt) {
+  answers[current] = opt;
+  showQuestion();
+}
+
+function nextQ() {
+  if (current < questions.length - 1) {
+    current++;
+    showQuestion();
+  }
+}
+
+function prevQ() {
+  if (current > 0) {
+    current--;
+    showQuestion();
+  }
+}
+
+function submitTest() {
+  let score = 0;
+  let resultHTML = "";
+
+  questions.forEach((q, i) => {
+    if (answers[i] === q.answer) score++;
+
+    resultHTML += `
+      <p>
+        <b>Q${i+1}:</b> ${q.question}<br>
+        Your: ${answers[i] || "Not answered"}<br>
+        Correct: ${q.answer}<br>
+        Explanation: ${q.explanation || "No explanation"}
+      </p>
+      <hr>
+    `;
+  });
+
+  document.getElementById("result").innerHTML =
+    `<h2>Score: ${score}/${questions.length}</h2>` + resultHTML;
+
+  fetch("https://mcq-backend-5zf2.onrender.com/result", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      studentName: document.getElementById("name").value,
+      testId,
+      score,
+      total: questions.length
+    })
+  });
+}
+
+</script>
+
+</body>
+</html>
+<script src="script.js"></script>
