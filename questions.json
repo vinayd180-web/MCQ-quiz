@@ -7,21 +7,36 @@
     {
       "testId": "english-grammar-01",
       "question": "What is a noun?",
-      "options": ["A person, place, or thing", "An action word", "A describing word", "A connecting word"],
+      "options": [
+        "A person, place, or thing",
+        "An action word",
+        "A describing word",
+        "A connecting word"
+      ],
       "correct": "A person, place, or thing",
       "explanation": "A noun names a person, place, or thing."
     },
     {
       "testId": "english-grammar-01",
       "question": "What is a verb?",
-      "options": ["A person, place, or thing", "An action word", "A describing word", "A connecting word"],
+      "options": [
+        "A person, place, or thing",
+        "An action word",
+        "A describing word",
+        "A connecting word"
+      ],
       "correct": "An action word",
       "explanation": "A verb shows action or state."
     },
     {
       "testId": "science-01",
       "question": "What is the chemical symbol for water?",
-      "options": ["O2", "CO2", "H2O", "NaCl"],
+      "options": [
+        "O2",
+        "CO2",
+        "H2O",
+        "NaCl"
+      ],
       "correct": "H2O",
       "explanation": "Water is H2O – two hydrogen, one oxygen."
     }
