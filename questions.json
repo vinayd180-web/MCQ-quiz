@@ -1,44 +1,129 @@
 {
   "tests": {
     "english-grammar-01": "quiz123",
-    "science-01": "sciencepass"
+    "science-01": "sciencepass",
+    "english-grammar-02": "grammar2025"
   },
   "questions": [
     {
-      "testId": "english-grammar-01",
-      "question": "What is a noun?",
+      "testId": "english-grammar-02",
+      "question": "Which of the following is a **proper noun**?",
       "options": [
-        "A person, place, or thing",
-        "An action word",
-        "A describing word",
-        "A connecting word"
+        "city",
+        "river",
+        "London",
+        "mountain"
       ],
-      "correct": "A person, place, or thing",
-      "explanation": "A noun names a person, place, or thing."
+      "correct": "London",
+      "explanation": "A proper noun is a specific name of a person, place, or thing (e.g., London). Common nouns like 'city' are not specific."
     },
     {
-      "testId": "english-grammar-01",
-      "question": "What is a verb?",
+      "testId": "english-grammar-02",
+      "question": "Which word is an **abstract noun**?",
       "options": [
-        "A person, place, or thing",
-        "An action word",
-        "A describing word",
-        "A connecting word"
+        "table",
+        "happiness",
+        "John",
+        "car"
       ],
-      "correct": "An action word",
-      "explanation": "A verb shows action or state."
+      "correct": "happiness",
+      "explanation": "Abstract nouns name ideas, feelings, or qualities – you cannot see or touch them. 'Happiness' is an emotion."
     },
     {
-      "testId": "science-01",
-      "question": "What is the chemical symbol for water?",
+      "testId": "english-grammar-02",
+      "question": "Identify the **collective noun** in this sentence: 'The team won the match.'",
       "options": [
-        "O2",
-        "CO2",
-        "H2O",
-        "NaCl"
+        "won",
+        "match",
+        "team",
+        "the"
       ],
-      "correct": "H2O",
-      "explanation": "Water is H2O – two hydrogen, one oxygen."
+      "correct": "team",
+      "explanation": "A collective noun names a group of people or things (e.g., team, flock, audience)."
+    },
+    {
+      "testId": "english-grammar-02",
+      "question": "In the sentence 'The quick brown fox jumps over the lazy dog', what is the **complete subject**?",
+      "options": [
+        "The quick brown fox",
+        "jumps over the lazy dog",
+        "fox",
+        "the lazy dog"
+      ],
+      "correct": "The quick brown fox",
+      "explanation": "The complete subject includes all words that tell who or what the sentence is about (the noun/pronoun plus modifiers)."
+    },
+    {
+      "testId": "english-grammar-02",
+      "question": "What is the **predicate** of the sentence: 'My sister baked a delicious cake.'?",
+      "options": [
+        "My sister",
+        "baked a delicious cake",
+        "a delicious cake",
+        "sister baked"
+      ],
+      "correct": "baked a delicious cake",
+      "explanation": "The predicate tells what the subject does or is – it contains the verb and all its modifiers/objects."
+    },
+    {
+      "testId": "english-grammar-02",
+      "question": "Which sentence is **declarative**?",
+      "options": [
+        "Close the door.",
+        "What time is it?",
+        "I enjoy reading books.",
+        "Wow, that's amazing!"
+      ],
+      "correct": "I enjoy reading books.",
+      "explanation": "A declarative sentence makes a statement and ends with a period."
+    },
+    {
+      "testId": "english-grammar-02",
+      "question": "Identify the **interrogative** sentence.",
+      "options": [
+        "Please sit down.",
+        "She is a doctor.",
+        "How old are you?",
+        "What a beautiful view!"
+      ],
+      "correct": "How old are you?",
+      "explanation": "An interrogative sentence asks a question and ends with a question mark."
+    },
+    {
+      "testId": "english-grammar-02",
+      "question": "Which sentence is **imperative**?",
+      "options": [
+        "The sun rises in the east.",
+        "Do your homework.",
+        "Have you eaten?",
+        "I love pizza!"
+      ],
+      "correct": "Do your homework.",
+      "explanation": "An imperative sentence gives a command or request. The subject 'you' is usually implied."
+    },
+    {
+      "testId": "english-grammar-02",
+      "question": "What type of sentence is: 'What a fantastic performance that was!' ?",
+      "options": [
+        "Declarative",
+        "Interrogative",
+        "Imperative",
+        "Exclamatory"
+      ],
+      "correct": "Exclamatory",
+      "explanation": "Exclamatory sentences express strong emotion and end with an exclamation mark."
+    },
+    {
+      "testId": "english-grammar-02",
+      "question": "Which of the following is a **compound sentence**?",
+      "options": [
+        "I like coffee.",
+        "She ran fast because she was late.",
+        "The sky is blue, and the grass is green.",
+        "After the rain stopped, we went outside."
+      ],
+      "correct": "The sky is blue, and the grass is green.",
+      "explanation": "A compound sentence contains two independent clauses joined by a coordinating conjunction (and, but, or, etc.)."
     }
   ]
 }
