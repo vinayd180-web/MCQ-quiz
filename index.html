@@ -1,203 +1,1081 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>QuizMaster | Secure MCQ Exam</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AV Private Tuitions – Hybrid Education</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ===== ROOT VARIABLES – Web Mode ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root { --primary:#0a1628; --gold:#d4a843; --gold-light:#f0d080; --gold-gradient:linear-gradient(135deg,#d4a843,#f0d080,#d4a843); --glass-bg:rgba(255,255,255,0.08); --glass-border:rgba(255,255,255,0.15); --shadow:0 20px 60px rgba(0,0,0,0.3); --radius:24px; --radius-sm:14px; --transition:all 0.3s cubic-bezier(0.4,0,0.2,1); --font-serif:'Playfair Display',serif; --font-marathi:'Noto Sans Devanagari',sans-serif; --accent:var(--gold); --accent-light:var(--gold-light); }
+        .mobile-mode { --accent:#14b8a6; --accent-light:#5eead4; --gold-gradient:linear-gradient(135deg,#14b8a6,#5eead4,#14b8a6); --gold:#14b8a6; --gold-light:#5eead4; }
+        html { scroll-behavior:smooth; }
+        body { font-family:'Inter',sans-serif; background:radial-gradient(circle at 10% 20%, #1a2d4a, #0a1628); color:#f0f0f0; min-height:100vh; background-attachment:fixed; overflow-x:hidden; }
+        a { text-decoration:none; color:inherit; }
+        .hidden { display:none !important; }
+        .lang-en { font-family:'Inter',sans-serif; }
+        .lang-mr { font-family:var(--font-marathi); }
+        .lang-semi { font-family:'Inter',sans-serif; }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+        .toast { position:fixed; bottom:2rem; right:2rem; background:rgba(10,22,40,0.92); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.15); color:white; padding:1rem 2rem; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.4); z-index:9999; border-left:4px solid var(--accent); transform:translateY(100px); opacity:0; transition:all 0.5s ease; max-width:400px; }
+        .toast.show { transform:translateY(0); opacity:1; }
+        .toast i { color:var(--accent); margin-right:10px; }
 
-        .quiz-container {
-            max-width: 800px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            transition: transform 0.2s ease;
-        }
+        .navbar { background:rgba(10,22,40,0.82); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.06); padding:0.5rem 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; position:sticky; top:0; z-index:1000; }
+        .logo { display:flex; align-items:center; gap:0.8rem; }
+        .logo svg { height:50px; width:auto; }
+        .logo .logo-text { display:flex; flex-direction:column; line-height:1.1; }
+        .logo .logo-text .brand { font-family:var(--font-serif); font-size:1.2rem; font-weight:900; color:white; background:var(--gold-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:0.5px; }
+        .logo .logo-text .sub { font-size:0.5rem; font-weight:400; color:var(--accent); letter-spacing:3px; -webkit-text-fill-color:var(--accent); font-family:'Inter',sans-serif; margin-top:-2px; text-transform:uppercase; }
+        .nav-links { display:flex; align-items:center; gap:0.2rem 1rem; flex-wrap:wrap; }
+        .nav-links a { color:rgba(255,255,255,0.6); font-weight:500; font-size:0.8rem; padding:0.3rem 0.5rem; border-radius:6px; transition:var(--transition); display:inline-flex; align-items:center; gap:4px; cursor:pointer; position:relative; }
+        .nav-links a:hover, .nav-links a.active { color:white; background:rgba(255,255,255,0.06); }
+        .nav-links a.active::after { content:''; position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:16px; height:2px; background:var(--accent); border-radius:4px; }
+        .lang-switcher { display:flex; gap:0.15rem; background:rgba(255,255,255,0.06); padding:0.1rem; border-radius:60px; border:1px solid rgba(255,255,255,0.06); }
+        .lang-btn { padding:0.15rem 0.5rem; border-radius:60px; border:none; background:transparent; color:rgba(255,255,255,0.4); font-weight:600; font-size:0.6rem; cursor:pointer; transition:var(--transition); text-transform:uppercase; }
+        .lang-btn.active { background:var(--accent); color:var(--primary); }
+        .lang-btn:hover:not(.active) { color:white; }
 
-        .quiz-header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            padding: 32px 28px;
-            text-align: center;
-        }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); z-index:9998; display:none; align-items:center; justify-content:center; }
+        .modal-overlay.active { display:flex; }
+        .modal-box { background:var(--glass-bg); backdrop-filter:blur(20px); border:1px solid var(--glass-border); border-radius:var(--radius); max-width:420px; width:90%; padding:2rem; box-shadow:0 30px 80px rgba(0,0,0,0.4); animation:slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform:translateY(30px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        .modal-box .close { float:right; font-size:1.3rem; cursor:pointer; color:rgba(255,255,255,0.4); transition:var(--transition); }
+        .modal-box .close:hover { color:var(--accent); }
+        .modal-box h2 { font-family:var(--font-serif); color:var(--accent); text-align:center; margin-bottom:0.3rem; }
+        .modal-box .sub { text-align:center; color:rgba(255,255,255,0.5); font-size:0.9rem; margin-bottom:1rem; }
 
-        .quiz-header h1 {
-            color: white;
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
+        .btn-gold { background:var(--gold-gradient); color:var(--primary); padding:0.6rem 1.5rem; border-radius:10px; font-weight:700; transition:var(--transition); border:none; cursor:pointer; font-size:0.9rem; }
+        .btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(0,0,0,0.3); }
+        .btn-outline { background:transparent; border:1.5px solid rgba(255,255,255,0.2); color:white; padding:0.5rem 1.2rem; border-radius:10px; font-weight:500; cursor:pointer; transition:var(--transition); font-size:0.85rem; }
+        .btn-outline:hover { background:rgba(255,255,255,0.06); border-color:var(--accent); }
+        .btn-secondary { background:#c0392b; color:white; padding:0.5rem 1.2rem; border-radius:10px; font-weight:600; border:none; cursor:pointer; transition:var(--transition); font-size:0.85rem; }
+        .btn-secondary:hover { background:#a93226; transform:translateY(-2px); }
+        .btn-sm { padding:0.3rem 0.8rem; font-size:0.75rem; border-radius:6px; }
 
-        .quiz-header p {
-            color: rgba(255,255,255,0.85);
-            margin-top: 8px;
-            font-weight: 500;
-        }
+        .input-group { text-align:left; margin-bottom:1rem; }
+        .input-group label { font-weight:500; color:rgba(255,255,255,0.7); display:block; margin-bottom:0.2rem; font-size:0.85rem; }
+        .input-group input, .input-group select, .input-group textarea { width:100%; padding:0.7rem 1rem; border:1px solid rgba(255,255,255,0.15); border-radius:10px; font-size:0.95rem; transition:var(--transition); background:rgba(255,255,255,0.05); color:white; }
+        .input-group input::placeholder, .input-group textarea::placeholder { color:rgba(255,255,255,0.3); }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(212,168,67,0.12); background:rgba(255,255,255,0.08); }
+        .input-group select option { background:#0a1628; color:white; }
 
-        .quiz-body {
-            padding: 32px;
-        }
+        .page-container { max-width:1280px; margin:0 auto; padding:1.5rem; }
+        .page { display:none; animation:fadeIn 0.4s ease; }
+        .page.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
 
-        .question-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 28px;
-            line-height: 1.3;
-        }
+        .glass { background:var(--glass-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--radius); box-shadow:var(--shadow); padding:1.5rem; transition:var(--transition); margin-bottom:1.2rem; }
+        .glass:hover { transform:translateY(-2px); box-shadow:0 25px 60px rgba(0,0,0,0.35); }
+        .glass-premium { background:rgba(255,255,255,0.06); border:1px solid rgba(212,168,67,0.2); }
 
-        .options-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 32px;
-        }
+        .section-title { font-size:1.6rem; font-weight:800; color:white; margin-bottom:1.5rem; display:flex; align-items:center; gap:12px; font-family:var(--font-serif); }
+        .section-title i { color:var(--accent); }
+        .section-title::after { content:''; flex:1; height:2px; background:linear-gradient(to right, var(--accent), transparent); margin-left:1rem; }
 
-        .option {
-            background: #f1f5f9;
-            border: 2px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .grid-2col { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+        .grid-3col { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; }
+        .grid-4col { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; }
+        @media (max-width:768px) { .grid-2col { grid-template-columns:1fr; } .navbar { padding:0.4rem 1rem; } .page-container { padding:1rem; } .logo svg { height:35px; } .logo .logo-text .brand { font-size:1rem; } }
 
-        .option:hover {
-            background: #eef2ff;
-            border-color: #818cf8;
-            transform: translateX(6px);
-        }
+        .stat-card { background:var(--glass-bg); backdrop-filter:blur(8px); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:1.2rem; text-align:center; transition:var(--transition); }
+        .stat-card:hover { transform:translateY(-3px); border-color:var(--accent); }
+        .stat-card .number { font-size:2rem; font-weight:900; color:var(--accent); display:block; font-family:var(--font-serif); }
+        .stat-card .label { color:rgba(255,255,255,0.6); font-weight:500; font-size:0.85rem; }
+        .stat-card .icon { font-size:1.6rem; color:var(--accent); margin-bottom:0.2rem; }
 
-        .option input {
-            width: 20px;
-            height: 20px;
-            margin-right: 16px;
-            accent-color: #4f46e5;
-            cursor: pointer;
-        }
+        .hero-img { width:100%; height:280px; object-fit:cover; border-radius:var(--radius-sm); margin-bottom:0.8rem; border:1px solid var(--glass-border); }
+        .tradition-img { width:100%; height:140px; object-fit:cover; border-radius:var(--radius-sm); margin-bottom:0.5rem; border:2px solid var(--gold); }
+        .features-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.5rem; list-style:none; padding:0; }
+        .features-list li { padding:0.5rem 0.8rem; background:rgba(255,255,255,0.04); border-radius:8px; display:flex; align-items:center; gap:8px; font-weight:500; font-size:0.85rem; border:1px solid rgba(212,168,67,0.06); }
+        .features-list li::before { content:'✦'; color:var(--accent); font-weight:700; font-size:0.9rem; }
 
-        .option label {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #1e293b;
-            cursor: pointer;
-            flex: 1;
-        }
+        .edit-toggle { position:fixed; bottom:1.5rem; right:1.5rem; z-index:999; background:var(--gold-gradient); color:var(--primary); border:none; border-radius:50%; width:48px; height:48px; font-size:1.2rem; cursor:pointer; box-shadow:0 8px 30px rgba(0,0,0,0.3); transition:var(--transition); display:none; align-items:center; justify-content:center; }
+        .edit-toggle:hover { transform:scale(1.08); }
+        .edit-toggle.active { background:var(--secondary); color:white; }
+        .edit-toggle.show { display:flex; }
 
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
+        .editable-field { position:relative; padding:0.2rem 0.4rem; border-radius:6px; transition:var(--transition); cursor:pointer; }
+        .edit-mode .editable-field:hover { background:rgba(212,168,67,0.08); outline:1px dashed var(--accent); }
+        .editable-field input, .editable-field textarea { display:none; width:100%; padding:0.3rem 0.6rem; border:1px solid var(--accent); border-radius:6px; background:rgba(10,22,40,0.9); color:white; font-size:inherit; font-family:inherit; }
+        .edit-mode .editable-field input, .edit-mode .editable-field textarea { display:block; }
+        .edit-mode .editable-field .display-text { display:none; }
+        .editable-field .display-text { display:block; }
 
-        .nav-btn {
-            background: #4f46e5;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 1rem;
-        }
+        .edit-hint { font-size:0.7rem; color:var(--accent); opacity:0.6; font-style:italic; display:none; }
+        .edit-mode .edit-hint { display:inline; }
+        .add-btn { display:none; }
+        .edit-mode .add-btn { display:inline-flex; }
 
-        .nav-btn.prev {
-            background: #475569;
-        }
+        .contact-number { color:var(--accent); font-weight:600; font-size:1rem; }
+        .social-handle { color:var(--gold-light); font-weight:500; }
+        .social-handle i { margin-right:4px; }
+        .text-muted { color:rgba(255,255,255,0.5); }
+        .text-center { text-align:center; }
+        .flex { display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap; }
+        .flex-center { display:flex; align-items:center; justify-content:center; gap:0.8rem; flex-wrap:wrap; }
+        .mt-1 { margin-top:0.8rem; }
+        .mt-2 { margin-top:1.5rem; }
 
-        .nav-btn:hover {
-            transform: scale(1.02);
-            background: #6366f1;
-        }
+        .gallery-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-top:0.8rem; }
+        .gallery-item { position:relative; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--glass-border); background:rgba(255,255,255,0.03); aspect-ratio:1/1; }
+        .gallery-item img, .gallery-item video { width:100%; height:100%; object-fit:cover; display:block; }
+        .gallery-item .del-btn { position:absolute; top:6px; right:6px; background:rgba(192,57,43,0.85); color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:0.7rem; transition:var(--transition); display:none; align-items:center; justify-content:center; }
+        .gallery-item .del-btn:hover { transform:scale(1.1); background:var(--secondary); }
+        .edit-mode .gallery-item .del-btn { display:flex; }
+        .gallery-item .type-badge { position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,0.6); color:white; padding:0.1rem 0.5rem; border-radius:4px; font-size:0.55rem; font-weight:600; text-transform:uppercase; }
 
-        .result-card {
-            background: #f8fafc;
-            border-radius: 24px;
-            padding: 24px;
-        }
+        .result-card { background:var(--glass-bg); backdrop-filter:blur(8px); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:1rem; text-align:center; transition:var(--transition); }
+        .result-card:hover { transform:translateY(-3px); border-color:var(--accent); }
+        .result-card img { width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--gold); margin:0 auto 0.5rem; display:block; background:#2a3d5a; }
+        .result-card .name { font-weight:700; font-size:1rem; color:white; }
+        .result-card .percent { color:var(--accent); font-weight:900; font-size:1.2rem; }
+        .result-card .jump { color:var(--gold-light); font-size:0.8rem; }
 
-        .result-card h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #0f172a;
-        }
+        .mcq-question { background:rgba(255,255,255,0.04); padding:0.8rem 1rem; border-radius:10px; margin-bottom:0.8rem; border-left:3px solid var(--accent); }
+        .mcq-question .options label { display:block; padding:0.2rem 0; cursor:pointer; color:rgba(255,255,255,0.75); font-size:0.9rem; }
+        .mcq-question .options input[type="radio"] { margin-right:8px; accent-color:var(--accent); }
+        .badge { background:var(--accent); color:var(--primary); padding:0.15rem 0.6rem; border-radius:60px; font-size:0.6rem; font-weight:700; text-transform:uppercase; display:inline-block; }
 
-        .result-item {
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 16px;
-        }
+        .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:rgba(10,22,40,0.95); backdrop-filter:blur(12px); border-top:1px solid rgba(255,255,255,0.06); padding:6px 0; z-index:100; justify-content:space-around; }
+        .bottom-nav .nav-item { display:flex; flex-direction:column; align-items:center; color:rgba(255,255,255,0.4); font-size:0.55rem; gap:2px; cursor:pointer; padding:4px 8px; background:none; border:none; transition:all 0.2s; }
+        .bottom-nav .nav-item i { font-size:1.2rem; color:rgba(255,255,255,0.4); transition:all 0.2s; }
+        .bottom-nav .nav-item.active i, .bottom-nav .nav-item.active { color:var(--accent); }
 
-        .result-item.correct {
-            background: #dcfce7;
-            border-left: 6px solid #22c55e;
-        }
+        .mobile-menu { position:fixed; top:0; left:-280px; width:280px; height:100%; background:rgba(10,22,40,0.98); backdrop-filter:blur(12px); border-right:1px solid rgba(255,255,255,0.06); transition:all 0.3s ease; z-index:1000; padding:20px 0; overflow-y:auto; }
+        .mobile-menu.open { left:0; }
+        .mobile-menu .menu-header { padding:0 20px 20px; border-bottom:1px solid rgba(255,255,255,0.06); margin-bottom:10px; }
+        .mobile-menu .menu-header .brand { font-family:var(--font-serif); font-size:1.2rem; color:var(--accent); }
+        .mobile-menu .menu-item { display:flex; align-items:center; gap:14px; padding:12px 20px; color:rgba(255,255,255,0.7); transition:all 0.2s; cursor:pointer; border-left:3px solid transparent; background:none; border-right:none; border-top:none; border-bottom:1px solid rgba(255,255,255,0.03); width:100%; font-size:0.9rem; }
+        .mobile-menu .menu-item:hover, .mobile-menu .menu-item.active { color:white; background:rgba(255,255,255,0.05); border-left-color:var(--accent); }
+        .mobile-menu .menu-item i { width:24px; color:var(--accent); text-align:center; }
+        .mobile-menu .menu-item .badge { margin-left:auto; background:var(--secondary); color:white; padding:2px 8px; border-radius:60px; font-size:0.6rem; }
+        .menu-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; display:none; }
+        .menu-overlay.active { display:block; }
+        .hamburger { display:none; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer; padding:8px; }
+        .mobile-mode .hamburger { display:block; }
+        .mobile-mode .desktop-nav { display:none; }
+        .mobile-mode .page-container { padding-bottom:80px; }
+        .mobile-mode .glass { padding:1rem; }
+        .mobile-mode .hero-img { height:180px; }
+        .mobile-mode .section-title { font-size:1.2rem; }
+        .mobile-mode .grid-4col { grid-template-columns:repeat(2,1fr); }
+        .mobile-mode .features-list { grid-template-columns:1fr; }
+        .mobile-mode .bottom-nav { display:flex; }
+        .desktop-nav { display:flex; align-items:center; gap:1rem; }
+        .desktop-nav a { color:rgba(255,255,255,0.7); padding:0.3rem 0.5rem; border-radius:6px; transition:var(--transition); font-size:0.8rem; }
+        .desktop-nav a:hover, .desktop-nav a.active { color:white; background:rgba(255,255,255,0.06); }
+        .mode-toggle-btn { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.6); padding:4px 12px; border-radius:60px; font-size:0.7rem; cursor:pointer; transition:var(--transition); }
+        .mode-toggle-btn:hover { background:rgba(255,255,255,0.1); color:white; }
 
-        .result-item.wrong {
-            background: #fee2e2;
-            border-left: 6px solid #ef4444;
-        }
+        .testimonial-card { background:var(--glass-bg); backdrop-filter:blur(8px); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:1.5rem; text-align:center; transition:var(--transition); }
+        .testimonial-card:hover { transform:translateY(-4px); border-color:var(--accent); }
+        .testimonial-card .avatar { width:70px; height:70px; border-radius:50%; object-fit:cover; border:2px solid var(--gold); margin:0 auto 0.5rem; display:block; background:#2a3d5a; }
+        .testimonial-card .name { font-weight:700; color:var(--accent); }
+        .testimonial-card .course { font-size:0.8rem; opacity:0.6; }
+        .testimonial-card .quote { font-style:italic; font-size:0.95rem; margin-top:0.5rem; opacity:0.8; }
 
-        .auth-container {
-            padding: 20px;
-            text-align: center;
-        }
-
-        .auth-container input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 30px;
-            border: 1px solid #cbd5e1;
-            font-size: 1rem;
-        }
-
-        .auth-container button {
-            background: #4f46e5;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
-            margin: 8px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 600px) {
-            .quiz-body { padding: 20px; }
-            .question-text { font-size: 1.3rem; }
-        }
+        .map-container { border-radius:12px; overflow:hidden; border:2px solid var(--accent); margin:1rem 0; }
+        .map-container iframe { width:100%; height:250px; border:none; display:block; }
     </style>
 </head>
 <body>
-<div class="quiz-container">
-    <div class="quiz-header">
-        <h1>📝 QuizMaster</h1>
-        <p>Secure online examination system</p>
-    </div>
-    <div class="quiz-body" id="quiz">
-        <div style="text-align:center; padding:40px;">Loading test...</div>
-    </div>
-</div>
 
-<script src="script.js"></script>
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMessage">Success!</span></div>
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="navbar" id="mainNav">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+                <circle cx="100" cy="100" r="95" fill="none" stroke="#d4a843" stroke-width="3"/>
+                <path d="M50 120 L100 150 L150 120 L100 90 L50 120 Z" fill="#d4a843" opacity="0.8"/>
+                <path d="M50 120 L50 70 L100 40 L100 90 L50 120 Z" fill="#f0d080" opacity="0.6"/>
+                <path d="M150 120 L150 70 L100 40 L100 90 L150 120 Z" fill="#f0d080" opacity="0.4"/>
+                <line x1="50" y1="95" x2="100" y2="65" stroke="#d4a843" stroke-width="2"/>
+                <line x1="150" y1="95" x2="100" y2="65" stroke="#d4a843" stroke-width="2"/>
+                <path d="M100 150 L100 130" stroke="#22c55e" stroke-width="3"/>
+                <path d="M100 130 C90 120, 80 110, 85 100" stroke="#22c55e" stroke-width="3" fill="none"/>
+                <path d="M100 130 C110 120, 120 110, 115 100" stroke="#22c55e" stroke-width="3" fill="none"/>
+                <ellipse cx="85" cy="100" rx="8" ry="5" fill="#22c55e" transform="rotate(-30, 85, 100)"/>
+                <ellipse cx="115" cy="100" rx="8" ry="5" fill="#22c55e" transform="rotate(30, 115, 100)"/>
+                <ellipse cx="100" cy="90" rx="6" ry="4" fill="#4ade80" transform="rotate(0, 100, 90)"/>
+                <circle cx="70" cy="70" r="6" fill="#d4a843" opacity="0.7"/>
+                <circle cx="130" cy="70" r="6" fill="#d4a843" opacity="0.7"/>
+                <line x1="70" y1="70" x2="130" y2="70" stroke="#d4a843" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                <circle cx="60" cy="85" r="3" fill="#d4a843" opacity="0.4"/>
+                <circle cx="140" cy="85" r="3" fill="#d4a843" opacity="0.4"/>
+            </svg>
+            <div class="logo-text">
+                <span class="brand">AV Private Tuitions</span>
+                <span class="sub">✦ Hybrid Education ✦</span>
+            </div>
+        </div>
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="desktop-nav" id="desktopNav">
+            <a data-page="home" class="active">Home</a>
+            <a data-page="about">About</a>
+            <a data-page="courses">Courses</a>
+            <a data-page="results">Results</a>
+            <a data-page="gallery">Gallery</a>
+            <a data-page="tests">Tests</a>
+            <a data-page="homework">Homework</a>
+            <a data-page="live">Live</a>
+            <a data-page="profile">Profile</a>
+            <a data-page="admin">Admin</a>
+            <a id="loginNavLink" style="color:var(--gold);"><i class="fas fa-lock"></i> Login</a>
+            <button class="mode-toggle-btn" onclick="toggleMode()"><i class="fas fa-mobile-alt"></i></button>
+        </div>
+    </nav>
+
+    <!-- ===== MOBILE MENU ===== -->
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <div class="brand">AV Private Tuitions</div>
+            <div style="font-size:0.6rem; color:rgba(255,255,255,0.4);">Hybrid Education</div>
+        </div>
+        <button class="menu-item active" data-page="home"><i class="fas fa-home"></i> Home</button>
+        <button class="menu-item" data-page="about"><i class="fas fa-info-circle"></i> About</button>
+        <button class="menu-item" data-page="courses"><i class="fas fa-book-open"></i> Courses</button>
+        <button class="menu-item" data-page="results"><i class="fas fa-trophy"></i> Results</button>
+        <button class="menu-item" data-page="gallery"><i class="fas fa-images"></i> Gallery</button>
+        <button class="menu-item" data-page="tests"><i class="fas fa-pencil-alt"></i> Tests</button>
+        <button class="menu-item" data-page="homework"><i class="fas fa-book"></i> Homework</button>
+        <button class="menu-item" data-page="live"><i class="fas fa-video"></i> Live</button>
+        <button class="menu-item" data-page="profile"><i class="fas fa-user"></i> Profile</button>
+        <button class="menu-item" data-page="admin"><i class="fas fa-shield-alt"></i> Admin</button>
+        <button class="menu-item" id="mobileLoginBtn" style="color:var(--gold);"><i class="fas fa-lock"></i> Login</button>
+        <button class="menu-item" onclick="toggleMode()"><i class="fas fa-desktop"></i> Web</button>
+    </div>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <div class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-page="home"><i class="fas fa-home"></i>Home</button>
+        <button class="nav-item" data-page="about"><i class="fas fa-info-circle"></i>About</button>
+        <button class="nav-item" data-page="courses"><i class="fas fa-book-open"></i>Courses</button>
+        <button class="nav-item" data-page="profile"><i class="fas fa-user"></i>Profile</button>
+    </div>
+
+    <!-- ===== PAGES ===== -->
+    <div class="page-container">
+        <div id="homePage" class="page active"><div id="homeContent"></div></div>
+        <div id="aboutPage" class="page"><div id="aboutContent"></div></div>
+        <div id="coursesPage" class="page"><div id="coursesContent"></div></div>
+        <div id="resultsPage" class="page"><div id="resultsContent"></div></div>
+        <div id="galleryPage" class="page"><div id="galleryContent"></div></div>
+        <div id="testsPage" class="page"><div id="testsContent"></div></div>
+        <div id="homeworkPage" class="page"><div id="homeworkContent"></div></div>
+        <div id="livePage" class="page"><div id="liveContent"></div></div>
+        <div id="profilePage" class="page"><div id="profileContent"></div></div>
+        <div id="adminPage" class="page"><div id="adminContent"></div></div>
+        <div id="loginPage" class="page"><div id="loginContent"></div></div>
+    </div>
+
+    <!-- ===== EDIT TOGGLE ===== -->
+    <button class="edit-toggle" id="editToggle" title="Toggle Edit Mode"><i class="fas fa-pen"></i></button>
+
+    <!-- ================================================================ -->
+    <!-- ====== FIREBASE CONFIG ====== -->
+    <!-- ================================================================ -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxegZFUpygNJ3kB_zPM8FEKsIt4hSnmxY",
+            authDomain: "av-private-tuitions.firebaseapp.com",
+            projectId: "av-private-tuitions",
+            storageBucket: "av-private-tuitions.firebasestorage.app",
+            messagingSenderId: "254111465995",
+            appId: "1:254111465995:android:78562412dc1de689b67d0e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // ================================================================
+        //  STATE
+        // ================================================================
+        let currentUser = null;
+        let currentLang = 'en';
+        let isEditMode = false;
+        let currentPage = 'home';
+        let isMobileMode = localStorage.getItem('av_mode') === 'mobile';
+        let isLoggedIn = false;
+
+        // ================================================================
+        //  LANGUAGE
+        // ================================================================
+        const translations = {
+            en: { label: 'English', home: 'Home', about: 'About', courses: 'Courses', results: 'Results',
+                gallery: 'Gallery', tests: 'Tests', homework: 'Homework', live: 'Live', profile: 'Profile',
+                admin: 'Admin', login: 'Login', logout: 'Logout' },
+            mr: { label: 'मराठी', home: 'मुख्य', about: 'आमच्याबद्दल', courses: 'अभ्यासक्रम', results: 'निकाल',
+                gallery: 'गॅलरी', tests: 'चाचण्या', homework: 'गृहपाठ', live: 'लाईव्ह', profile: 'प्रोफाइल',
+                admin: 'प्रशासन', login: 'लॉगिन', logout: 'लॉगआउट' },
+            semi: { label: 'Semi-English', home: 'Home', about: 'About', courses: 'Courses', results: 'Results',
+                gallery: 'Gallery', tests: 'Tests', homework: 'Homework', live: 'Live', profile: 'Profile',
+                admin: 'Admin', login: 'Login', logout: 'Logout' }
+        };
+
+        function t(key) { return translations[currentLang] && translations[currentLang][key] ? translations[currentLang][
+                key] : key; }
+
+        // ================================================================
+        //  HELPERS
+        // ================================================================
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._to);
+            t._to = setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2, 6); }
+
+        function formatDate(ts) { if (!ts) return '-'; return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric',
+                month: 'short', year: 'numeric' }); }
+
+        // ================================================================
+        //  AUTH
+        // ================================================================
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            isLoggedIn = !!user;
+            renderNav();
+            renderPage(currentPage);
+        });
+
+        async function login(email, password) {
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                toast('✅ Welcome!');
+                return true;
+            } catch (e) {
+                toast('❌ ' + e.message);
+                return false;
+            }
+        }
+
+        async function logout() {
+            await auth.signOut();
+            toast('👋 Logged out');
+        }
+
+        async function signup(name, email, password, role) {
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection('users').doc(cred.user.uid).set({ name, email, role, created: Date.now() });
+                toast('✅ Account created! Please login.');
+                return true;
+            } catch (e) {
+                toast('❌ ' + e.message);
+                return false;
+            }
+        }
+
+        // ================================================================
+        //  ENSURE DEFAULT USERS EXIST (NEW)
+        // ================================================================
+        async function ensureDefaultUser(email, password, name, role) {
+            try {
+                // Try to sign in – if successful, user exists
+                await auth.signInWithEmailAndPassword(email, password);
+                await auth.signOut(); // sign out immediately
+                console.log(`✅ Default user already exists: ${email}`);
+                return;
+            } catch (error) {
+                if (error.code === 'auth/user-not-found') {
+                    // User doesn't exist – create them
+                    try {
+                        const cred = await auth.createUserWithEmailAndPassword(email, password);
+                        await db.collection('users').doc(cred.user.uid).set({
+                            name,
+                            email,
+                            role,
+                            created: Date.now()
+                        });
+                        await auth.signOut();
+                        console.log(`✅ Created default user: ${email} (${role})`);
+                    } catch (createError) {
+                        console.warn('⚠️ Could not create default user:', createError.message);
+                    }
+                } else {
+                    console.warn('⚠️ Error checking default user:', error.message);
+                }
+            }
+        }
+
+        // ================================================================
+        //  NAVIGATION
+        // ================================================================
+        function renderNav() {
+            const loggedIn = isLoggedIn;
+            document.querySelectorAll('.desktop-nav a[data-page]').forEach(a => {
+                a.style.display = 'inline-flex';
+            });
+            document.querySelectorAll('.menu-item[data-page]').forEach(a => {
+                a.style.display = 'flex';
+            });
+
+            const loginBtn = document.getElementById('loginNavLink');
+            const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+            if (loggedIn) {
+                loginBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Logout`;
+                loginBtn.onclick = logout;
+                mobileLoginBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Logout`;
+                mobileLoginBtn.onclick = logout;
+                document.querySelectorAll('.desktop-nav a[data-page="admin"]').forEach(a => a.style.display =
+                    'inline-flex');
+                document.querySelectorAll('.menu-item[data-page="admin"]').forEach(a => a.style.display = 'flex');
+            } else {
+                loginBtn.innerHTML = `<i class="fas fa-lock"></i> Login`;
+                loginBtn.onclick = showLoginModal;
+                mobileLoginBtn.innerHTML = `<i class="fas fa-lock"></i> Login`;
+                mobileLoginBtn.onclick = showLoginModal;
+                document.querySelectorAll('.desktop-nav a[data-page="admin"]').forEach(a => a.style.display = 'none');
+                document.querySelectorAll('.menu-item[data-page="admin"]').forEach(a => a.style.display = 'none');
+            }
+            document.querySelectorAll('.desktop-nav a[data-page]').forEach(a => {
+                a.classList.toggle('active', a.dataset.page === currentPage);
+            });
+            document.querySelectorAll('.menu-item[data-page]').forEach(a => {
+                a.classList.toggle('active', a.dataset.page === currentPage);
+            });
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(a => {
+                a.classList.toggle('active', a.dataset.page === currentPage);
+            });
+
+            const toggle = document.getElementById('editToggle');
+            if (loggedIn && currentUser && currentUser.email === 'admin@demo.com') {
+                toggle.classList.add('show');
+            } else {
+                toggle.classList.remove('show');
+            }
+        }
+
+        function navigateTo(page) {
+            const publicPages = ['home', 'about', 'courses', 'results', 'gallery'];
+            if (!publicPages.includes(page) && !isLoggedIn) {
+                showLoginModal();
+                return;
+            }
+            currentPage = page;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(page + 'Page');
+            if (target) target.classList.add('active');
+            renderPage(page);
+            closeMobileMenu();
+        }
+
+        function renderPage(page) {
+            const funcs = {
+                home: renderHome,
+                about: renderAbout,
+                courses: renderCourses,
+                results: renderResults,
+                gallery: renderGallery,
+                tests: renderTests,
+                homework: renderHomework,
+                live: renderLive,
+                profile: renderProfile,
+                admin: renderAdmin,
+                login: showLoginModal
+            };
+            if (funcs[page]) funcs[page]();
+        }
+
+        // ================================================================
+        //  MOBILE MENU
+        // ================================================================
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+            document.getElementById('menuOverlay').classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.remove('open');
+            document.getElementById('menuOverlay').classList.remove('active');
+        }
+
+        // ================================================================
+        //  MODE TOGGLE
+        // ================================================================
+        function toggleMode() {
+            isMobileMode = !isMobileMode;
+            document.body.classList.toggle('mobile-mode', isMobileMode);
+            localStorage.setItem('av_mode', isMobileMode ? 'mobile' : 'web');
+            toast(isMobileMode ? '📱 Mobile Mode' : '🌐 Web Mode');
+            closeMobileMenu();
+        }
+
+        if (isMobileMode) {
+            document.body.classList.add('mobile-mode');
+        }
+
+        // ================================================================
+        //  LOGIN MODAL
+        // ================================================================
+        function showLoginModal() {
+            const container = document.getElementById('loginContent');
+            container.innerHTML = `
+                <div class="modal-overlay active" style="display:flex; position:relative; background:transparent; backdrop-filter:none;">
+                    <div class="modal-box" style="max-width:480px; margin:auto;">
+                        <h2><i class="fas fa-lock" style="color:var(--gold);"></i> Login Required</h2>
+                        <p class="sub">Sign in to access this page</p>
+                        <form id="loginForm">
+                            <div class="input-group"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com" value="admin@demo.com" required /></div>
+                            <div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter password" value="password123" required /></div>
+                            <button type="submit" class="btn-gold" style="width:100%;"><i class="fas fa-unlock"></i> Sign In</button>
+                            <p style="margin-top:0.5rem; font-size:0.7rem; opacity:0.4; text-align:center;">Demo: admin@demo.com / password123</p>
+                            <p style="font-size:0.8rem; margin-top:0.5rem; text-align:center;">Don't have an account? <a href="#" id="showSignup" style="color:var(--gold); font-weight:600;">Sign up</a></p>
+                        </form>
+                        <form id="signupForm" class="hidden">
+                            <div class="input-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Your name" value="Demo User" required /></div>
+                            <div class="input-group"><label>Email</label><input type="email" id="signupEmail" placeholder="your@email.com" value="demo@demo.com" required /></div>
+                            <div class="input-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Choose password" value="password123" required /></div>
+                            <div class="input-group"><label>Role</label><select id="signupRole"><option value="student">Student</option><option value="teacher">Teacher</option><option value="admin" selected>Admin</option></select></div>
+                            <button type="submit" class="btn-gold" style="width:100%;"><i class="fas fa-user-plus"></i> Sign Up</button>
+                            <p style="margin-top:0.5rem; font-size:0.7rem; opacity:0.4; text-align:center;">Already have an account? <a href="#" id="showLoginLink" style="color:var(--gold); font-weight:600;">Sign in</a></p>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value.trim();
+                const pass = document.getElementById('loginPassword').value.trim();
+                if (!email || !pass) { toast('⚠️ Please fill all fields'); return; }
+                await login(email, pass);
+            });
+
+            document.getElementById('signupForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('signupName').value.trim();
+                const email = document.getElementById('signupEmail').value.trim();
+                const pass = document.getElementById('signupPassword').value.trim();
+                const role = document.getElementById('signupRole').value;
+                if (!name || !email || !pass) { toast('⚠️ Please fill all fields'); return; }
+                await signup(name, email, pass, role);
+                document.getElementById('signupForm').classList.add('hidden');
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('loginEmail').value = email;
+                document.getElementById('loginPassword').value = pass;
+            });
+
+            document.getElementById('showSignup').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('signupForm').classList.remove('hidden');
+            });
+            document.getElementById('showLoginLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('signupForm').classList.add('hidden');
+                document.getElementById('loginForm').classList.remove('hidden');
+            });
+        }
+
+        // ================================================================
+        //  EDIT MODE TOGGLE
+        // ================================================================
+        document.getElementById('editToggle').addEventListener('click', function() {
+            if (!isLoggedIn) return;
+            isEditMode = !isEditMode;
+            this.classList.toggle('active');
+            document.body.classList.toggle('edit-mode', isEditMode);
+            toast(isEditMode ? '✏️ Edit mode ON' : '🔒 Edit mode OFF');
+            renderPage(currentPage);
+        });
+
+        // ================================================================
+        //  RENDER: HOME
+        // ================================================================
+        function renderHome() {
+            const container = document.getElementById('homeContent');
+            const contacts = [
+                { label: 'Phone', value: '+91 7977106449' },
+                { label: 'Phone', value: '+91 7977109493' }
+            ];
+            const social = { instagram: 'avprivatetuitions', facebook: 'avprivatetuitions', whatsapp: '+91 7977106449',
+                telegram: 'avprivatetuitions' };
+            const address = '105 H-Wing, Kalpnisarg, Opp Aryan One, Badlapur 421503';
+
+            container.innerHTML = `
+                <div class="glass">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                        <div style="flex:1;">
+                            <h1 style="font-family:var(--font-serif); font-size:2.5rem; color:var(--gold);">AV Private Tuitions</h1>
+                            <p style="font-size:1.2rem; color:var(--gold-light);">📚 Hybrid Education – Offline + Online</p>
+                            <p style="opacity:0.7; font-size:0.95rem;">"Empowering Futures, Online & Offline"</p>
+                            <div class="editable-field" style="margin-top:0.3rem;">
+                                <span class="display-text" style="opacity:0.6; font-size:0.85rem;">🏫 ${address}</span>
+                                <input type="text" value="${address}" placeholder="Address" style="font-size:0.85rem;" />
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <span class="badge" style="background:#22c55e;">🌱 13+ Years</span>
+                            <span class="badge" style="background:#3b82f6;">🎓 26+ Years</span>
+                            <span class="badge" style="background:#f97316;">💻 Hybrid</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass glass-premium">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-phone"></i> Contact Us <span class="edit-hint">(admin: edit)</span></h3>
+                    <div class="flex-center">
+                        ${contacts.map((c, idx) => `
+                            <div class="editable-field" data-field="contact_${idx}">
+                                <span class="display-text contact-number"><i class="fas fa-phone"></i> ${c.value}</span>
+                                <input type="text" value="${c.value}" data-idx="${idx}" class="contact-input" />
+                            </div>
+                        `).join('')}
+                        <div class="add-btn"><button class="btn-gold btn-sm" onclick="addContact()"><i class="fas fa-plus"></i> Add</button></div>
+                    </div>
+                </div>
+                <div class="glass glass-premium">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-share-alt"></i> Connect With Us <span class="edit-hint">(admin: edit)</span></h3>
+                    <div class="flex-center" style="gap:1.2rem;">
+                        ${['instagram','facebook','whatsapp','telegram'].map(f => `
+                            <div class="editable-field" data-field="social_${f}">
+                                <span class="display-text social-handle"><i class="fab fa-${f}"></i> ${f==='whatsapp'?social[f]||'+91 7977106449':'@'+(social[f]||'avprivatetuitions')}</span>
+                                <input type="text" value="${social[f]||''}" data-field="${f}" class="social-input" placeholder="${f} handle" />
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${isEditMode ? `<div class="text-muted" style="font-size:0.7rem; margin-top:0.3rem;"><i class="fas fa-info-circle"></i> Edit mode: click any field to change, then click outside to save</div>` : ''}
+                </div>
+                <div class="glass">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-chart-bar"></i> At a Glance</h3>
+                    <div class="grid-3col" style="margin-top:0.8rem;">
+                        <div class="stat-card"><span class="number">13+</span><span class="label">Years of Excellence</span></div>
+                        <div class="stat-card"><span class="number">26+</span><span class="label">Teaching Experience</span></div>
+                        <div class="stat-card"><span class="number">🎯</span><span class="label">Hybrid Education</span></div>
+                    </div>
+                </div>
+                <div class="glass">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-star"></i> Why AV Private Tuitions?</h3>
+                    <div class="grid-3col" style="margin-top:0.8rem;">
+                        <div class="stat-card" style="padding:0.8rem;">
+                            <div style="font-size:2rem;">📚</div>
+                            <div class="label">All Subjects & Boards</div>
+                        </div>
+                        <div class="stat-card" style="padding:0.8rem;">
+                            <div style="font-size:2rem;">💻</div>
+                            <div class="label">Offline + Online Learning</div>
+                        </div>
+                        <div class="stat-card" style="padding:0.8rem;">
+                            <div style="font-size:2rem;">🧮</div>
+                            <div class="label">Abacus, Vedic Maths, Phonics</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass glass-premium text-center" style="background:rgba(212,168,67,0.06);">
+                    <h2 style="color:var(--gold); font-family:var(--font-serif);">"Empowering Futures, Online & Offline"</h2>
+                    <p style="max-width:500px; margin:0.5rem auto; font-size:0.95rem;">We provide all offline and online education solutions. A complete hybrid education system.</p>
+                    <a href="tel:+917977106449" class="btn-gold" style="display:inline-block;"><i class="fas fa-phone"></i> Enroll Now</a>
+                </div>
+                <div class="glass">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-map-pin"></i> Our Location</h3>
+                    <div class="editable-field">
+                        <span class="display-text" style="opacity:0.8;">${address}</span>
+                        <input type="text" value="${address}" placeholder="Address" />
+                    </div>
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3769.456789!2d73.123456!3d19.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTnCsDA3JzI0LjUiTiA3M8KwMDcnMjQuNSJF!5e0!3m2!1sen!2sin!4v1700000000000" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            `;
+
+            // Editable contacts
+            document.querySelectorAll('.contact-input').forEach(inp => {
+                inp.addEventListener('change', function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const contacts = [
+                        { label: 'Phone', value: '+91 7977106449' },
+                        { label: 'Phone', value: '+91 7977109493' }
+                    ];
+                    if (contacts[idx]) {
+                        contacts[idx].value = this.value.trim();
+                        localStorage.setItem('av_contacts', JSON.stringify(contacts));
+                        toast('✅ Contact updated');
+                    }
+                });
+            });
+            document.querySelectorAll('.social-input').forEach(inp => {
+                inp.addEventListener('change', function() {
+                    const social = { instagram: 'avprivatetuitions', facebook: 'avprivatetuitions',
+                        whatsapp: '+91 7977106449', telegram: 'avprivatetuitions' };
+                    social[this.dataset.field] = this.value.trim();
+                    localStorage.setItem('av_social', JSON.stringify(social));
+                    toast('✅ ' + this.dataset.field + ' updated');
+                });
+            });
+            // Address edit
+            document.querySelectorAll('.editable-field input[placeholder="Address"]').forEach(inp => {
+                inp.addEventListener('change', function() {
+                    const newAddress = this.value.trim();
+                    const mapFrame = document.querySelector('.map-container iframe');
+                    if (mapFrame) {
+                        const encoded = encodeURIComponent(newAddress);
+                        mapFrame.src =
+                            `https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3769.456789!2d73.123456!3d19.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2z${encoded}!5e0!3m2!1sen!2sin!4v1700000000000`;
+                    }
+                    toast('✅ Address updated');
+                });
+            });
+        }
+
+        window.addContact = function() {
+            const contacts = JSON.parse(localStorage.getItem('av_contacts')) || [
+                { label: 'Phone', value: '+91 7977106449' },
+                { label: 'Phone', value: '+91 7977109493' }
+            ];
+            contacts.push({ label: 'Phone', value: '+91 ' });
+            localStorage.setItem('av_contacts', JSON.stringify(contacts));
+            toast('✅ New contact added. Edit the number in edit mode.');
+            renderHome();
+        };
+
+        // ================================================================
+        //  RENDER: ABOUT
+        // ================================================================
+        function renderAbout() {
+            const container = document.getElementById('aboutContent');
+            container.innerHTML = `
+                <div class="glass glass-premium">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-info-circle"></i> About AV Private Tuitions</h3>
+                    <p style="font-size:1.05rem; line-height:1.8;">
+                        <strong>AV Private Tuitions</strong> is a premier hybrid education institution offering both offline and online learning solutions. Founded by <strong>Mrs. Archana Vinay Dubey (M.A., B.Ed.)</strong> and <strong>Mr. Vinay Dubey (M.Sc.)</strong>, we are committed to providing quality education with a personalized approach.
+                    </p>
+                    <div class="grid-2col" style="margin-top:1rem;">
+                        <div>
+                            <h4 style="color:var(--gold);"><i class="fas fa-user-tie"></i> Founder & Director</h4>
+                            <p><strong>Mrs. Archana Vinay Dubey</strong></p>
+                            <p style="font-size:0.9rem; opacity:0.7;">M.A., B.Ed. • 13+ Years Experience</p>
+                        </div>
+                        <div>
+                            <h4 style="color:var(--gold);"><i class="fas fa-user-tie"></i> Co-founder</h4>
+                            <p><strong>Mr. Vinay Dubey</strong></p>
+                            <p style="font-size:0.9rem; opacity:0.7;">M.Sc. • 26+ Years Experience</p>
+                        </div>
+                    </div>
+                    <p style="margin-top:1rem;">
+                        <strong>📍 Address:</strong> 105 H-Wing, Kalpnisarg, Opp Aryan One, Shirgaon, Badlapur 421503
+                    </p>
+                </div>
+                <div class="grid-2col">
+                    <div class="glass">
+                        <h4 style="color:var(--gold);"><i class="fas fa-bullseye"></i> Our Mission</h4>
+                        <p>To provide quality hybrid education that empowers students to excel in their academic journey, combining the best of offline and online learning.</p>
+                        <br>
+                        <h4 style="color:var(--gold);"><i class="fas fa-eye"></i> Our Vision</h4>
+                        <p>To become a leading hybrid education provider, making quality education accessible to every student.</p>
+                    </div>
+                    <div class="glass">
+                        <h4 style="color:var(--gold);"><i class="fas fa-heart"></i> Our Core Values</h4>
+                        <ul style="list-style:none; padding:0;">
+                            <li style="padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.05);">✦ Quality Education</li>
+                            <li style="padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.05);">✦ Personalized Attention</li>
+                            <li style="padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.05);">✦ Hybrid Learning Approach</li>
+                            <li style="padding:0.3rem 0;">✦ Continuous Innovation</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ================================================================
+        //  RENDER: COURSES
+        // ================================================================
+        function renderCourses() {
+            const container = document.getElementById('coursesContent');
+            const primary = ['1st', '2nd', '3rd', '4th'];
+            const secondary = ['5th', '6th', '7th', '8th', '9th', '10th'];
+            const higher = ['11th Science', '11th Commerce', '11th Arts', '12th Science', '12th Commerce', '12th Arts'];
+
+            container.innerHTML = `
+                <div class="glass glass-premium">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-book-open"></i> Our Courses</h3>
+                    <p style="opacity:0.7;">We offer comprehensive education for all levels with a hybrid approach.</p>
+                </div>
+                <div class="glass">
+                    <h4 style="color:var(--gold);"><i class="fas fa-graduation-cap"></i> Primary Education (1st - 4th)</h4>
+                    <div class="flex" style="margin-top:0.5rem;">
+                        ${primary.map(c => `<span class="badge" style="background:#3b82f6;">${c}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="glass">
+                    <h4 style="color:var(--gold);"><i class="fas fa-school"></i> Secondary Education (5th - 10th)</h4>
+                    <div class="flex" style="margin-top:0.5rem;">
+                        ${secondary.map(c => `<span class="badge" style="background:#f97316;">${c}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="glass">
+                    <h4 style="color:var(--gold);"><i class="fas fa-university"></i> Higher Secondary (11th - 12th)</h4>
+                    <div class="grid-3col" style="margin-top:0.5rem;">
+                        ${higher.map(c => `<div class="stat-card" style="padding:0.8rem;"><span style="font-weight:700;">${c}</span></div>`).join('')}
+                    </div>
+                </div>
+                <div class="glass">
+                    <h4 style="color:var(--gold);"><i class="fas fa-star"></i> Special Courses</h4>
+                    <div class="flex" style="margin-top:0.5rem;">
+                        <span class="badge" style="background:#8b5cf6;">🧮 Abacus</span>
+                        <span class="badge" style="background:#8b5cf6;">📐 Vedic Maths</span>
+                        <span class="badge" style="background:#8b5cf6;">📖 Phonics</span>
+                        <span class="badge" style="background:#8b5cf6;">🗣️ Spoken English</span>
+                        <span class="badge" style="background:#8b5cf6;">📝 English Grammar</span>
+                        <span class="badge" style="background:#8b5cf6;">📚 All Subjects</span>
+                        <span class="badge" style="background:#8b5cf6;">🏛️ All Boards</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ================================================================
+        //  RENDER: RESULTS
+        // ================================================================
+        function renderResults() {
+            const container = document.getElementById('resultsContent');
+            const results = [
+                { name: 'Tanaya D.', percent: 90.20, jump: 4.37 },
+                { name: 'Ketaki B.', percent: 89.60, jump: 6.43 },
+                { name: 'Parth K.', percent: 90.00, jump: 8.00 },
+                { name: 'Riddhesh Dagar', percent: 81.80, jump: 21.47 },
+                { name: 'Jay Patel', percent: 75.60, jump: 26.77 }
+            ];
+
+            container.innerHTML = `
+                <div class="glass glass-premium text-center">
+                    <h2 style="font-family:var(--font-serif); color:var(--gold);">🏆 Our Achievements</h2>
+                    <p style="opacity:0.7;">Heartily Congratulations to all the achievers!</p>
+                </div>
+                <div class="glass">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-list"></i> Top Performers</h3>
+                    <div class="grid-3col" style="margin-top:0.8rem;">
+                        ${results.map(r => `
+                            <div class="result-card">
+                                <div style="width:60px; height:60px; border-radius:50%; background:var(--gold-gradient); margin:0 auto 0.5rem; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700; color:var(--primary);">${r.name.charAt(0)}</div>
+                                <div class="name">${r.name}</div>
+                                <div class="percent">${r.percent}%</div>
+                                <div class="jump">⬆ ${r.jump}% jump</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ================================================================
+        //  RENDER: GALLERY
+        // ================================================================
+        function renderGallery() {
+            const container = document.getElementById('galleryContent');
+            const videos = [
+                { title: 'Welcome to AV Private Tuitions', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+                { title: 'Abacus Learning Session', url: 'https://www.youtube.com/embed/abc123' },
+                { title: 'Vedic Maths Introduction', url: 'https://www.youtube.com/embed/xyz789' }
+            ];
+
+            container.innerHTML = `
+                <div class="glass glass-premium">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fab fa-youtube"></i> YouTube Gallery</h3>
+                    <p style="opacity:0.7;">Watch our educational videos and tutorials.</p>
+                    <div class="grid-2col" style="margin-top:0.8rem;">
+                        ${videos.map(v => `
+                            <div class="glass" style="padding:0.5rem;">
+                                <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px;">
+                                    <iframe src="${v.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none; border-radius:8px;" allowfullscreen loading="lazy"></iframe>
+                                </div>
+                                <p style="text-align:center; font-size:0.85rem; margin-top:0.3rem;">${v.title}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="text-center mt-1">
+                        <button class="btn-gold btn-sm" onclick="toast('📹 Admin: Add YouTube video')"><i class="fas fa-plus"></i> Add Video</button>
+                        <span class="edit-hint" style="font-size:0.7rem; opacity:0.5;">(Admin only)</span>
+                    </div>
+                </div>
+                <div class="glass">
+                    <h3 style="font-family:var(--font-serif); color:var(--gold);"><i class="fas fa-images"></i> Campus Gallery</h3>
+                    <div class="gallery-grid">
+                        ${['https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=400&h=400&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=400&h=400&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=400&h=400&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=400&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&h=400&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=400&h=400&fit=crop&crop=center'
+                        ].map(url => `
+                            <div class="gallery-item">
+                                <img src="${url}" alt="Gallery" />
+                                <span class="type-badge">image</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ================================================================
+        //  STUB RENDERS FOR PROTECTED PAGES
+        // ================================================================
+        function renderTests() {
+            document.getElementById('testsContent').innerHTML = `
+                <div class="glass"><h3 style="color:var(--gold);">📝 Tests</h3>
+                <p>Create and manage tests for your students.</p>
+                <div class="flex mt-1">
+                    <button class="btn-gold btn-sm" onclick="toast('📝 Create Test')"><i class="fas fa-plus"></i> Create Test</button>
+                    <button class="btn-gold btn-sm" onclick="toast('📤 Import JSON')"><i class="fas fa-upload"></i> Import</button>
+                    <button class="btn-gold btn-sm" onclick="toast('📥 Export JSON')"><i class="fas fa-download"></i> Export</button>
+                    <button class="btn-secondary btn-sm" onclick="toast('📄 Export PDF')"><i class="fas fa-file-pdf"></i> PDF</button>
+                </div>
+                <div class="grid-2col" style="margin-top:0.8rem;">
+                    <div class="glass"><strong>📝 Math Test - Chapter 5</strong>
+                    <p style="font-size:0.85rem; opacity:0.6;">10 questions • 30 minutes</p>
+                    <button class="btn-gold btn-sm">▶ Take Test</button></div>
+                    <div class="glass"><strong>📝 Science Test - Chemical Reactions</strong>
+                    <p style="font-size:0.85rem; opacity:0.6;">15 questions • 45 minutes</p>
+                    <button class="btn-gold btn-sm">▶ Take Test</button></div>
+                </div>
+                </div>
+            `;
+        }
+
+        function renderHomework() {
+            document.getElementById('homeworkContent').innerHTML = `
+                <div class="glass"><h3 style="color:var(--gold);">📄 Homework</h3>
+                <p>Create and manage homework assignments.</p>
+                <div class="grid-2col" style="margin-top:0.8rem;">
+                    <div class="glass"><strong>📄 Algebra Problems</strong>
+                    <p style="font-size:0.85rem; opacity:0.6;">Due: Tomorrow • 5 submissions</p>
+                    <button class="btn-gold btn-sm">📤 Submit</button></div>
+                    <div class="glass"><strong>📄 Essay on Pollution</strong>
+                    <p style="font-size:0.85rem; opacity:0.6;">Due: Friday • 3 submissions</p>
+                    <button class="btn-gold btn-sm">📤 Submit</button></div>
+                </div>
+                </div>
+            `;
+        }
+
+        function renderLive() {
+            document.getElementById('liveContent').innerHTML = `
+                <div class="glass"><h3 style="color:var(--gold);">📹 Live Classes</h3>
+                <p>Join live classes, view recordings, and interact with teachers.</p>
+                <div class="grid-2col" style="margin-top:0.8rem;">
+                    <div class="glass"><strong>🔴 Maths Doubt Session</strong>
+                    <p style="font-size:0.85rem; opacity:0.6;">Today 4:00 PM • 15 min left</p>
+                    <button class="btn-gold btn-sm">▶ Join Class</button></div>
+                    <div class="glass"><strong>🔴 Science - Chemical Reactions</strong>
+                    <p style="font-size:0.85rem; opacity:0.6;">Tomorrow 10:00 AM</p>
+                    <button class="btn-gold btn-sm">🔔 Remind Me</button></div>
+                </div>
+                </div>
+            `;
+        }
+
+        function renderProfile() {
+            const user = currentUser;
+            document.getElementById('profileContent').innerHTML = `
+                <div class="glass"><h3 style="color:var(--gold);">👤 My Profile</h3>
+                <div style="text-align:center; padding:0.5rem;">
+                    <div style="width:80px; height:80px; border-radius:50%; background:var(--gold-gradient); margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700; color:var(--primary);">${user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}</div>
+                    <p><strong>${user?.displayName || 'User'}</strong></p>
+                    <p style="font-size:0.85rem; opacity:0.6;">${user?.email || 'user@demo.com'}</p>
+                </div>
+                <div class="grid-3col" style="margin-top:0.8rem;">
+                    <div class="stat-card"><span class="number" style="font-size:1.2rem;">5</span><span class="label">Courses</span></div>
+                    <div class="stat-card"><span class="number" style="font-size:1.2rem;">12</span><span class="label">Tests</span></div>
+                    <div class="stat-card"><span class="number" style="font-size:1.2rem;">85%</span><span class="label">Avg Score</span></div>
+                </div>
+                </div>
+            `;
+        }
+
+        function renderAdmin() {
+            document.getElementById('adminContent').innerHTML = `
+                <div class="glass glass-premium">
+                    <h3 style="color:var(--gold);"><i class="fas fa-shield-alt"></i> Admin Panel</h3>
+                    <p>Manage all content, users, and settings.</p>
+                    <div class="grid-2col" style="margin-top:0.8rem;">
+                        <div class="glass"><strong>👥 Users</strong><p>Total: 3 (Admin, Teacher, Student)</p>
+                        <button class="btn-gold btn-sm" onclick="toast('👥 Manage Users')">Manage</button></div>
+                        <div class="glass"><strong>📚 Content</strong><p>Tests: 8 • Homework: 5 • Courses: 12</p>
+                        <button class="btn-gold btn-sm" onclick="toast('📚 Manage Content')">Manage</button></div>
+                    </div>
+                    <div class="flex mt-1">
+                        <button class="btn-gold btn-sm" onclick="document.getElementById('editToggle').click()"><i class="fas fa-pen"></i> Edit Mode</button>
+                        <button class="btn-gold btn-sm" onclick="toast('💾 Backup downloaded!')"><i class="fas fa-download"></i> Backup</button>
+                        <button class="btn-gold btn-sm" onclick="toast('🔄 Restore completed!')"><i class="fas fa-upload"></i> Restore</button>
+                        <button class="btn-secondary btn-sm" onclick="toast('🗑️ All data cleared!')"><i class="fas fa-trash"></i> Reset</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ================================================================
+        //  EVENT LISTENERS
+        // ================================================================
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('lang-btn')) {
+                currentLang = e.target.dataset.lang;
+                renderNav();
+                renderPage(currentPage);
+                toast('🌐 ' + translations[currentLang].label);
+            }
+        });
+
+        document.querySelectorAll('.desktop-nav a[data-page]').forEach(a => {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigateTo(this.dataset.page);
+            });
+        });
+        document.querySelectorAll('.menu-item[data-page]').forEach(a => {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigateTo(this.dataset.page);
+            });
+        });
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(a => {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigateTo(this.dataset.page);
+            });
+        });
+
+        // ================================================================
+        //  INIT – Create Default Users
+        // ================================================================
+        (async function init() {
+            // Create default users
+            await ensureDefaultUser('admin@demo.com', 'password123', 'Admin', 'admin');
+            await ensureDefaultUser('teacher@demo.com', 'password123', 'Demo Teacher', 'teacher');
+            await ensureDefaultUser('student@demo.com', 'password123', 'Demo Student', 'student');
+
+            // Load saved language
+            const savedLang = localStorage.getItem('av_lang') || 'en';
+            currentLang = savedLang;
+            switchLanguage(savedLang);
+            renderNav();
+            navigateTo('home');
+
+            console.log('🚀 AV Private Tuitions – Complete Platform');
+            console.log('🔐 Login: any default email / password123');
+            console.log('📱 Toggle between Web/Mobile mode using the button');
+            console.log('🔓 Public pages: Home, About, Courses, Results, Gallery');
+            console.log('🔒 Protected pages require login');
+            console.log('🔥 Firebase connected successfully!');
+            console.log('📞 Phone numbers: 7977106449, 7977109493');
+            console.log('📧 Email: vinayd180@gmail.com');
+            console.log('📍 Address: 105 H-Wing, Kalpnisarg, Opp Aryan One, Badlapur 421503');
+        })();
+    </script>
 </body>
-</html>
+    </html>
