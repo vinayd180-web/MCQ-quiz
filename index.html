@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
-        /* ===== COMPLETE MOBILE STYLES (exact same as previous) ===== */
+        /* ===== COMPLETE MOBILE STYLES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -615,7 +615,7 @@
         .settings-tabs .stab {
             padding: 0.4rem 0.8rem;
             border-radius: var(--radius-sm);
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             background: var(--bg);
             color: var(--text-muted);
             font-size: 0.7rem;
@@ -656,7 +656,7 @@
         }
         .notif-panel .notif-item {
             padding: 0.6rem 0;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             font-size: 0.85rem;
         }
         .notif-panel .notif-item .time {
@@ -763,7 +763,7 @@
 
                 <!-- Subjects -->
                 <div id="settings-subjects" class="settings-panel">
-                    <div class="input-group"><label>Add Subject</label><div class="flex"><input type="text" id="newSubjectInput" style="flex:1;" /><button class="btn btn-primary btn-sm" onclick="addSubject()" style="width:auto;">+</button></div></div>
+                    <div class="input-group"><label>Add Subject</label><div class="flex"><input type="text" id="newSubjectInput" style="flex:1;" /><button class="btn btn-primary btn-sm" onclick="addNewSubject()">Add</button></div></div>
                     <div id="subjectList"></div>
                 </div>
 
@@ -790,7 +790,7 @@
     <nav class="navbar">
         <div class="navbar-left">
             <button onclick="toggleMenu()" style="background:none;border:none;font-size:1.4rem;color:var(--text);cursor:pointer;padding:0 4px;">☰</button>
-            <img id="navLogo" class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23d4a843'/%3E%3Ctext x='50' y='68' font-family='Georgia' font-size='50' font-weight='bold' fill='%230a1628' text-anchor='middle'%3EAV%3C/text%3E%3C/svg%3E" alt="Logo" />
+            <img id="navLogo" class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23d4a843'/%3E%3Ctext x='50' y='60' font-size='60' font-weight='bold' text-anchor='middle' fill='white'%3EAV%3C/text%3E%3C/svg%3E" alt="Logo" />
             <span class="logo-text" id="navTitle">AV Pro</span>
         </div>
         <div class="navbar-right">
@@ -896,8 +896,6 @@
         // ============================================================
         // 1. FIREBASE CONFIG – EDIT THESE VALUES
         // ============================================================
-        // ⚠️ Replace this object with your own Firebase project config.
-        // To get your config: Firebase Console → Project Settings → Your apps → </> → Copy config.
         const DEFAULT_CONFIG = {
             apiKey: "AIzaSyACnqjnq2VFIX17pSoiNMNxy77WlWBgeWs",
             authDomain: "av-private-tuitions.firebaseapp.com",
@@ -978,36 +976,28 @@
             if (s.tagline) document.getElementById('homeTagline')?.textContent = '✦ ' + s.tagline + ' ✦';
             if (s.primaryColor) {
                 document.documentElement.style.setProperty('--gold', s.primaryColor);
-                document.documentElement.style.setProperty('--gold-gradient', 'linear-gradient(135deg, ' + s
-                    .primaryColor + ', ' + s.primaryColor + '80)');
+                document.documentElement.style.setProperty('--gold-gradient', 'linear-gradient(135deg, ' + s.primaryColor + ', ' + s.primaryColor + '80)');
             }
             if (s.darkColor) document.documentElement.style.setProperty('--primary', s.darkColor);
-            if (s.phone) document.getElementById('contactPhone')?.innerHTML = '<i class="fas fa-phone" style="color:var(--gold);"></i> <strong>' +
-                s.phone + '</strong>';
-            if (s.altPhone) document.getElementById('contactAltPhone')?.innerHTML =
-                '<i class="fas fa-phone" style="color:var(--gold);"></i> <strong>' + s.altPhone + '</strong>';
-            if (s.email) document.getElementById('contactEmail')?.innerHTML =
-                '<i class="fas fa-envelope" style="color:var(--gold);"></i> ' + s.email;
-            if (s.address) document.getElementById('contactAddress')?.innerHTML =
-                '<i class="fas fa-map-marker-alt" style="color:var(--gold);"></i> ' + s.address;
+            if (s.phone) document.getElementById('contactPhone')?.innerHTML = '<i class="fas fa-phone" style="color:var(--gold);"></i> <strong>' + s.phone + '</strong>';
+            if (s.altPhone) document.getElementById('contactAltPhone')?.innerHTML = '<i class="fas fa-phone" style="color:var(--gold);"></i> <strong>' + s.altPhone + '</strong>';
+            if (s.email) document.getElementById('contactEmail')?.innerHTML = '<i class="fas fa-envelope" style="color:var(--gold);"></i> ' + s.email;
+            if (s.address) document.getElementById('contactAddress')?.innerHTML = '<i class="fas fa-map-marker-alt" style="color:var(--gold);"></i> ' + s.address;
             if (s.upiId) document.getElementById('upiDisplay')?.textContent = 'UPI: ' + s.upiId;
         }
 
         // ============================================================
-        // SETTINGS MODAL
+        // SETTINGS MODAL FUNCTIONS
         // ============================================================
         function openDeveloperSettings() {
             document.getElementById('settingsModal').classList.add('active');
-            document.getElementById('settingsPasswordPrompt').style.display = 'block';
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('settingsPasswordError').style.display = 'none';
-            document.getElementById('settingsPasswordInput').value = '';
-            loadSettingsIntoForm();
         }
 
         function closeSettings() {
             document.getElementById('settingsModal').classList.remove('active');
             settingsUnlocked = false;
+            document.getElementById('settingsPasswordPrompt').style.display = 'block';
+            document.getElementById('settingsContent').style.display = 'none';
         }
 
         function verifySettingsPassword() {
@@ -1016,16 +1006,16 @@
                 settingsUnlocked = true;
                 document.getElementById('settingsPasswordPrompt').style.display = 'none';
                 document.getElementById('settingsContent').style.display = 'block';
-                document.getElementById('settingsPasswordError').style.display = 'none';
-                document.getElementById('devBadge').style.display = 'inline';
-                showToast('🔓 Settings unlocked!');
+                loadSettingsForm();
             } else {
                 document.getElementById('settingsPasswordError').style.display = 'block';
-                document.getElementById('settingsPasswordError').textContent = '❌ Incorrect password.';
+                setTimeout(() => {
+                    document.getElementById('settingsPasswordError').style.display = 'none';
+                }, 3000);
             }
         }
 
-        function loadSettingsIntoForm() {
+        function loadSettingsForm() {
             const s = centerSettings;
             document.getElementById('setCenterName').value = s.centerName || '';
             document.getElementById('setTagline').value = s.tagline || '';
@@ -1038,758 +1028,95 @@
             document.getElementById('setEmail').value = s.email || '';
             document.getElementById('setAddress').value = s.address || '';
             document.getElementById('setUpi').value = s.upiId || '';
-            document.getElementById('setWhatsApp').value = s.whatsapp || '';
-            document.getElementById('setPayUpi').value = (s.payment && s.payment.upiId) || '';
-            document.getElementById('setPayQr').value = (s.payment && s.payment.qrUrl) || '';
-            document.getElementById('setBankName').value = (s.payment && s.payment.bankName) || '';
-            document.getElementById('setBankAccount').value = (s.payment && s.payment.bankAccount) || '';
-            document.getElementById('setBankIfsc').value = (s.payment && s.payment.bankIfsc) || '';
-            if (s.payment) {
-                document.getElementById('setEnableUpi').checked = s.payment.enableUpi !== false;
-                document.getElementById('setEnableCard').checked = s.payment.enableCard !== false;
-                document.getElementById('setEnableBank').checked = s.payment.enableBank !== false;
-                document.getElementById('setEnableCash').checked = s.payment.enableCash !== false;
-            }
-            const cfg = currentFirebaseConfig;
-            document.getElementById('setApiKey').value = cfg.apiKey || '';
-            document.getElementById('setAuthDomain').value = cfg.authDomain || '';
-            document.getElementById('setProjectId').value = cfg.projectId || '';
-            document.getElementById('setStorageBucket').value = cfg.storageBucket || '';
-            document.getElementById('setMessagingSenderId').value = cfg.messagingSenderId || '';
-            document.getElementById('setAppId').value = cfg.appId || '';
-            renderSubjectList();
+            document.getElementById('setWhatsApp').value = s.whatsAppLink || '';
+            document.getElementById('setPayUpi').value = s.payUpi || '';
+            document.getElementById('setPayQr').value = s.payQrUrl || '';
+            document.getElementById('setBankName').value = s.bankName || '';
+            document.getElementById('setBankAccount').value = s.bankAccount || '';
+            document.getElementById('setBankIfsc').value = s.bankIfsc || '';
+            document.getElementById('setEnableUpi').checked = s.enableUpi || false;
+            document.getElementById('setEnableCard').checked = s.enableCard || false;
+            document.getElementById('setEnableBank').checked = s.enableBank || false;
+            document.getElementById('setEnableCash').checked = s.enableCash || false;
+            document.getElementById('setApiKey').value = currentFirebaseConfig.apiKey || '';
+            document.getElementById('setAuthDomain').value = currentFirebaseConfig.authDomain || '';
+            document.getElementById('setProjectId').value = currentFirebaseConfig.projectId || '';
+            document.getElementById('setStorageBucket').value = currentFirebaseConfig.storageBucket || '';
+            document.getElementById('setMessagingSenderId').value = currentFirebaseConfig.messagingSenderId || '';
+            document.getElementById('setAppId').value = currentFirebaseConfig.appId || '';
         }
 
         function switchSettingsTab(tab) {
-            document.querySelectorAll('.settings-tabs .stab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.settings-tabs .stab[data-tab="${tab}"]`).classList.add('active');
             document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
             document.getElementById('settings-' + tab).classList.add('active');
+            document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
         }
 
-        // ============================================================
-        // SUBJECTS
-        // ============================================================
-        function renderSubjectList() {
-            const container = document.getElementById('subjectList');
-            const subjects = centerSettings.subjects || [];
-            if (!subjects.length) { container.innerHTML = '<p class="text-muted">No subjects.</p>'; return; }
-            let html = '';
-            subjects.forEach((s, i) => {
-                html += `<div class="flex" style="justify-content:space-between;padding:0.4rem 0.6rem;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:0.3rem;">
-                    <span>${s}</span>
-                    <button class="btn btn-danger btn-sm" onclick="removeSubject(${i})" style="width:auto;padding:0.1rem 0.6rem;">✕</button>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        function addSubject() {
-            const input = document.getElementById('newSubjectInput');
-            const sub = input.value.trim();
-            if (!sub) { showToast('⚠️ Enter a subject'); return; }
-            if (!centerSettings.subjects) centerSettings.subjects = [];
-            if (centerSettings.subjects.includes(sub)) { showToast('⚠️ Already exists'); return; }
-            centerSettings.subjects.push(sub);
-            saveCenterSettings();
-            renderSubjectList();
-            input.value = '';
-            showToast('✅ Subject added');
-            applySettings();
-        }
-
-        function removeSubject(i) {
-            centerSettings.subjects.splice(i, 1);
-            saveCenterSettings();
-            renderSubjectList();
-            showToast('✅ Subject removed');
-            applySettings();
-        }
-
-        // ============================================================
-        // SAVE SETTINGS
-        // ============================================================
         function saveSettings() {
-            if (!settingsUnlocked) return;
-            centerSettings.centerName = document.getElementById('setCenterName').value.trim();
-            centerSettings.tagline = document.getElementById('setTagline').value.trim();
-            centerSettings.primaryColor = document.getElementById('setPrimaryColor').value;
-            centerSettings.darkColor = document.getElementById('setDarkColor').value;
-            centerSettings.logoUrl = document.getElementById('setLogoUrl').value.trim();
-            centerSettings.favicon = document.getElementById('setFavicon').value.trim();
-            centerSettings.phone = document.getElementById('setPhone').value.trim();
-            centerSettings.altPhone = document.getElementById('setAltPhone').value.trim();
-            centerSettings.email = document.getElementById('setEmail').value.trim();
-            centerSettings.address = document.getElementById('setAddress').value.trim();
-            centerSettings.upiId = document.getElementById('setUpi').value.trim();
-            centerSettings.whatsapp = document.getElementById('setWhatsApp').value.trim();
-            centerSettings.payment = {
-                upiId: document.getElementById('setPayUpi').value.trim(),
-                qrUrl: document.getElementById('setPayQr').value.trim(),
-                bankName: document.getElementById('setBankName').value.trim(),
-                bankAccount: document.getElementById('setBankAccount').value.trim(),
-                bankIfsc: document.getElementById('setBankIfsc').value.trim(),
+            centerSettings = {
+                centerName: document.getElementById('setCenterName').value,
+                tagline: document.getElementById('setTagline').value,
+                primaryColor: document.getElementById('setPrimaryColor').value,
+                darkColor: document.getElementById('setDarkColor').value,
+                logoUrl: document.getElementById('setLogoUrl').value,
+                favicon: document.getElementById('setFavicon').value,
+                phone: document.getElementById('setPhone').value,
+                altPhone: document.getElementById('setAltPhone').value,
+                email: document.getElementById('setEmail').value,
+                address: document.getElementById('setAddress').value,
+                upiId: document.getElementById('setUpi').value,
+                whatsAppLink: document.getElementById('setWhatsApp').value,
+                payUpi: document.getElementById('setPayUpi').value,
+                payQrUrl: document.getElementById('setPayQr').value,
+                bankName: document.getElementById('setBankName').value,
+                bankAccount: document.getElementById('setBankAccount').value,
+                bankIfsc: document.getElementById('setBankIfsc').value,
                 enableUpi: document.getElementById('setEnableUpi').checked,
                 enableCard: document.getElementById('setEnableCard').checked,
                 enableBank: document.getElementById('setEnableBank').checked,
-                enableCash: document.getElementById('setEnableCash').checked,
+                enableCash: document.getElementById('setEnableCash').checked
             };
             saveCenterSettings();
             applySettings();
-            showToast('✅ Settings saved!');
+            showToast('✅ Settings saved successfully!');
+        }
 
-            const newConfig = {
-                apiKey: document.getElementById('setApiKey').value.trim(),
-                authDomain: document.getElementById('setAuthDomain').value.trim(),
-                projectId: document.getElementById('setProjectId').value.trim(),
-                storageBucket: document.getElementById('setStorageBucket').value.trim(),
-                messagingSenderId: document.getElementById('setMessagingSenderId').value.trim(),
-                appId: document.getElementById('setAppId').value.trim()
-            };
-            if (newConfig.apiKey && JSON.stringify(newConfig) !== JSON.stringify(currentFirebaseConfig)) {
-                currentFirebaseConfig = newConfig;
-                saveFirebaseConfig();
-                if (initFirebase(currentFirebaseConfig)) {
-                    showToast('🔥 Firebase re-initialized!');
-                    location.reload();
-                }
+        function addNewSubject() {
+            const input = document.getElementById('newSubjectInput');
+            if (input.value.trim()) {
+                // Add to localStorage
+                const subjects = JSON.parse(localStorage.getItem('av_subjects') || '[]');
+                subjects.push({ id: Date.now(), name: input.value });
+                localStorage.setItem('av_subjects', JSON.stringify(subjects));
+                input.value = '';
+                showToast('✅ Subject added!');
             }
-            closeSettings();
         }
 
         function reinitFirebase() {
-            if (!settingsUnlocked) return;
-            const cfg = {
-                apiKey: document.getElementById('setApiKey').value.trim(),
-                authDomain: document.getElementById('setAuthDomain').value.trim(),
-                projectId: document.getElementById('setProjectId').value.trim(),
-                storageBucket: document.getElementById('setStorageBucket').value.trim(),
-                messagingSenderId: document.getElementById('setMessagingSenderId').value.trim(),
-                appId: document.getElementById('setAppId').value.trim()
+            currentFirebaseConfig = {
+                apiKey: document.getElementById('setApiKey').value,
+                authDomain: document.getElementById('setAuthDomain').value,
+                projectId: document.getElementById('setProjectId').value,
+                storageBucket: document.getElementById('setStorageBucket').value,
+                messagingSenderId: document.getElementById('setMessagingSenderId').value,
+                appId: document.getElementById('setAppId').value
             };
-            if (!cfg.apiKey) { showToast('⚠️ Fill all fields'); return; }
-            currentFirebaseConfig = cfg;
             saveFirebaseConfig();
-            if (initFirebase(cfg)) { showToast('🔥 Firebase re-initialized!');
-                location.reload(); } else showToast('❌ Failed');
-        }
-
-        // ============================================================
-        // HELPERS
-        // ============================================================
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            const el = document.getElementById('toastMessage');
-            if (!el) return;
-            el.textContent = msg;
-            t.classList.add('show');
-            clearTimeout(t._to);
-            t._to = setTimeout(() => t.classList.remove('show'), 3000);
-        }
-
-        function getCurrentUser() { return auth ? auth.currentUser : null; }
-
-        // ============================================================
-        // AUTH
-        // ============================================================
-        document.getElementById('showSignup').addEventListener('click', e => {
-            e.preventDefault();
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('signupForm').classList.remove('hidden');
-        });
-        document.getElementById('showLogin').addEventListener('click', e => {
-            e.preventDefault();
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('signupForm').classList.add('hidden');
-        });
-
-        document.getElementById('loginForm').addEventListener('submit', async e => {
-            e.preventDefault();
-            if (!auth) { showToast('⚠️ Firebase not ready'); return; }
-            const email = document.getElementById('loginEmail').value.trim();
-            const pass = document.getElementById('loginPassword').value.trim();
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-                showToast('✅ Welcome!');
-            } catch (err) {
-                document.getElementById('loginError').textContent = err.message;
-                document.getElementById('loginError').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('signupForm').addEventListener('submit', async e => {
-            e.preventDefault();
-            if (!auth) { showToast('⚠️ Firebase not ready'); return; }
-            const name = document.getElementById('signupName').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const pass = document.getElementById('signupPassword').value.trim();
-            const role = document.getElementById('signupRole').value;
-            const level = document.getElementById('signupLevel').value.trim();
-            try {
-                const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                await db.collection('users').doc(cred.user.uid).set({
-                    name,
-                    email,
-                    role,
-                    level: level || '',
-                    photoURL: '',
-                    huraId: 'HURA-' + Date.now().toString(36).toUpperCase(),
-                    created_at: new Date().toISOString(),
-                    status: 'active'
-                });
-                await db.collection('notifications').add({
-                    userId: cred.user.uid,
-                    message: 'Welcome to ' + (centerSettings.centerName || 'AV Pro') + '!',
-                    type: 'welcome',
-                    read: false,
-                    createdAt: new Date().toISOString()
-                });
-                showToast('✅ Account created!');
-            } catch (err) {
-                document.getElementById('signupError').textContent = err.message;
-                document.getElementById('signupError').classList.remove('hidden');
-            }
-        });
-
-        function logout() {
-            if (auth) auth.signOut();
-            showToast('👋 Logged out');
-        }
-
-        // ============================================================
-        // THEME
-        // ============================================================
-        function toggleTheme() {
-            const cur = document.documentElement.getAttribute('data-theme') || 'light';
-            const next = cur === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('av_theme', next);
-            document.getElementById('themeToggle').innerHTML = next === 'light' ? '<i class="fas fa-moon"></i>' :
-                '<i class="fas fa-sun"></i>';
-        }
-
-        function loadTheme() {
-            const theme = localStorage.getItem('av_theme') || 'light';
-            document.documentElement.setAttribute('data-theme', theme);
-            document.getElementById('themeToggle').innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' :
-                '<i class="fas fa-sun"></i>';
-        }
-
-        // ============================================================
-        // NAVIGATION
-        // ============================================================
-        const pageLabels = {
-            homePage: '🏠 Home',
-            coursesPage: '📚 Courses',
-            attendancePage: '📋 Attendance',
-            chatPage: '💬 Chat',
-            morePage: '⚙️ More',
-            adminPage: '⚙️ Admin'
-        };
-        const pageIcons = {
-            homePage: 'fa-home',
-            coursesPage: 'fa-book',
-            attendancePage: 'fa-fingerprint',
-            chatPage: 'fa-comment',
-            morePage: 'fa-ellipsis-h',
-            adminPage: 'fa-shield-alt'
-        };
-
-        function navigateTo(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(pageId);
-            if (target) target.classList.add('active');
-            document.querySelectorAll('.bottom-tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.page ===
-                pageId));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            closeMenu();
-            if (pageId === 'homePage') renderDashboard();
-            if (pageId === 'coursesPage') renderCourses();
-            if (pageId === 'attendancePage') renderAttendance();
-            if (pageId === 'chatPage') renderChat();
-            if (pageId === 'morePage') renderMore();
-            if (pageId === 'adminPage') renderAdmin();
-        }
-
-        function renderNav() {
-            const user = getCurrentUser();
-            const list = document.getElementById('menuList');
-            let visible = ['homePage', 'coursesPage', 'attendancePage', 'chatPage', 'morePage'];
-            if (user && userRole === 'admin') visible.push('adminPage');
-            list.innerHTML = '';
-            visible.forEach(id => {
-                const a = document.createElement('a');
-                a.innerHTML = `<i class="fas ${pageIcons[id] || 'fa-circle'}"></i> ${pageLabels[id] || id}`;
-                a.addEventListener('click', () => navigateTo(id));
-                list.appendChild(a);
-            });
-            if (document.getElementById('devBadge').style.display === 'inline') {
-                const a = document.createElement('a');
-                a.innerHTML = '<i class="fas fa-cog"></i> Developer Settings';
-                a.addEventListener('click', () => openDeveloperSettings());
-                list.appendChild(a);
-            }
-        }
-
-        function renderBottomTabs() {
-            const user = getCurrentUser();
-            const bar = document.getElementById('bottomTabs');
-            const tabs = ['homePage', 'coursesPage', 'attendancePage', 'chatPage', 'morePage'];
-            const icons = { homePage: '🏠', coursesPage: '📚', attendancePage: '📋', chatPage: '💬', morePage: '⚙️' };
-            bar.innerHTML = '';
-            tabs.forEach(id => {
-                const btn = document.createElement('button');
-                btn.className = 'tab';
-                btn.dataset.page = id;
-                btn.innerHTML = `<i class="fas ${pageIcons[id] || 'fa-circle'}"></i> ${icons[id] || ''}`;
-                btn.addEventListener('click', () => navigateTo(id));
-                bar.appendChild(btn);
-            });
-            if (user) {
-                const btn = document.createElement('button');
-                btn.className = 'tab logout-tab';
-                btn.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
-                btn.addEventListener('click', logout);
-                bar.appendChild(btn);
+            if (initFirebase(currentFirebaseConfig)) {
+                showToast('✅ Firebase re-initialized!');
             }
         }
 
         // ============================================================
-        // NOTIFICATIONS
-        // ============================================================
-        function toggleNotifications() {
-            const panel = document.getElementById('notifPanel');
-            panel.classList.toggle('open');
-            if (panel.classList.contains('open')) loadNotifications();
-        }
-
-        function loadNotifications() {
-            const user = getCurrentUser();
-            if (!user) return;
-            const container = document.getElementById('notifList');
-            db.collection('notifications')
-                .where('userId', '==', user.uid)
-                .orderBy('createdAt', 'desc')
-                .limit(20)
-                .get()
-                .then(snap => {
-                    if (snap.empty) { container.innerHTML = '<p class="text-muted">No notifications.</p>'; return; }
-                    let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const cls = d.read ? '' : 'unread';
-                        html += `<div class="notif-item ${cls}">
-                            <div>${d.message}</div>
-                            <div class="time">${new Date(d.createdAt).toLocaleString()}</div>
-                        </div>`;
-                    });
-                    container.innerHTML = html;
-                });
-        }
-
-        function markAllRead() {
-            const user = getCurrentUser();
-            if (!user) return;
-            db.collection('notifications')
-                .where('userId', '==', user.uid)
-                .where('read', '==', false)
-                .get()
-                .then(snap => {
-                    const batch = db.batch();
-                    snap.forEach(doc => batch.update(doc.ref, { read: true }));
-                    return batch.commit();
-                })
-                .then(() => {
-                    notifCount = 0;
-                    document.getElementById('notifCount').textContent = '0';
-                    loadNotifications();
-                });
-        }
-
-        function setupNotificationListener() {
-            const user = getCurrentUser();
-            if (!user) return;
-            if (notifUnsubscribe) notifUnsubscribe();
-            notifUnsubscribe = db.collection('notifications')
-                .where('userId', '==', user.uid)
-                .where('read', '==', false)
-                .onSnapshot(snap => {
-                    notifCount = snap.size;
-                    document.getElementById('notifCount').textContent = notifCount;
-                });
-        }
-
-        // ============================================================
-        // DASHBOARD
-        // ============================================================
-        function renderDashboard() {
-            const user = getCurrentUser();
-            if (!user) return;
-            const container = document.getElementById('dashboardContent');
-            db.collection('users').doc(user.uid).get().then(doc => {
-                const data = doc.data() || {};
-                const name = data.name || user.email;
-                let html = `
-                    <div class="card" style="background:linear-gradient(135deg,var(--primary),#1a2d4a);color:white;text-align:center;">
-                        <div style="font-size:2rem;">👋</div>
-                        <h2 style="color:var(--gold);font-family:Georgia,serif;">Welcome, ${name}!</h2>
-                        <p style="opacity:0.8;">${data.role || 'Student'} · ${data.level || ''}</p>
-                    </div>
-                    <div class="dash-grid">
-                        <div class="dash-item" onclick="navigateTo('coursesPage')"><span class="icon">📚</span><span class="label">Courses</span></div>
-                        <div class="dash-item" onclick="navigateTo('attendancePage')"><span class="icon">📋</span><span class="label">Attendance</span></div>
-                        <div class="dash-item" onclick="navigateTo('chatPage')"><span class="icon">💬</span><span class="label">Chat</span></div>
-                        <div class="dash-item" onclick="navigateTo('morePage')"><span class="icon">⚙️</span><span class="label">More</span></div>
-                    </div>
-                `;
-                container.innerHTML = html;
-                renderBroadcasts();
-            });
-        }
-
-        function renderBroadcasts() {
-            const container = document.getElementById('broadcastDisplay');
-            db.collection('broadcasts').orderBy('createdAt', 'desc').limit(3).get().then(snap => {
-                if (snap.empty) { container.innerHTML = ''; return; }
-                let html = `<div class="card card-gold"><div style="font-weight:600;"><i class="fas fa-bullhorn"></i> Announcements</div>`;
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    html += `<div style="padding:0.3rem 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:0.85rem;">${d.message}</div>`;
-                });
-                html += `</div>`;
-                container.innerHTML = html;
-            });
-        }
-
-        // ============================================================
-        // COURSES
-        // ============================================================
-        function renderCourses() {
-            const user = getCurrentUser();
-            if (!user) return;
-            const container = document.getElementById('coursesContent');
-            let html = `
-                <div class="card card-gold">
-                    <div style="font-weight:600;">📅 My Timetable</div>
-                    <div style="font-size:0.85rem;padding:0.2rem 0;">Mon: Maths 4PM</div>
-                    <div style="font-size:0.85rem;padding:0.2rem 0;">Wed: Science 5PM</div>
-                    <div style="font-size:0.85rem;padding:0.2rem 0;">Fri: English 3PM</div>
-                </div>
-                <div class="card card-gold">
-                    <div style="font-weight:600;">🎥 Live Classes</div>
-                    <div style="padding:0.5rem 0;border-bottom:1px solid rgba(0,0,0,0.04);">
-                        <div style="font-weight:500;">Maths Revision</div>
-                        <div style="font-size:0.75rem;color:var(--text-muted);">Today 4:00 PM</div>
-                        <div style="display:flex;gap:0.5rem;margin-top:0.3rem;">
-                            <button class="btn btn-primary btn-sm" onclick="joinLive('meet')" style="width:auto;">Google Meet</button>
-                            <button class="btn btn-outline btn-sm" onclick="joinLive('jitsi')" style="width:auto;">Jitsi</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div style="font-weight:600;">📹 Educational Videos</div>
-                    <div style="margin-top:0.3rem;">
-                        <iframe width="100%" height="180" src="https://www.youtube.com/embed/1dQrU58P0S0" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-            `;
-            container.innerHTML = html;
-        }
-
-        function joinLive(platform) {
-            if (platform === 'meet') {
-                window.open('https://meet.google.com/new', '_blank');
-            } else {
-                window.open('https://meet.jit.si/AVProClassroom', '_blank');
-            }
-        }
-
-        // ============================================================
-        // ATTENDANCE
-        // ============================================================
-        function renderAttendance() {
-            const user = getCurrentUser();
-            if (!user) return;
-            const container = document.getElementById('attendanceContent');
-            let html = `
-                <div class="card card-gold">
-                    <div style="font-weight:600;">📅 Mark Attendance</div>
-                    <div class="input-group"><label>Date</label><input type="date" id="attDate" value="${new Date().toISOString().slice(0,10)}" /></div>
-                    <div class="input-group"><label>Course</label><select id="attCourse"><option>Maths</option><option>Science</option></select></div>
-                    <button class="btn btn-primary" onclick="markAttendance()"><i class="fas fa-check"></i> Mark Present</button>
-                </div>
-                <div class="card">
-                    <div style="font-weight:600;">📊 Attendance Summary</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3rem;margin-top:0.3rem;">
-                        <div class="card text-center" style="padding:0.5rem;"><span style="font-size:1.2rem;font-weight:700;color:var(--green);">85%</span><div class="text-muted">Overall</div></div>
-                        <div class="card text-center" style="padding:0.5rem;"><span style="font-size:1.2rem;font-weight:700;">12</span><div class="text-muted">Present</div></div>
-                        <div class="card text-center" style="padding:0.5rem;"><span style="font-size:1.2rem;font-weight:700;color:var(--coral);">2</span><div class="text-muted">Absent</div></div>
-                    </div>
-                </div>
-            `;
-            container.innerHTML = html;
-        }
-
-        function markAttendance() {
-            const user = getCurrentUser();
-            if (!user) { showToast('⚠️ Login first'); return; }
-            const date = document.getElementById('attDate').value;
-            const course = document.getElementById('attCourse').value;
-            db.collection('attendance').add({
-                studentId: user.uid,
-                course: course,
-                date: date,
-                status: 'present',
-                method: 'manual',
-                createdAt: new Date().toISOString()
-            }).then(() => { showToast('✅ Attendance marked!'); }).catch(e => showToast('❌ ' + e.message));
-        }
-
-        // ============================================================
-        // CHAT
-        // ============================================================
-        function renderChat() {
-            const container = document.getElementById('chatContent');
-            let html = `
-                <div class="card card-gold">
-                    <div style="font-weight:600;">💬 Ask Doubt</div>
-                    <div class="input-group"><label>Subject</label><select id="doubtSubject"><option>Maths</option><option>Science</option></select></div>
-                    <div class="input-group"><label>Description</label><textarea id="doubtDesc" rows="2" placeholder="Describe your doubt..."></textarea></div>
-                    <button class="btn btn-primary" onclick="submitDoubt()"><i class="fas fa-send"></i> Submit</button>
-                </div>
-                <div class="card">
-                    <div style="font-weight:600;">📋 Your Doubts</div>
-                    <div id="doubtList"><p class="text-muted">Loading...</p></div>
-                </div>
-                <div class="card">
-                    <div style="font-weight:600;">⭐ Feedback</div>
-                    <div class="input-group"><label>Teacher</label><select id="fbTeacher"><option>Mr. Sharma</option><option>Ms. Patil</option></select></div>
-                    <div class="input-group"><label>Rating</label><select id="fbRating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
-                    <div class="input-group"><label>Comment</label><textarea id="fbComment" rows="2"></textarea></div>
-                    <button class="btn btn-primary" onclick="submitFeedback()"><i class="fas fa-star"></i> Submit</button>
-                </div>
-            `;
-            container.innerHTML = html;
-            loadDoubts();
-        }
-
-        function submitDoubt() {
-            const user = getCurrentUser();
-            if (!user) { showToast('⚠️ Login first'); return; }
-            const subject = document.getElementById('doubtSubject').value;
-            const desc = document.getElementById('doubtDesc').value.trim();
-            if (!desc) { showToast('⚠️ Describe your doubt'); return; }
-            db.collection('doubts').add({
-                studentId: user.uid,
-                subject,
-                description: desc,
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            }).then(() => {
-                showToast('✅ Doubt submitted!');
-                document.getElementById('doubtDesc').value = '';
-                loadDoubts();
-            }).catch(e => showToast('❌ ' + e.message));
-        }
-
-        function loadDoubts() {
-            const user = getCurrentUser();
-            if (!user) return;
-            db.collection('doubts').where('studentId', '==', user.uid).orderBy('createdAt', 'desc').get().then(snap => {
-                const container = document.getElementById('doubtList');
-                if (snap.empty) { container.innerHTML = '<p class="text-muted">No doubts.</p>'; return; }
-                let html = '';
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    html += `<div class="card" style="padding:0.6rem;margin-bottom:0.3rem;">
-                        <div class="flex"><strong>${d.subject}</strong> <span class="badge">${d.status}</span></div>
-                        <p style="font-size:0.85rem;">${d.description}</p>
-                    </div>`;
-                });
-                container.innerHTML = html;
-            });
-        }
-
-        function submitFeedback() {
-            const user = getCurrentUser();
-            if (!user) { showToast('⚠️ Login first'); return; }
-            const teacher = document.getElementById('fbTeacher').value;
-            const rating = document.getElementById('fbRating').value;
-            const comment = document.getElementById('fbComment').value.trim();
-            if (!comment) { showToast('⚠️ Enter feedback'); return; }
-            db.collection('feedback').add({
-                studentId: user.uid,
-                teacher,
-                rating: parseInt(rating),
-                comment,
-                createdAt: new Date().toISOString()
-            }).then(() => { showToast('✅ Feedback sent!');
-                document.getElementById('fbComment').value = ''; }).catch(e => showToast('❌ ' + e.message));
-        }
-
-        // ============================================================
-        // MORE
-        // ============================================================
-        function renderMore() {
-            const user = getCurrentUser();
-            if (!user) return;
-            const container = document.getElementById('moreContent');
-            db.collection('users').doc(user.uid).get().then(doc => {
-                const data = doc.data() || {};
-                let html = `
-                    <div class="card card-gold">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <img src="${data.photoURL || 'https://ui-avatars.com/api/?name='+encodeURIComponent(data.name||'User')+'&background=d4a843&color=fff&size=64'}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" />
-                            <div>
-                                <div style="font-weight:700;font-size:1.1rem;">${data.name || 'User'}</div>
-                                <div style="font-size:0.8rem;color:var(--text-muted);">${data.role || 'Student'} · ${data.level || ''}</div>
-                                <div style="font-size:0.7rem;color:var(--text-muted);">Hura ID: ${data.huraId || 'N/A'}</div>
-                            </div>
-                        </div>
-                        <div style="margin-top:0.5rem;">
-                            <div class="input-group"><label>Email</label><input type="email" value="${data.email || ''}" disabled /></div>
-                            <div class="input-group"><label>Phone</label><input type="text" id="profilePhone" value="${data.phone || ''}" /></div>
-                            <div class="input-group"><label>Photo URL</label><input type="url" id="profilePhoto" value="${data.photoURL || ''}" /></div>
-                            <button class="btn btn-primary" onclick="updateProfile()"><i class="fas fa-save"></i> Update Profile</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div style="font-weight:600;">💳 Fees</div>
-                        <div id="feesList"><p class="text-muted">Loading...</p></div>
-                    </div>
-                `;
-                container.innerHTML = html;
-                loadFees();
-            });
-        }
-
-        function updateProfile() {
-            const user = getCurrentUser();
-            if (!user) return;
-            const phone = document.getElementById('profilePhone').value.trim();
-            const photoURL = document.getElementById('profilePhoto').value.trim();
-            db.collection('users').doc(user.uid).update({
-                phone: phone || '',
-                photoURL: photoURL || ''
-            }).then(() => { showToast('✅ Profile updated!'); }).catch(e => showToast('❌ ' + e.message));
-        }
-
-        function loadFees() {
-            const user = getCurrentUser();
-            if (!user) return;
-            db.collection('fees').where('studentId', '==', user.uid).orderBy('dueDate', 'desc').get().then(snap => {
-                const container = document.getElementById('feesList');
-                if (snap.empty) { container.innerHTML = '<p class="text-muted">No fees.</p>'; return; }
-                let html = '';
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    html += `<div class="flex" style="justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid rgba(0,0,0,0.04);">
-                        <span>₹${d.amount}</span>
-                        <span class="badge" style="background:${d.status==='paid'?'var(--green)':'var(--coral)'};">${d.status}</span>
-                    </div>`;
-                });
-                container.innerHTML = html;
-            });
-        }
-
-        // ============================================================
-        // ADMIN
-        // ============================================================
-        function renderAdmin() {
-            const user = getCurrentUser();
-            if (!user || userRole !== 'admin') {
-                document.getElementById('adminContent').innerHTML = '<p class="text-muted">Admin access only.</p>';
-                return;
-            }
-            const container = document.getElementById('adminContent');
-            Promise.all([
-                db.collection('users').get(),
-                db.collection('homework').get(),
-                db.collection('tests').get(),
-                db.collection('complaints').get(),
-                db.collection('inquiries').get()
-            ]).then(([users, hw, tests, comps, inq]) => {
-                container.innerHTML = `
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
-                        <div class="card text-center"><div style="font-size:1.5rem;">${users.size}</div><div class="text-muted">Users</div></div>
-                        <div class="card text-center"><div style="font-size:1.5rem;">${hw.size}</div><div class="text-muted">Homework</div></div>
-                        <div class="card text-center"><div style="font-size:1.5rem;">${tests.size}</div><div class="text-muted">Tests</div></div>
-                        <div class="card text-center"><div style="font-size:1.5rem;">${comps.size}</div><div class="text-muted">Complaints</div></div>
-                        <div class="card text-center" style="grid-column:1/3;"><div style="font-size:1.5rem;">${inq.size}</div><div class="text-muted">Inquiries</div></div>
-                    </div>
-                    <div class="card mt-1">
-                        <button class="btn btn-primary" onclick="sendBroadcast()"><i class="fas fa-bullhorn"></i> Send Broadcast</button>
-                    </div>
-                    <div class="card">
-                        <div style="font-weight:600;">👥 Manage Users</div>
-                        <div id="userList"></div>
-                    </div>
-                `;
-                let ul = '';
-                users.forEach(doc => {
-                    const d = doc.data();
-                    ul += `<div class="flex" style="justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid rgba(0,0,0,0.04);">
-                        <span>${d.name || d.email}</span>
-                        <span class="badge">${d.role}</span>
-                        <button class="btn btn-sm btn-outline" onclick="toggleUserRole('${doc.id}','${d.role}')" style="width:auto;">Toggle Role</button>
-                    </div>`;
-                });
-                document.getElementById('userList').innerHTML = ul;
-            });
-        }
-
-        function toggleUserRole(uid, currentRole) {
-            const newRole = currentRole === 'admin' ? 'student' : 'admin';
-            db.collection('users').doc(uid).update({ role: newRole }).then(() => {
-                showToast('✅ Role updated to ' + newRole);
-                renderAdmin();
-            }).catch(e => showToast('❌ ' + e.message));
-        }
-
-        function sendBroadcast() {
-            const msg = prompt('Enter broadcast message:');
-            if (!msg) return;
-            db.collection('broadcasts').add({
-                message: msg,
-                sender: 'Admin',
-                audience: 'all',
-                createdAt: new Date().toISOString()
-            }).then(() => { showToast('✅ Broadcast sent!');
-                renderBroadcasts(); }).catch(e => showToast('❌ ' + e.message));
-        }
-
-        // ============================================================
-        // ROLE & AUTH STATE
-        // ============================================================
-        function loadUserRole(uid) {
-            if (!db) return;
-            db.collection('users').doc(uid).get().then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    userRole = data.role || 'student';
-                    sessionStorage.setItem('av_user_role', userRole);
-                    renderNav();
-                    renderBottomTabs();
-                    if (userRole === 'admin') {
-                        // Add admin link if not already
-                        const menu = document.getElementById('menuList');
-                        if (!menu.querySelector('a[data-page="adminPage"]')) {
-                            const a = document.createElement('a');
-                            a.innerHTML = '<i class="fas fa-shield-alt"></i> Admin Panel';
-                            a.addEventListener('click', () => navigateTo('adminPage'));
-                            menu.appendChild(a);
-                        }
-                    }
-                }
-            }).catch(() => {});
-        }
-
-        // ============================================================
-        // MENU
+        // MENU FUNCTIONS
         // ============================================================
         function toggleMenu() {
-            document.getElementById('menuDrawer').classList.toggle('open');
-            document.getElementById('menuOverlay').classList.toggle('active');
+            const drawer = document.getElementById('menuDrawer');
+            const overlay = document.getElementById('menuOverlay');
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('active');
         }
 
         function closeMenu() {
@@ -1798,53 +1125,41 @@
         }
 
         // ============================================================
-        // INIT
+        // NOTIFICATIONS
         // ============================================================
-        loadTheme();
-        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-        loadSettings();
-
-        // Try to load saved Firebase config, otherwise use default.
-        const savedCfg = localStorage.getItem('av_firebase_config');
-        let configToUse = DEFAULT_CONFIG;
-        if (savedCfg) {
-            try {
-                const p = JSON.parse(savedCfg);
-                if (p.apiKey) configToUse = p;
-            } catch (e) {}
-        }
-        currentFirebaseConfig = configToUse;
-        initFirebase(configToUse);
-
-        if (auth) {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    currentUser = user;
-                    document.getElementById('userBadge').classList.remove('hidden');
-                    document.getElementById('userBadge').textContent = '👤 ' + (user.displayName || user.email);
-                    loadUserRole(user.uid);
-                    renderNav();
-                    renderBottomTabs();
-                    navigateTo('homePage');
-                    setupNotificationListener();
-                } else {
-                    currentUser = null;
-                    document.getElementById('userBadge').classList.add('hidden');
-                    renderNav();
-                    renderBottomTabs();
-                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                    document.getElementById('loginPage').classList.add('active');
-                    if (notifUnsubscribe) { notifUnsubscribe();
-                        notifUnsubscribe = null; }
-                }
-            });
+        function toggleNotifications() {
+            document.getElementById('notifPanel').classList.toggle('open');
         }
 
-        console.log('📱 AV Pro – Full Coaching App Loaded');
-        console.log('🔑 Developer password: ' + DEVELOPER_PASSWORD);
-        console.log('🔧 Tap "Developer Settings" on login page to customize');
-        console.log('⚙️ To use your own Firebase, replace DEFAULT_CONFIG or use the settings panel.');
+        function markAllRead() {
+            showToast('✅ All notifications marked as read');
+        }
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        function logout() {
+            auth.signOut();
+            location.reload();
+        }
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            initFirebase(currentFirebaseConfig);
+        });
     </script>
-
 </body>
-    </html>
+</html>
