@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>AV Pro – Complete Coaching App</title>
+    <title>AV Pro – Coaching Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- Firebase SDK -->
@@ -13,9 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
-        /* ============================================================
-           COMPLETE MOBILE STYLES (optimized for this file)
-           ============================================================ */
+        /* ===== COMPLETE MOBILE STYLES (exact same as previous) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -461,9 +459,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ============================================================
-           LOGIN
-           ============================================================ */
         .login-wrapper {
             display: flex;
             align-items: center;
@@ -560,9 +555,7 @@
             display: none !important;
         }
 
-        /* ============================================================
-           SETTINGS MODAL
-           ============================================================ */
+        /* ===== MODAL / SETTINGS ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -643,9 +636,7 @@
             display: block;
         }
 
-        /* ============================================================
-           NOTIFICATIONS PANEL
-           ============================================================ */
+        /* ===== NOTIFICATIONS PANEL ===== */
         .notif-panel {
             position: fixed;
             top: 60px;
@@ -887,7 +878,7 @@
             <div id="moreContent"></div>
         </div>
 
-        <!-- ===== ADMIN PANEL (separate page, only for admin) ===== -->
+        <!-- ===== ADMIN PANEL ===== -->
         <div id="adminPage" class="page">
             <div class="section-title"><i class="fas fa-shield-alt"></i> Admin Panel</div>
             <div id="adminContent"></div>
@@ -899,12 +890,14 @@
     <div class="bottom-tabs" id="bottomTabs"></div>
 
     <!-- ================================================================
-    JAVASCRIPT
+    JAVASCRIPT – FIREBASE CONFIGURATION
     ================================================================ -->
     <script>
         // ============================================================
-        // FIREBASE CONFIG – REPLACE WITH YOUR OWN
+        // 1. FIREBASE CONFIG – EDIT THESE VALUES
         // ============================================================
+        // ⚠️ Replace this object with your own Firebase project config.
+        // To get your config: Firebase Console → Project Settings → Your apps → </> → Copy config.
         const DEFAULT_CONFIG = {
             apiKey: "AIzaSyACnqjnq2VFIX17pSoiNMNxy77WlWBgeWs",
             authDomain: "av-private-tuitions.firebaseapp.com",
@@ -914,7 +907,14 @@
             appId: "1:254111465995:web:89f3e1f7b1d2fb0bb67d0e"
         };
 
+        // ============================================================
+        // 2. DEVELOPER PASSWORD (change this to your own)
+        // ============================================================
         const DEVELOPER_PASSWORD = "admin@AV2024";
+
+        // ============================================================
+        // DO NOT EDIT BELOW THIS LINE (unless you know what you're doing)
+        // ============================================================
 
         let auth, db, storage;
         let currentUser = null;
@@ -935,13 +935,19 @@
                 auth = firebase.auth();
                 db = firebase.firestore();
                 storage = firebase.storage();
+                // Enable offline persistence
                 db.enablePersistence().catch(() => {});
+                console.log('✅ Firebase initialized with project:', config.projectId);
                 return true;
-            } catch (e) { console.error(e); return false; }
+            } catch (e) {
+                console.error('❌ Firebase init error:', e);
+                showToast('❌ Firebase init failed. Check console.');
+                return false;
+            }
         }
 
         // ============================================================
-        // LOAD SETTINGS
+        // LOAD SETTINGS FROM LOCALSTORAGE
         // ============================================================
         function loadSettings() {
             try {
@@ -950,7 +956,7 @@
                 const cfg = localStorage.getItem('av_firebase_config');
                 if (cfg) currentFirebaseConfig = JSON.parse(cfg);
                 applySettings();
-            } catch (e) {}
+            } catch (e) { console.warn('Settings load error:', e); }
         }
 
         function saveCenterSettings() {
@@ -1174,6 +1180,7 @@
         function showToast(msg) {
             const t = document.getElementById('toast');
             const el = document.getElementById('toastMessage');
+            if (!el) return;
             el.textContent = msg;
             t.classList.add('show');
             clearTimeout(t._to);
@@ -1230,7 +1237,6 @@
                     created_at: new Date().toISOString(),
                     status: 'active'
                 });
-                // Create a welcome notification for the user
                 await db.collection('notifications').add({
                     userId: cred.user.uid,
                     message: 'Welcome to ' + (centerSettings.centerName || 'AV Pro') + '!',
@@ -1297,7 +1303,6 @@
                 pageId));
             window.scrollTo({ top: 0, behavior: 'smooth' });
             closeMenu();
-            // Load content
             if (pageId === 'homePage') renderDashboard();
             if (pageId === 'coursesPage') renderCourses();
             if (pageId === 'attendancePage') renderAttendance();
@@ -1463,7 +1468,6 @@
             const user = getCurrentUser();
             if (!user) return;
             const container = document.getElementById('coursesContent');
-            // For demo, show static courses + timetable + live classes
             let html = `
                 <div class="card card-gold">
                     <div style="font-weight:600;">📅 My Timetable</div>
@@ -1721,7 +1725,6 @@
                         <div id="userList"></div>
                     </div>
                 `;
-                // List users
                 let ul = '';
                 users.forEach(doc => {
                     const d = doc.data();
@@ -1764,18 +1767,18 @@
                 if (doc.exists) {
                     const data = doc.data();
                     userRole = data.role || 'student';
-                    // Store role in session for quick access
                     sessionStorage.setItem('av_user_role', userRole);
                     renderNav();
                     renderBottomTabs();
-                    // If admin, show admin page in nav
                     if (userRole === 'admin') {
-                        document.querySelector('#menuList a:last-child')?.remove();
-                        // Add admin link
-                        const adminLink = document.createElement('a');
-                        adminLink.innerHTML = '<i class="fas fa-shield-alt"></i> Admin Panel';
-                        adminLink.addEventListener('click', () => navigateTo('adminPage'));
-                        document.getElementById('menuList').appendChild(adminLink);
+                        // Add admin link if not already
+                        const menu = document.getElementById('menuList');
+                        if (!menu.querySelector('a[data-page="adminPage"]')) {
+                            const a = document.createElement('a');
+                            a.innerHTML = '<i class="fas fa-shield-alt"></i> Admin Panel';
+                            a.addEventListener('click', () => navigateTo('adminPage'));
+                            menu.appendChild(a);
+                        }
                     }
                 }
             }).catch(() => {});
@@ -1801,11 +1804,14 @@
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         loadSettings();
 
-        // Init Firebase
+        // Try to load saved Firebase config, otherwise use default.
         const savedCfg = localStorage.getItem('av_firebase_config');
         let configToUse = DEFAULT_CONFIG;
         if (savedCfg) {
-            try { const p = JSON.parse(savedCfg); if (p.apiKey) configToUse = p; } catch (e) {}
+            try {
+                const p = JSON.parse(savedCfg);
+                if (p.apiKey) configToUse = p;
+            } catch (e) {}
         }
         currentFirebaseConfig = configToUse;
         initFirebase(configToUse);
@@ -1837,6 +1843,8 @@
         console.log('📱 AV Pro – Full Coaching App Loaded');
         console.log('🔑 Developer password: ' + DEVELOPER_PASSWORD);
         console.log('🔧 Tap "Developer Settings" on login page to customize');
+        console.log('⚙️ To use your own Firebase, replace DEFAULT_CONFIG or use the settings panel.');
     </script>
+
 </body>
     </html>
