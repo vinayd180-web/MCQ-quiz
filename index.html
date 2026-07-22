@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>AV Pro – Coaching Management</title>
+    <title>AV Pro – Complete Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- Firebase SDK -->
@@ -13,11 +13,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ===== GLOBAL ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #0a1628;
             --gold: #d4a843;
@@ -46,35 +43,21 @@
             --text-muted: #94a3b8;
             --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
         }
-        html, body {
-            height: 100%;
-            font-family: var(--font);
-            background: var(--bg);
-            color: var(--text);
-            transition: background 0.3s, color 0.3s;
-        }
-        body {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+        html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
+        body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
+        /* ===== NAVBAR ===== */
         .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.6rem 1rem;
-            background: var(--card-bg);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.6rem 1rem; background: var(--card-bg);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 100;
             box-shadow: var(--shadow);
         }
         .navbar-left { display: flex; align-items: center; gap: 10px; }
         .navbar .logo-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--gold); }
         .navbar .logo-text {
-            font-weight: 800;
-            font-size: 1.1rem;
+            font-weight: 800; font-size: 1.1rem;
             background: var(--gold-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -84,35 +67,26 @@
         .navbar-right { display: flex; align-items: center; gap: 8px; }
         .navbar .theme-toggle { background: none; border: none; font-size: 1.2rem; color: var(--text); cursor: pointer; padding: 4px 8px; }
         .navbar .user-badge { font-size: 0.7rem; background: var(--gold); color: #fff; padding: 2px 10px; border-radius: 60px; font-weight: 600; }
-        .navbar .dev-badge { font-size: 0.6rem; background: var(--coral); color: #fff; padding: 2px 8px; border-radius: 60px; font-weight: 700; }
-        .navbar .notification-bell { position: relative; background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; padding: 4px; }
+        .navbar .dev-badge { font-size: 0.6rem; background: var(--coral); color: #fff; padding: 2px 8px; border-radius: 60px; font-weight: 700; cursor: pointer; }
+        .navbar .notification-bell { background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; padding: 4px; }
 
+        /* ===== PAGE CONTAINER ===== */
         .page-container { padding-bottom: 70px; }
         .page { display: none; padding: 1rem 1rem 1.5rem; animation: fadeUp 0.25s ease; }
         .page.active { display: block; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1rem; box-shadow: var(--shadow); border: 1px solid rgba(0, 0, 0, 0.04); }
+        /* ===== CARDS ===== */
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1rem; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.04); }
         .card-gold { border-left: 4px solid var(--gold); }
 
+        /* ===== BUTTONS ===== */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 0.7rem 1.2rem;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            touch-action: manipulation;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 0.7rem 1.2rem; border-radius: var(--radius-sm);
+            font-weight: 600; font-size: 0.9rem; border: none;
+            cursor: pointer; transition: all 0.2s;
+            width: 100%; touch-action: manipulation;
         }
         .btn-primary { background: var(--gold-gradient); color: #fff; }
         .btn-primary:active { transform: scale(0.96); }
@@ -121,671 +95,1048 @@
         .btn-success { background: var(--green); color: #fff; }
         .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; width: auto; }
 
+        /* ===== INPUTS ===== */
         .input-group { margin-bottom: 0.8rem; }
         .input-group label { display: block; font-weight: 600; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-        .input-group input,
-        .input-group select,
-        .input-group textarea {
-            width: 100%;
-            padding: 0.7rem 0.8rem;
-            border: 1.5px solid rgba(0, 0, 0, 0.08);
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 0.7rem 0.8rem;
+            border: 1.5px solid rgba(0,0,0,0.08);
             border-radius: var(--radius-sm);
-            background: var(--bg);
-            color: var(--text);
-            font-size: 0.95rem;
-            font-family: var(--font);
+            background: var(--bg); color: var(--text);
+            font-size: 0.95rem; font-family: var(--font);
         }
-        .input-group input:focus,
-        .input-group select:focus,
-        .input-group textarea:focus {
-            outline: none;
-            border-color: var(--gold);
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none; border-color: var(--gold);
         }
 
+        /* ===== LOGIN ===== */
         .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 70vh; padding: 1rem; }
         .login-card { width: 100%; max-width: 380px; background: var(--card-bg); border-radius: var(--radius); padding: 2rem 1.5rem; box-shadow: var(--shadow); }
         .login-card .icon { font-size: 2.8rem; text-align: center; display: block; margin-bottom: 0.2rem; }
         .login-card h2 { font-family: Georgia, serif; text-align: center; font-size: 1.4rem; }
         .login-card .sub { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; }
 
+        /* ===== BOTTOM TABS ===== */
         .bottom-tabs {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--card-bg);
-            border-top: 1px solid rgba(0, 0, 0, 0.06);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 4px 0 8px;
-            z-index: 999;
-            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+            border-top: 1px solid rgba(0,0,0,0.06);
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 4px 0 8px; z-index: 999;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+            overflow-x: auto;
+            flex-wrap: nowrap;
         }
         .bottom-tabs .tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.55rem;
-            color: var(--text-muted);
-            padding: 2px 8px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            touch-action: manipulation;
-            min-width: 44px;
-            transition: color 0.2s;
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 0.5rem; color: var(--text-muted);
+            padding: 2px 6px; border: none; background: none;
+            cursor: pointer; touch-action: manipulation;
+            min-width: 44px; transition: color 0.2s;
+            white-space: nowrap;
         }
-        .bottom-tabs .tab i { font-size: 1.3rem; margin-bottom: 1px; }
+        .bottom-tabs .tab i { font-size: 1.1rem; margin-bottom: 1px; }
         .bottom-tabs .tab.active { color: var(--gold); }
         .bottom-tabs .tab:active { transform: scale(0.9); }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; }
+        /* ===== MODAL ===== */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:1rem; }
         .modal-overlay.active { display: flex; }
-        .modal { background: var(--card-bg); border-radius: var(--radius); max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 1.5rem; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
-        .modal .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--gold); }
+        .modal { background: var(--card-bg); border-radius: var(--radius); max-width: 500px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+        .modal .modal-header { display: flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:2px solid var(--gold); }
         .modal .modal-header h3 { font-family: Georgia, serif; color: var(--gold); }
-        .modal .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .modal .modal-close { background:none; border:none; font-size:1.5rem; color:var(--text-muted); cursor:pointer; }
 
-        .settings-tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 1rem;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-        .settings-tabs .stab {
-            padding: 0.4rem 0.8rem;
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            background: var(--bg);
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
-        .settings-tabs .stab.active {
-            background: var(--gold);
-            color: #fff;
-            border-color: var(--gold);
-        }
-        .settings-panel { display: none; }
-        .settings-panel.active { display: block; }
+        /* ===== SETTINGS TABS ===== */
+        .settings-tabs { display:flex; gap:4px; margin-bottom:1rem; overflow-x:auto; padding-bottom:4px; }
+        .settings-tabs .stab { padding:0.4rem 0.8rem; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,0.1); background:var(--bg); color:var(--text-muted); font-size:0.7rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:all 0.2s; }
+        .settings-tabs .stab.active { background:var(--gold); color:#fff; border-color:var(--gold); }
+        .settings-panel { display:none; }
+        .settings-panel.active { display:block; }
 
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: var(--card-bg);
-            color: var(--text);
-            padding: 0.7rem 1.2rem;
-            border-radius: var(--radius-sm);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            border-left: 4px solid var(--gold);
-            opacity: 0;
-            transition: all 0.4s ease;
-            max-width: 90%;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* ===== TOAST ===== */
+        .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--card-bg); color:var(--text); padding:0.7rem 1.2rem; border-radius:var(--radius-sm); box-shadow:0 8px 30px rgba(0,0,0,0.15); z-index:9999; border-left:4px solid var(--gold); opacity:0; transition:all 0.4s ease; max-width:90%; font-size:0.85rem; text-align:center; }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-        .hidden { display: none !important; }
-        .text-link { color: var(--gold); font-weight: 600; cursor: pointer; }
-        .mt-2 { margin-top: 1rem; }
-        .mb-2 { margin-bottom: 1rem; }
-        .flex { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .text-muted { color: var(--text-muted); font-size: 0.8rem; }
+        .hidden { display:none !important; }
+        .text-link { color:var(--gold); font-weight:600; cursor:pointer; }
+        .mt-2 { margin-top:1rem; }
+        .mb-2 { margin-bottom:1rem; }
+        .flex { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        .text-muted { color:var(--text-muted); font-size:0.8rem; }
 
-        .role-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem;
-            background: var(--bg);
-            border-radius: var(--radius-sm);
-            margin-bottom: 0.5rem;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .role-item select {
-            padding: 0.4rem 0.6rem;
-            font-size: 0.8rem;
-            width: auto;
-        }
-        .role-item .delete-btn {
-            background: var(--coral);
-            color: white;
-            border: none;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
+        .role-item { display:flex; justify-content:space-between; align-items:center; padding:0.8rem; background:var(--bg); border-radius:var(--radius-sm); margin-bottom:0.5rem; border:1px solid rgba(0,0,0,0.1); }
+        .role-item select { padding:0.4rem 0.6rem; font-size:0.8rem; width:auto; }
+        .role-item .delete-btn { background:var(--coral); color:white; border:none; padding:0.3rem 0.6rem; border-radius:4px; cursor:pointer; font-size:0.75rem; }
+
+        .table-wrap { overflow-x:auto; }
+        .table-wrap table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+        .table-wrap th, .table-wrap td { padding:0.6rem 0.4rem; text-align:left; border-bottom:1px solid rgba(0,0,0,0.05); }
+        .table-wrap th { font-weight:600; color:var(--text-muted); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; }
+
+        .badge { padding:0.2rem 0.6rem; border-radius:20px; font-size:0.65rem; font-weight:600; }
+        .badge-success { background:#d1fae5; color:#065f46; }
+        .badge-warning { background:#fef3c7; color:#92400e; }
+        .badge-danger { background:#fee2e2; color:#991b1b; }
+        .badge-info { background:#dbeafe; color:#1e40af; }
+        .badge-gold { background:var(--gold); color:#fff; }
+
+        .stat-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(100px,1fr)); gap:0.8rem; }
+        .stat-card { background:var(--bg); padding:0.8rem; border-radius:var(--radius-sm); text-align:center; }
+        .stat-card .num { font-size:1.6rem; font-weight:800; }
+        .stat-card .label { font-size:0.65rem; color:var(--text-muted); }
+
+        /* Classroom iframe */
+        .classroom-iframe { width:100%; height:70vh; border:none; border-radius:var(--radius-sm); }
     </style>
 </head>
 <body>
 
-    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMessage">Success!</span></div>
+<div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMessage">Success!</span></div>
 
-    <!-- SETTINGS MODAL -->
-    <div id="settingsModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3><i class="fas fa-cog"></i> Developer Settings</h3>
-                <button class="modal-close" onclick="closeSettings()">✕</button>
+<!-- ============================ SETTINGS MODAL ============================ -->
+<div id="settingsModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header"><h3><i class="fas fa-cog"></i> Developer Settings</h3><button class="modal-close" onclick="closeSettings()">✕</button></div>
+        <div id="settingsPasswordPrompt">
+            <p class="text-muted mb-2">Enter developer password:</p>
+            <div class="input-group"><input type="password" id="settingsPasswordInput" placeholder="Enter password..." /></div>
+            <button class="btn btn-primary" onclick="verifySettingsPassword()"><i class="fas fa-unlock"></i> Unlock</button>
+            <p id="settingsPasswordError" class="text-muted" style="color:var(--coral);margin-top:0.5rem;display:none;">❌ Incorrect password</p>
+        </div>
+        <div id="settingsContent" style="display:none;">
+            <div class="settings-tabs">
+                <button class="stab active" data-tab="general" onclick="switchSettingsTab('general')">🏫 General</button>
+                <button class="stab" data-tab="roles" onclick="switchSettingsTab('roles')">👥 Gmail Roles</button>
+                <button class="stab" data-tab="firebase" onclick="switchSettingsTab('firebase')">🔥 Firebase</button>
             </div>
-
-            <!-- Password Prompt -->
-            <div id="settingsPasswordPrompt">
-                <p class="text-muted mb-2">Enter developer password:</p>
-                <div class="input-group">
-                    <input type="password" id="settingsPasswordInput" placeholder="Enter password..." />
-                </div>
-                <button class="btn btn-primary" onclick="verifySettingsPassword()"><i class="fas fa-unlock"></i> Unlock</button>
-                <p id="settingsPasswordError" class="text-muted" style="color:var(--coral);margin-top:0.5rem;display:none;">❌ Incorrect password</p>
+            <div id="settings-general" class="settings-panel active">
+                <div class="input-group"><label>Developer Password</label><input type="password" id="setPassword" placeholder="Change password" /></div>
+                <div class="input-group"><label>Institute Name</label><input type="text" id="setCenterName" placeholder="AV Pro" /></div>
+                <div class="input-group"><label>Primary Color</label><input type="color" id="setPrimaryColor" value="#d4a843" /></div>
             </div>
-
-            <!-- Settings Content -->
-            <div id="settingsContent" style="display:none;">
-                <div class="settings-tabs">
-                    <button class="stab active" data-tab="general" onclick="switchSettingsTab('general')">🏫 General</button>
-                    <button class="stab" data-tab="roles" onclick="switchSettingsTab('roles')">👥 Gmail Roles</button>
-                    <button class="stab" data-tab="firebase" onclick="switchSettingsTab('firebase')">🔥 Firebase</button>
+            <div id="settings-roles" class="settings-panel">
+                <p class="text-muted" style="margin-bottom:0.5rem;">Assign roles to Gmail addresses.</p>
+                <div class="input-group" style="display:flex; gap:0.5rem;">
+                    <input type="email" id="newGmailEmail" placeholder="user@gmail.com" style="flex:1;" />
+                    <select id="newGmailRole" style="flex:1;">
+                        <option value="admin">Admin</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" onclick="addGmailRole()" style="flex:0.5;width:auto;">Add</button>
                 </div>
+                <div id="gmailRolesList"></div>
+            </div>
+            <div id="settings-firebase" class="settings-panel">
+                <div class="input-group"><label>API Key</label><input type="text" id="setApiKey" /></div>
+                <div class="input-group"><label>Auth Domain</label><input type="text" id="setAuthDomain" /></div>
+                <div class="input-group"><label>Project ID</label><input type="text" id="setProjectId" /></div>
+                <div class="input-group"><label>Storage Bucket</label><input type="text" id="setStorageBucket" /></div>
+                <div class="input-group"><label>Messaging Sender ID</label><input type="text" id="setMessagingSenderId" /></div>
+                <div class="input-group"><label>App ID</label><input type="text" id="setAppId" /></div>
+                <button class="btn btn-danger" onclick="reinitFirebase()"><i class="fas fa-sync"></i> Re‑init Firebase</button>
+            </div>
+            <div class="flex mt-2" style="justify-content:flex-end;gap:0.5rem;">
+                <button class="btn btn-primary" onclick="saveSettings()" style="width:auto;"><i class="fas fa-save"></i> Save</button>
+                <button class="btn btn-outline" onclick="closeSettings()" style="width:auto;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <!-- General Tab -->
-                <div id="settings-general" class="settings-panel active">
-                    <div class="input-group"><label>Developer Password</label><input type="password" id="setPassword" placeholder="Change password" /></div>
-                    <div class="input-group"><label>Center Name</label><input type="text" id="setCenterName" placeholder="AV Pro" /></div>
-                    <div class="input-group"><label>Primary Color</label><input type="color" id="setPrimaryColor" value="#d4a843" /></div>
-                </div>
+<!-- ============================ NAVBAR ============================ -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <img id="navLogo" class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23d4a843'/%3E%3Ctext x='50' y='60' font-size='60' font-weight='bold' text-anchor='middle' fill='white'%3EAV%3C/text%3E%3C/svg%3E" alt="Logo" />
+        <span class="logo-text" id="navTitle">AV Pro</span>
+    </div>
+    <div class="navbar-right">
+        <span class="dev-badge" id="devBadge" onclick="openDeveloperSettings()">🔧 DEV</span>
+        <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+        <span id="userBadge" class="user-badge hidden">Guest</span>
+    </div>
+</nav>
 
-                <!-- Gmail Roles Tab -->
-                <div id="settings-roles" class="settings-panel">
-                    <p class="text-muted" style="margin-bottom: 1rem;">Assign roles to Gmail addresses. Users with these emails will automatically get the assigned role.</p>
-                    
-                    <div class="input-group" style="display: flex; gap: 0.5rem;">
-                        <input type="email" id="newGmailEmail" placeholder="user@gmail.com" style="flex: 1;" />
-                        <select id="newGmailRole" style="flex: 1;">
-                            <option value="admin">Admin</option>
-                            <option value="teacher">Teacher</option>
-                            <option value="student">Student</option>
-                        </select>
-                        <button class="btn btn-primary btn-sm" onclick="addGmailRole()" style="flex: 0.5; width: auto;">Add</button>
-                    </div>
+<!-- ============================ PAGE CONTAINER ============================ -->
+<div class="page-container">
 
-                    <div id="gmailRolesList"></div>
-                </div>
-
-                <!-- Firebase Tab -->
-                <div id="settings-firebase" class="settings-panel">
-                    <div class="input-group"><label>API Key</label><input type="text" id="setApiKey" /></div>
-                    <div class="input-group"><label>Auth Domain</label><input type="text" id="setAuthDomain" /></div>
-                    <div class="input-group"><label>Project ID</label><input type="text" id="setProjectId" /></div>
-                    <div class="input-group"><label>Storage Bucket</label><input type="text" id="setStorageBucket" /></div>
-                    <div class="input-group"><label>Messaging Sender ID</label><input type="text" id="setMessagingSenderId" /></div>
-                    <div class="input-group"><label>App ID</label><input type="text" id="setAppId" /></div>
-                    <button class="btn btn-danger" onclick="reinitFirebase()"><i class="fas fa-sync"></i> Re-initialize Firebase</button>
-                </div>
-
-                <div class="flex mt-2" style="justify-content:flex-end;gap:0.5rem;">
-                    <button class="btn btn-primary" onclick="saveSettings()" style="width:auto;"><i class="fas fa-save"></i> Save</button>
-                    <button class="btn btn-outline" onclick="closeSettings()" style="width:auto;">Close</button>
-                </div>
+    <!-- ===== LOGIN ===== -->
+    <div id="loginPage" class="page active">
+        <div class="login-wrapper">
+            <div class="login-card">
+                <span class="icon">🌱</span>
+                <h2>AV Pro</h2>
+                <p class="sub">Sign in to access your dashboard</p>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="input-group"><label>Email</label><input type="email" id="loginEmail" required /></div>
+                    <div class="input-group"><label>Password</label><input type="password" id="loginPassword" required /></div>
+                    <div id="loginError" class="hidden" style="color:var(--coral);margin-bottom:0.5rem;"></div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
+                    <p style="margin-top:0.8rem;font-size:0.75rem;opacity:0.5;text-align:center;">
+                        Don't have an account? <span class="text-link" onclick="toggleSignup()">Sign Up</span>
+                    </p>
+                    <p style="margin-top:0.4rem;font-size:0.65rem;opacity:0.3;text-align:center;">
+                        <span class="text-link" onclick="openDeveloperSettings()">🔧 Developer Settings</span>
+                    </p>
+                </form>
+                <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
+                    <div class="input-group"><label>Full Name</label><input type="text" id="signupName" required /></div>
+                    <div class="input-group"><label>Email</label><input type="email" id="signupEmail" required /></div>
+                    <div class="input-group"><label>Password</label><input type="password" id="signupPassword" required /></div>
+                    <div id="signupError" class="hidden" style="color:var(--coral);margin-bottom:0.5rem;"></div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Sign Up</button>
+                    <p style="margin-top:0.8rem;font-size:0.75rem;opacity:0.5;text-align:center;">
+                        Already have an account? <span class="text-link" onclick="toggleSignup()">Sign In</span>
+                    </p>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="navbar-left">
-            <img id="navLogo" class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23d4a843'/%3E%3Ctext x='50' y='60' font-size='60' font-weight='bold' text-anchor='middle' fill='white'%3EAV%3C/text%3E%3C/svg%3E" alt="Logo" />
-            <span class="logo-text" id="navTitle">AV Pro</span>
-        </div>
-        <div class="navbar-right">
-            <span class="dev-badge" id="devBadge">🔧 DEV</span>
-            <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
-            <span id="userBadge" class="user-badge hidden">Guest</span>
-        </div>
-    </nav>
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboardPage" class="page">
+        <h2 style="font-family:Georgia,serif;color:var(--gold);margin-bottom:1rem;">📊 Dashboard</h2>
+        <div id="dashStats" class="stat-grid"></div>
+        <div class="card mt-2"><p id="dashWelcome" class="text-muted">Welcome back, <strong id="dashUser">User</strong>!</p></div>
+    </div>
 
-    <!-- PAGE CONTAINER -->
-    <div class="page-container">
-        <!-- LOGIN PAGE -->
-        <div id="loginPage" class="page active">
-            <div class="login-wrapper">
-                <div class="login-card">
-                    <span class="icon" id="loginIcon">🌱</span>
-                    <h2 id="loginTitle">AV Pro</h2>
-                    <p class="sub" id="loginSub">Sign in to access your dashboard</p>
-                    <form id="loginForm" onsubmit="handleLogin(event)">
-                        <div class="input-group"><label>Email</label><input type="email" id="loginEmail" required /></div>
-                        <div class="input-group"><label>Password</label><input type="password" id="loginPassword" required /></div>
-                        <div id="loginError" class="hidden" style="color:var(--coral);margin-bottom:0.5rem;"></div>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
-                        <p style="margin-top:0.8rem;font-size:0.75rem;opacity:0.5;text-align:center;">
-                            Don't have an account? <span class="text-link" onclick="toggleSignup()">Sign Up</span>
-                        </p>
-                        <p style="margin-top:0.4rem;font-size:0.65rem;opacity:0.3;text-align:center;">
-                            <span class="text-link" onclick="openDeveloperSettings()">🔧 Developer Settings</span>
-                        </p>
-                    </form>
-                    <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
-                        <div class="input-group"><label>Full Name</label><input type="text" id="signupName" required /></div>
-                        <div class="input-group"><label>Email</label><input type="email" id="signupEmail" required /></div>
-                        <div class="input-group"><label>Password</label><input type="password" id="signupPassword" required /></div>
-                        <div id="signupError" class="hidden" style="color:var(--coral);margin-bottom:0.5rem;"></div>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Sign Up</button>
-                        <p style="margin-top:0.8rem;font-size:0.75rem;opacity:0.5;text-align:center;">
-                            Already have an account? <span class="text-link" onclick="toggleSignup()">Sign In</span>
-                        </p>
-                    </form>
-                </div>
-            </div>
-        </div>
+    <!-- ===== STUDENTS ===== -->
+    <div id="studentsPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>👨‍🎓 Students</h3><button class="btn btn-primary btn-sm" onclick="openModal('student')">+ Add</button></div>
+        <div id="studentsList" class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Batch</th><th>Actions</th></tr></thead><tbody id="studentsTableBody"></tbody></table></div>
+    </div>
 
-        <!-- HOME PAGE -->
-        <div id="homePage" class="page">
-            <div style="padding: 1rem;">
-                <h1 style="font-family: Georgia, serif; color: var(--gold); margin-bottom: 1rem;">Welcome to AV Pro</h1>
-                <div class="card">
-                    <p>Welcome, <strong id="userName">User</strong>!</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Email: <span id="userEmail">user@example.com</span></p>
-                    <p style="margin-top: 0.3rem; font-size: 0.9rem; color: var(--text-muted);">Role: <span id="userRole" style="background: var(--gold); color: white; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600;">Student</span></p>
-                </div>
-                <button class="btn btn-danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-            </div>
+    <!-- ===== COURSES ===== -->
+    <div id="coursesPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📚 Courses</h3><button class="btn btn-primary btn-sm" onclick="openModal('course')">+ Add</button></div>
+        <div id="coursesList" class="table-wrap"><table><thead><tr><th>Name</th><th>Code</th><th>Instructor</th><th>Actions</th></tr></thead><tbody id="coursesTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== ATTENDANCE ===== -->
+    <div id="attendancePage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📋 Attendance</h3><button class="btn btn-primary btn-sm" onclick="openModal('attendance')">+ Add</button></div>
+        <div id="attendanceList" class="table-wrap"><table><thead><tr><th>Student</th><th>Course</th><th>Date</th><th>Status</th><th>Method</th><th>Actions</th></tr></thead><tbody id="attendanceTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== FEES ===== -->
+    <div id="feesPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>💰 Fees</h3><button class="btn btn-primary btn-sm" onclick="openModal('fee')">+ Add</button></div>
+        <div id="feesList" class="table-wrap"><table><thead><tr><th>Student</th><th>Amount</th><th>Due</th><th>Status</th><th>Receipt</th><th>Actions</th></tr></thead><tbody id="feesTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== MARKS ===== -->
+    <div id="marksPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📝 Marks</h3><button class="btn btn-primary btn-sm" onclick="openModal('mark')">+ Add</button></div>
+        <div id="marksList" class="table-wrap"><table><thead><tr><th>Student</th><th>Course</th><th>Exam</th><th>Subject</th><th>Score</th><th>Actions</th></tr></thead><tbody id="marksTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== EXAMS ===== -->
+    <div id="examsPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📅 Exams</h3><button class="btn btn-primary btn-sm" onclick="openModal('exam')">+ Schedule</button></div>
+        <div id="examsList" class="table-wrap"><table><thead><tr><th>Title</th><th>Course</th><th>Type</th><th>Date</th><th>Duration</th><th>Actions</th></tr></thead><tbody id="examsTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== BATCHES ===== -->
+    <div id="batchesPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📦 Batches</h3><button class="btn btn-primary btn-sm" onclick="openModal('batch')">+ Add</button></div>
+        <div id="batchesList" class="table-wrap"><table><thead><tr><th>Name</th><th>Standard</th><th>Actions</th></tr></thead><tbody id="batchesTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== HOMEWORK ===== -->
+    <div id="homeworkPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📄 Homework</h3><button class="btn btn-primary btn-sm" onclick="openModal('homework')">+ Assign</button></div>
+        <div id="homeworkList" class="table-wrap"><table><thead><tr><th>Title</th><th>Course</th><th>Due</th><th>Assigned By</th><th>File</th><th>Actions</th></tr></thead><tbody id="homeworkTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== LIVE CLASSES ===== -->
+    <div id="liveClassesPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>🎥 Live Classes</h3><button class="btn btn-primary btn-sm" onclick="openModal('liveclass')">+ Create</button></div>
+        <div id="liveClassesList" class="table-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Time</th><th>Join</th><th>Actions</th></tr></thead><tbody id="liveClassesTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== CLASSROOM (WebRTC) ===== -->
+    <div id="classroomPage" class="page">
+        <h3>🏫 Classroom</h3>
+        <div class="input-group"><label>Room ID</label><input type="text" id="classroomRoomId" placeholder="Enter room ID" /></div>
+        <button class="btn btn-primary" onclick="joinClassroom()"><i class="fas fa-video"></i> Join Room</button>
+        <div id="classroomFrameContainer" style="margin-top:1rem;display:none;">
+            <iframe id="classroomFrame" class="classroom-iframe" allow="camera; microphone; fullscreen"></iframe>
         </div>
     </div>
 
-    <!-- BOTTOM TAB BAR -->
-    <div class="bottom-tabs" id="bottomTabs"></div>
+    <!-- ===== GRIEVANCES ===== -->
+    <div id="grievancesPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>⚖️ Grievances</h3><button class="btn btn-primary btn-sm" onclick="openModal('grievance')">+ File</button></div>
+        <div id="grievancesList" class="table-wrap"><table><thead><tr><th>Teacher</th><th>Complaint</th><th>Status</th><th>Actions</th></tr></thead><tbody id="grievancesTableBody"></tbody></table></div>
+    </div>
 
-    <script>
-        // ============================================================
-        // FIREBASE CONFIGURATION
-        // ============================================================
-        const DEFAULT_CONFIG = {
-            apiKey: "AIzaSyACnqjnq2VFIX17pSoiNMNxy77WlWBgeWs",
-            authDomain: "av-private-tuitions.firebaseapp.com",
-            projectId: "av-private-tuitions",
-            storageBucket: "av-private-tuitions.firebasestorage.app",
-            messagingSenderId: "254111465995",
-            appId: "1:254111465995:web:89f3e1f7b1d2fb0bb67d0e"
-        };
+    <!-- ===== PAYMENTS ===== -->
+    <div id="paymentsPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>💳 Payments</h3><button class="btn btn-primary btn-sm" onclick="openModal('payment')">+ Add</button></div>
+        <div id="paymentsList" class="table-wrap"><table><thead><tr><th>Student</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="paymentsTableBody"></tbody></table></div>
+    </div>
 
-        const DEFAULT_PASSWORD = "admin@AV2024";
+    <!-- ===== SALARY ===== -->
+    <div id="salaryPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>💵 Salary</h3><button class="btn btn-primary btn-sm" onclick="openModal('salary')">+ Add</button></div>
+        <div id="salaryList" class="table-wrap"><table><thead><tr><th>Teacher</th><th>Amount</th><th>Month</th><th>Paid</th><th>Actions</th></tr></thead><tbody id="salaryTableBody"></tbody></table></div>
+    </div>
 
-        let auth, db, storage;
-        let currentUser = null;
-        let userRole = 'student';
-        let settingsUnlocked = false;
-        let currentFirebaseConfig = { ...DEFAULT_CONFIG };
-        let developerPassword = DEFAULT_PASSWORD;
-        let gmailRoles = {}; // { 'user@gmail.com': 'admin' }
+    <!-- ===== WORKLOG ===== -->
+    <div id="worklogPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📋 Worklog</h3><button class="btn btn-primary btn-sm" onclick="openModal('worklog')">+ Add</button></div>
+        <div id="worklogList" class="table-wrap"><table><thead><tr><th>Teacher</th><th>Date</th><th>Hours</th><th>Description</th><th>Actions</th></tr></thead><tbody id="worklogTableBody"></tbody></table></div>
+    </div>
 
-        // ============================================================
-        // INITIALIZE FIREBASE
-        // ============================================================
-        function initFirebase(config) {
-            try {
-                if (firebase.apps.length) {
-                    firebase.apps.forEach(app => app.delete());
-                }
-                firebase.initializeApp(config);
-                auth = firebase.auth();
-                db = firebase.firestore();
-                storage = firebase.storage();
-                db.enablePersistence().catch(err => console.warn('Persistence error:', err));
-                console.log('✅ Firebase initialized successfully');
-                return true;
-            } catch (e) {
-                console.error('❌ Firebase init error:', e);
-                showToast('Firebase initialization failed. Check console.');
-                return false;
-            }
-        }
+    <!-- ===== FEEDBACK ===== -->
+    <div id="feedbackPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>💬 Feedback</h3><button class="btn btn-primary btn-sm" onclick="openModal('feedback')">+ Add</button></div>
+        <div id="feedbackList" class="table-wrap"><table><thead><tr><th>Student</th><th>Teacher</th><th>Rating</th><th>Comment</th><th>Actions</th></tr></thead><tbody id="feedbackTableBody"></tbody></table></div>
+    </div>
 
-        // ============================================================
-        // LOAD SETTINGS FROM FIRESTORE
-        // ============================================================
-        function loadAllSettings() {
-            try {
-                const savedConfig = localStorage.getItem('av_firebase_config');
-                if (savedConfig) currentFirebaseConfig = JSON.parse(savedConfig);
-                
-                const savedPassword = localStorage.getItem('av_developer_password');
-                if (savedPassword) developerPassword = savedPassword;
-                
-                const savedRoles = localStorage.getItem('av_gmail_roles');
-                if (savedRoles) gmailRoles = JSON.parse(savedRoles);
-                
-                console.log('✅ Settings loaded');
-            } catch (e) {
-                console.warn('Settings load error:', e);
-            }
-        }
+    <!-- ===== BROADCAST ===== -->
+    <div id="broadcastPage" class="page">
+        <div class="flex" style="justify-content:space-between;"><h3>📡 Broadcast</h3><button class="btn btn-primary btn-sm" onclick="openModal('broadcast')">+ Send</button></div>
+        <div id="broadcastList" class="table-wrap"><table><thead><tr><th>Title</th><th>Message</th><th>Date</th><th>Sender</th><th>Actions</th></tr></thead><tbody id="broadcastTableBody"></tbody></table></div>
+    </div>
 
-        // ============================================================
-        // SAVE SETTINGS TO LOCALSTORAGE
-        // ============================================================
-        function saveAllSettings() {
-            localStorage.setItem('av_firebase_config', JSON.stringify(currentFirebaseConfig));
-            localStorage.setItem('av_developer_password', developerPassword);
-            localStorage.setItem('av_gmail_roles', JSON.stringify(gmailRoles));
-            showToast('✅ All settings saved successfully!');
-        }
+    <!-- ===== MARKSHEET (individual) ===== -->
+    <div id="marksheetPage" class="page">
+        <h3>📊 Marksheet</h3>
+        <div class="input-group"><label>Student</label><select id="marksheetStudent"></select></div>
+        <div class="input-group"><label>Exam Type</label><select id="marksheetExamType"></select></div>
+        <button class="btn btn-primary" onclick="generateMarksheet()"><i class="fas fa-file-pdf"></i> Generate</button>
+        <div id="marksheetResult" class="mt-2"></div>
+    </div>
 
-        // ============================================================
-        // AUTHENTICATION FUNCTIONS
-        // ============================================================
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+</div>
 
-            auth.signInWithEmailAndPassword(email, password)
-                .then(userCredential => {
-                    currentUser = userCredential.user;
-                    
-                    // Check Gmail role mapping
-                    const userEmail = currentUser.email.toLowerCase();
-                    if (gmailRoles[userEmail]) {
-                        userRole = gmailRoles[userEmail];
-                    } else {
-                        userRole = 'student'; // Default role
-                    }
-                    
-                    saveUserData(userEmail);
-                    loadUserData();
-                    showPage('homePage');
-                    showToast('✅ Logged in successfully!');
-                })
-                .catch(error => {
-                    console.error('Login error:', error);
-                    document.getElementById('loginError').textContent = error.message;
-                    document.getElementById('loginError').classList.remove('hidden');
-                });
-        }
+<!-- ============================ BOTTOM TABS ============================ -->
+<div class="bottom-tabs" id="bottomTabs"></div>
 
-        function handleSignup(e) {
-            e.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
+<!-- ============================ MODAL ============================ -->
+<div id="crudModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header"><h3 id="modalTitle">Add</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+        <form id="crudForm" onsubmit="saveRecord(event)">
+            <div id="modalFields"></div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+        </form>
+    </div>
+</div>
 
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(userCredential => {
-                    currentUser = userCredential.user;
-                    
-                    // Check Gmail role mapping
-                    const userEmail = currentUser.email.toLowerCase();
-                    if (gmailRoles[userEmail]) {
-                        userRole = gmailRoles[userEmail];
-                    } else {
-                        userRole = 'student'; // Default role
-                    }
-                    
-                    saveUserData(name);
-                    loadUserData();
-                    showPage('homePage');
-                    showToast('✅ Account created successfully!');
-                })
-                .catch(error => {
-                    console.error('Signup error:', error);
-                    document.getElementById('signupError').textContent = error.message;
-                    document.getElementById('signupError').classList.remove('hidden');
-                });
-        }
+<script>
+// ============================================================
+// FIREBASE CONFIG
+// ============================================================
+const DEFAULT_CONFIG = {
+    apiKey: "AIzaSyACnqjnq2VFIX17pSoiNMNxy77WlWBgeWs",
+    authDomain: "av-private-tuitions.firebaseapp.com",
+    projectId: "av-private-tuitions",
+    storageBucket: "av-private-tuitions.firebasestorage.app",
+    messagingSenderId: "254111465995",
+    appId: "1:254111465995:web:89f3e1f7b1d2fb0bb67d0e"
+};
 
-        function handleLogout() {
-            auth.signOut()
-                .then(() => {
-                    currentUser = null;
-                    userRole = 'student';
-                    showPage('loginPage');
-                    document.getElementById('loginForm').reset();
-                    document.getElementById('signupForm').reset();
-                    showToast('✅ Logged out successfully!');
-                })
-                .catch(error => {
-                    console.error('Logout error:', error);
-                    showToast('Error logging out');
-                });
-        }
+const DEFAULT_PASSWORD = "admin@AV2024";
 
-        // ============================================================
-        // USER DATA FUNCTIONS
-        // ============================================================
-        function saveUserData(nameOrEmail) {
-            if (!currentUser) return;
-            
-            db.collection('users').doc(currentUser.uid).set({
-                name: nameOrEmail,
-                email: currentUser.email.toLowerCase(),
-                role: userRole,
-                createdAt: new Date(),
-                lastLogin: new Date()
-            }, { merge: true })
-            .then(() => {
-                console.log('✅ User data saved');
-            })
-            .catch(error => {
-                console.error('Error saving user data:', error);
-            });
-        }
+let auth, db, storage;
+let currentUser = null;
+let userRole = 'student';
+let settingsUnlocked = false;
+let currentFirebaseConfig = { ...DEFAULT_CONFIG };
+let developerPassword = DEFAULT_PASSWORD;
+let gmailRoles = {};
+let editingId = null;
+let currentCollection = '';
 
-        function loadUserData() {
-            if (!currentUser) return;
-            
-            db.collection('users').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        document.getElementById('userName').textContent = data.name || 'User';
-                        document.getElementById('userEmail').textContent = data.email;
-                        document.getElementById('userRole').textContent = data.role.toUpperCase();
-                    }
-                })
-                .catch(error => console.error('Error loading user data:', error));
-        }
+// ============================================================
+// INIT
+// ============================================================
+function initFirebase(config) {
+    try {
+        if (firebase.apps.length) firebase.apps.forEach(a => a.delete());
+        firebase.initializeApp(config);
+        auth = firebase.auth();
+        db = firebase.firestore();
+        storage = firebase.storage();
+        db.enablePersistence().catch(()=>{});
+        return true;
+    } catch(e) { console.error(e); return false; }
+}
 
-        // ============================================================
-        // SETTINGS FUNCTIONS - GMAIL ROLES
-        // ============================================================
-        function loadGmailRoles() {
-            const list = document.getElementById('gmailRolesList');
-            list.innerHTML = '';
-            
-            Object.entries(gmailRoles).forEach(([email, role]) => {
-                const item = document.createElement('div');
-                item.className = 'role-item';
-                item.innerHTML = `
-                    <span>${email}</span>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <select style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" onchange="updateGmailRole('${email}', this.value)">
-                            <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
-                            <option value="teacher" ${role === 'teacher' ? 'selected' : ''}>Teacher</option>
-                            <option value="student" ${role === 'student' ? 'selected' : ''}>Student</option>
-                        </select>
-                        <button class="delete-btn" onclick="deleteGmailRole('${email}')">Delete</button>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-        }
+function loadAllSettings() {
+    try {
+        const c = localStorage.getItem('av_firebase_config');
+        if (c) currentFirebaseConfig = JSON.parse(c);
+        const p = localStorage.getItem('av_developer_password');
+        if (p) developerPassword = p;
+        const r = localStorage.getItem('av_gmail_roles');
+        if (r) gmailRoles = JSON.parse(r);
+    } catch(e) {}
+}
 
-        function addGmailRole() {
-            const email = document.getElementById('newGmailEmail').value.toLowerCase().trim();
-            const role = document.getElementById('newGmailRole').value;
-            
-            if (!email) {
-                showToast('❌ Please enter an email');
-                return;
-            }
-            
-            if (!email.includes('@')) {
-                showToast('❌ Invalid email');
-                return;
-            }
-            
-            gmailRoles[email] = role;
-            saveAllSettings();
-            loadGmailRoles();
-            document.getElementById('newGmailEmail').value = '';
-            showToast(`✅ ${email} set as ${role}`);
-        }
+function saveAllSettings() {
+    localStorage.setItem('av_firebase_config', JSON.stringify(currentFirebaseConfig));
+    localStorage.setItem('av_developer_password', developerPassword);
+    localStorage.setItem('av_gmail_roles', JSON.stringify(gmailRoles));
+    showToast('✅ Settings saved');
+}
 
-        function updateGmailRole(email, role) {
-            gmailRoles[email] = role;
-            saveAllSettings();
-            showToast(`✅ ${email} updated to ${role}`);
-        }
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+    document.getElementById('toastMessage').textContent = msg;
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    clearTimeout(t._hide);
+    t._hide = setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-        function deleteGmailRole(email) {
-            if (confirm(`Delete role for ${email}?`)) {
-                delete gmailRoles[email];
-                saveAllSettings();
-                loadGmailRoles();
-                showToast('✅ Role deleted');
-            }
-        }
-
-        // ============================================================
-        // UI FUNCTIONS
-        // ============================================================
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-        }
-
-        function toggleSignup() {
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('signupForm').classList.toggle('hidden');
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // ============================================================
-        // SETTINGS MODAL FUNCTIONS
-        // ============================================================
-        function openDeveloperSettings() {
-            document.getElementById('settingsModal').classList.add('active');
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('active');
-            settingsUnlocked = false;
-            document.getElementById('settingsPasswordPrompt').style.display = 'block';
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('settingsPasswordInput').value = '';
-        }
-
-        function verifySettingsPassword() {
-            const pwd = document.getElementById('settingsPasswordInput').value;
-            if (pwd === developerPassword) {
-                settingsUnlocked = true;
-                document.getElementById('settingsPasswordPrompt').style.display = 'none';
-                document.getElementById('settingsContent').style.display = 'block';
-                loadSettingsForm();
-            } else {
-                document.getElementById('settingsPasswordError').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('settingsPasswordError').style.display = 'none';
-                }, 3000);
-            }
-        }
-
-        function switchSettingsTab(tab) {
-            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
-            document.getElementById('settings-' + tab).classList.add('active');
-            document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
-            
-            if (tab === 'roles') {
-                loadGmailRoles();
-            }
-        }
-
-        function loadSettingsForm() {
-            document.getElementById('setPassword').value = '';
-            document.getElementById('setCenterName').value = 'AV Pro';
-            document.getElementById('setPrimaryColor').value = '#d4a843';
-            document.getElementById('setApiKey').value = currentFirebaseConfig.apiKey || '';
-            document.getElementById('setAuthDomain').value = currentFirebaseConfig.authDomain || '';
-            document.getElementById('setProjectId').value = currentFirebaseConfig.projectId || '';
-            document.getElementById('setStorageBucket').value = currentFirebaseConfig.storageBucket || '';
-            document.getElementById('setMessagingSenderId').value = currentFirebaseConfig.messagingSenderId || '';
-            document.getElementById('setAppId').value = currentFirebaseConfig.appId || '';
-            loadGmailRoles();
-        }
-
-        function saveSettings() {
-            const newPassword = document.getElementById('setPassword').value;
-            if (newPassword) {
-                developerPassword = newPassword;
-            }
-
-            currentFirebaseConfig = {
-                apiKey: document.getElementById('setApiKey').value,
-                authDomain: document.getElementById('setAuthDomain').value,
-                projectId: document.getElementById('setProjectId').value,
-                storageBucket: document.getElementById('setStorageBucket').value,
-                messagingSenderId: document.getElementById('setMessagingSenderId').value,
-                appId: document.getElementById('setAppId').value
-            };
-
-            saveAllSettings();
-        }
-
-        function reinitFirebase() {
-            if (confirm('This will reinitialize Firebase with new settings. Continue?')) {
-                initFirebase(currentFirebaseConfig);
-                showToast('✅ Firebase reinitialized!');
-            }
-        }
-
-        // ============================================================
-        // THEME TOGGLE
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAllSettings();
-            initFirebase(currentFirebaseConfig);
-
-            // Theme toggle
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                const html = document.documentElement;
-                const currentTheme = html.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                html.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-            });
-
-            // Load saved theme
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-
-            // Auth state listener
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    currentUser = user;
-                    loadUserData();
-                    showPage('homePage');
-                } else {
-                    currentUser = null;
-                    showPage('loginPage');
-                }
-            });
+// ============================================================
+// AUTH
+// ============================================================
+function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    auth.signInWithEmailAndPassword(email, password)
+        .then(uc => {
+            currentUser = uc.user;
+            const userEmail = currentUser.email.toLowerCase();
+            userRole = gmailRoles[userEmail] || 'student';
+            saveUserData(userEmail);
+            afterLogin();
+        })
+        .catch(err => {
+            document.getElementById('loginError').textContent = err.message;
+            document.getElementById('loginError').classList.remove('hidden');
         });
-    </script>
+}
+
+function handleSignup(e) {
+    e.preventDefault();
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    auth.createUserWithEmailAndPassword(email, password)
+        .then(uc => {
+            currentUser = uc.user;
+            const userEmail = currentUser.email.toLowerCase();
+            userRole = gmailRoles[userEmail] || 'student';
+            saveUserData(name);
+            afterLogin();
+        })
+        .catch(err => {
+            document.getElementById('signupError').textContent = err.message;
+            document.getElementById('signupError').classList.remove('hidden');
+        });
+}
+
+function saveUserData(name) {
+    if (!currentUser) return;
+    db.collection('users').doc(currentUser.uid).set({
+        name: name || currentUser.email,
+        email: currentUser.email.toLowerCase(),
+        role: userRole,
+        lastLogin: new Date()
+    }, { merge: true });
+}
+
+function afterLogin() {
+    document.getElementById('userBadge').textContent = userRole.toUpperCase();
+    document.getElementById('userBadge').classList.remove('hidden');
+    document.getElementById('dashUser').textContent = currentUser.email;
+    showPage('dashboardPage');
+    showToast('✅ Logged in!');
+    loadDashboard();
+    loadAllData();
+    buildTabs();
+}
+
+function handleLogout() {
+    auth.signOut().then(() => {
+        currentUser = null;
+        userRole = 'student';
+        document.getElementById('userBadge').classList.add('hidden');
+        showPage('loginPage');
+        showToast('✅ Logged out');
+    });
+}
+
+function toggleSignup() {
+    document.getElementById('loginForm').classList.toggle('hidden');
+    document.getElementById('signupForm').classList.toggle('hidden');
+}
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.bottom-tabs .tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.bottom-tabs .tab').forEach(t => {
+        if (t.dataset.page === id) t.classList.add('active');
+    });
+}
+
+function buildTabs() {
+    const container = document.getElementById('bottomTabs');
+    const allTabs = [
+        { id: 'dashboardPage', icon: 'fa-house', label: 'Home' },
+        { id: 'studentsPage', icon: 'fa-user-graduate', label: 'Students' },
+        { id: 'coursesPage', icon: 'fa-book', label: 'Courses' },
+        { id: 'attendancePage', icon: 'fa-clipboard', label: 'Attendance' },
+        { id: 'feesPage', icon: 'fa-coins', label: 'Fees' },
+        { id: 'marksPage', icon: 'fa-pen', label: 'Marks' },
+        { id: 'examsPage', icon: 'fa-calendar', label: 'Exams' },
+        { id: 'batchesPage', icon: 'fa-layer-group', label: 'Batches' },
+        { id: 'homeworkPage', icon: 'fa-file', label: 'Homework' },
+        { id: 'liveClassesPage', icon: 'fa-video', label: 'Live' },
+        { id: 'classroomPage', icon: 'fa-chalkboard', label: 'Classroom' },
+        { id: 'grievancesPage', icon: 'fa-scale-balanced', label: 'Grievances' },
+        { id: 'paymentsPage', icon: 'fa-credit-card', label: 'Payments' },
+        { id: 'salaryPage', icon: 'fa-money-bill', label: 'Salary' },
+        { id: 'worklogPage', icon: 'fa-clock', label: 'Worklog' },
+        { id: 'feedbackPage', icon: 'fa-comment', label: 'Feedback' },
+        { id: 'broadcastPage', icon: 'fa-bullhorn', label: 'Broadcast' },
+        { id: 'marksheetPage', icon: 'fa-file-pdf', label: 'Marksheet' },
+    ];
+    // Show all tabs for admin; for others we can filter later.
+    container.innerHTML = '';
+    allTabs.forEach(t => {
+        const btn = document.createElement('button');
+        btn.className = 'tab';
+        btn.dataset.page = t.id;
+        btn.innerHTML = `<i class="fas ${t.icon}"></i><span>${t.label}</span>`;
+        btn.onclick = () => showPage(t.id);
+        container.appendChild(btn);
+    });
+    // set active
+    document.querySelectorAll('.bottom-tabs .tab').forEach(t => {
+        if (t.dataset.page === 'dashboardPage') t.classList.add('active');
+    });
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function openDeveloperSettings() { document.getElementById('settingsModal').classList.add('active'); }
+function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('active');
+    settingsUnlocked = false;
+    document.getElementById('settingsPasswordPrompt').style.display = 'block';
+    document.getElementById('settingsContent').style.display = 'none';
+}
+function verifySettingsPassword() {
+    const pwd = document.getElementById('settingsPasswordInput').value;
+    if (pwd === developerPassword) {
+        settingsUnlocked = true;
+        document.getElementById('settingsPasswordPrompt').style.display = 'none';
+        document.getElementById('settingsContent').style.display = 'block';
+        loadSettingsForm();
+        loadGmailRoles();
+    } else {
+        document.getElementById('settingsPasswordError').style.display = 'block';
+        setTimeout(() => document.getElementById('settingsPasswordError').style.display = 'none', 3000);
+    }
+}
+function switchSettingsTab(tab) {
+    document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+    document.getElementById('settings-'+tab).classList.add('active');
+    document.querySelector('[data-tab="'+tab+'"]').classList.add('active');
+    if (tab === 'roles') loadGmailRoles();
+}
+function loadSettingsForm() {
+    document.getElementById('setApiKey').value = currentFirebaseConfig.apiKey || '';
+    document.getElementById('setAuthDomain').value = currentFirebaseConfig.authDomain || '';
+    document.getElementById('setProjectId').value = currentFirebaseConfig.projectId || '';
+    document.getElementById('setStorageBucket').value = currentFirebaseConfig.storageBucket || '';
+    document.getElementById('setMessagingSenderId').value = currentFirebaseConfig.messagingSenderId || '';
+    document.getElementById('setAppId').value = currentFirebaseConfig.appId || '';
+}
+function saveSettings() {
+    const np = document.getElementById('setPassword').value;
+    if (np) developerPassword = np;
+    currentFirebaseConfig = {
+        apiKey: document.getElementById('setApiKey').value,
+        authDomain: document.getElementById('setAuthDomain').value,
+        projectId: document.getElementById('setProjectId').value,
+        storageBucket: document.getElementById('setStorageBucket').value,
+        messagingSenderId: document.getElementById('setMessagingSenderId').value,
+        appId: document.getElementById('setAppId').value
+    };
+    saveAllSettings();
+    showToast('✅ Settings saved');
+}
+function reinitFirebase() {
+    if (confirm('Re-initialize Firebase with new config?')) {
+        initFirebase(currentFirebaseConfig);
+        showToast('✅ Firebase re-initialized');
+    }
+}
+
+// GMAIL ROLES
+function loadGmailRoles() {
+    const list = document.getElementById('gmailRolesList');
+    list.innerHTML = '';
+    Object.entries(gmailRoles).forEach(([email, role]) => {
+        const div = document.createElement('div');
+        div.className = 'role-item';
+        div.innerHTML = `
+            <span>${email}</span>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+                <select onchange="updateGmailRole('${email}',this.value)">
+                    <option value="admin" ${role==='admin'?'selected':''}>Admin</option>
+                    <option value="teacher" ${role==='teacher'?'selected':''}>Teacher</option>
+                    <option value="student" ${role==='student'?'selected':''}>Student</option>
+                </select>
+                <button class="delete-btn" onclick="deleteGmailRole('${email}')">Delete</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+function addGmailRole() {
+    const email = document.getElementById('newGmailEmail').value.toLowerCase().trim();
+    const role = document.getElementById('newGmailRole').value;
+    if (!email || !email.includes('@')) { showToast('❌ Valid email required'); return; }
+    gmailRoles[email] = role;
+    saveAllSettings();
+    loadGmailRoles();
+    document.getElementById('newGmailEmail').value = '';
+    showToast(`✅ ${email} → ${role}`);
+}
+function updateGmailRole(email, role) {
+    gmailRoles[email] = role;
+    saveAllSettings();
+    showToast('✅ Updated');
+}
+function deleteGmailRole(email) {
+    if (!confirm('Delete role for '+email+'?')) return;
+    delete gmailRoles[email];
+    saveAllSettings();
+    loadGmailRoles();
+    showToast('✅ Deleted');
+}
+
+// ============================================================
+// CRUD HELPERS
+// ============================================================
+function openModal(collection, data) {
+    currentCollection = collection;
+    editingId = null;
+    document.getElementById('modalTitle').textContent = 'Add ' + collection.charAt(0).toUpperCase() + collection.slice(1);
+    const fields = document.getElementById('modalFields');
+    fields.innerHTML = '';
+    if (data) {
+        editingId = data.id;
+        document.getElementById('modalTitle').textContent = 'Edit ' + collection.charAt(0).toUpperCase() + collection.slice(1);
+    }
+    // Build dynamic fields based on collection
+    const schema = getSchema(collection);
+    schema.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'input-group';
+        const label = document.createElement('label');
+        label.textContent = f.label + (f.required ? ' *' : '');
+        const input = document.createElement(f.type === 'select' ? 'select' : f.type === 'textarea' ? 'textarea' : 'input');
+        input.name = f.key;
+        input.required = f.required || false;
+        if (f.type === 'select') {
+            (f.options || []).forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt;
+                o.textContent = opt;
+                input.appendChild(o);
+            });
+        } else if (f.type === 'file') {
+            input.type = 'file';
+        } else {
+            input.type = f.type || 'text';
+            input.placeholder = f.label;
+        }
+        if (data && data[f.key] !== undefined) {
+            if (f.type === 'select' || f.type === 'text' || f.type === 'number' || f.type === 'date') {
+                input.value = data[f.key];
+            }
+        }
+        div.appendChild(label);
+        div.appendChild(input);
+        fields.appendChild(div);
+    });
+    document.getElementById('crudModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('crudModal').classList.remove('active');
+    editingId = null;
+}
+
+function getSchema(collection) {
+    const common = [
+        { key: 'name', label: 'Name', required: true },
+        { key: 'code', label: 'Code' },
+        { key: 'description', label: 'Description', type: 'textarea' },
+        { key: 'instructor', label: 'Instructor' },
+    ];
+    const maps = {
+        student: [
+            { key: 'firstName', label: 'First Name', required: true },
+            { key: 'lastName', label: 'Last Name' },
+            { key: 'email', label: 'Email', type: 'email' },
+            { key: 'phone', label: 'Phone' },
+            { key: 'standard', label: 'Standard' },
+            { key: 'batch', label: 'Batch' },
+            { key: 'parentName', label: 'Parent Name' },
+            { key: 'parentPhone', label: 'Parent Phone' },
+            { key: 'address', label: 'Address', type: 'textarea' },
+        ],
+        course: common,
+        attendance: [
+            { key: 'studentId', label: 'Student ID', required: true },
+            { key: 'courseId', label: 'Course ID', required: true },
+            { key: 'date', label: 'Date', type: 'date' },
+            { key: 'status', label: 'Status', type: 'select', options: ['Present','Absent','Late'] },
+            { key: 'method', label: 'Method', type: 'select', options: ['Manual','Biometric','Card','Face'] },
+        ],
+        fee: [
+            { key: 'studentId', label: 'Student ID', required: true },
+            { key: 'amount', label: 'Amount', type: 'number', required: true },
+            { key: 'dueDate', label: 'Due Date', type: 'date', required: true },
+            { key: 'paid', label: 'Paid', type: 'select', options: ['true','false'] },
+        ],
+        mark: [
+            { key: 'studentId', label: 'Student ID', required: true },
+            { key: 'courseId', label: 'Course ID', required: true },
+            { key: 'examType', label: 'Exam Type', required: true },
+            { key: 'subject', label: 'Subject', required: true },
+            { key: 'score', label: 'Score', type: 'number', required: true },
+        ],
+        exam: [
+            { key: 'title', label: 'Title', required: true },
+            { key: 'courseId', label: 'Course ID', required: true },
+            { key: 'exam_type', label: 'Exam Type' },
+            { key: 'date', label: 'Date', type: 'date', required: true },
+            { key: 'duration', label: 'Duration (min)', type: 'number', required: true },
+        ],
+        batch: [
+            { key: 'name', label: 'Name', required: true },
+            { key: 'standard', label: 'Standard', required: true },
+        ],
+        homework: [
+            { key: 'title', label: 'Title', required: true },
+            { key: 'description', label: 'Description', type: 'textarea' },
+            { key: 'courseId', label: 'Course ID', required: true },
+            { key: 'dueDate', label: 'Due Date', type: 'date', required: true },
+            { key: 'assignedBy', label: 'Assigned By', required: true },
+            { key: 'file', label: 'File', type: 'file' },
+        ],
+        liveclass: [
+            { key: 'title', label: 'Title', required: true },
+            { key: 'description', label: 'Description', type: 'textarea' },
+            { key: 'type', label: 'Type', type: 'select', options: ['google_meet','webrtc'] },
+            { key: 'link', label: 'Link / Room ID', required: true },
+            { key: 'date', label: 'Date', type: 'date', required: true },
+            { key: 'time', label: 'Time', type: 'time', required: true },
+            { key: 'teacher_id', label: 'Teacher ID', required: true },
+            { key: 'course_id', label: 'Course ID', required: true },
+        ],
+        grievance: [
+            { key: 'teacherName', label: 'Teacher Name', required: true },
+            { key: 'complaint', label: 'Complaint', required: true },
+            { key: 'category', label: 'Category', type: 'select', options: ['Academic','Professional','Behavioral','Other'] },
+            { key: 'description', label: 'Description', type: 'textarea' },
+        ],
+        payment: [
+            { key: 'studentId', label: 'Student ID', required: true },
+            { key: 'amount', label: 'Amount', type: 'number', required: true },
+            { key: 'method', label: 'Method', type: 'select', options: ['Cash','Card','UPI','Bank Transfer'] },
+            { key: 'status', label: 'Status', type: 'select', options: ['Pending','Completed','Failed'] },
+            { key: 'date', label: 'Date', type: 'date' },
+        ],
+        salary: [
+            { key: 'teacherId', label: 'Teacher ID', required: true },
+            { key: 'amount', label: 'Amount', type: 'number', required: true },
+            { key: 'month', label: 'Month', required: true },
+            { key: 'paid', label: 'Paid', type: 'select', options: ['true','false'] },
+        ],
+        worklog: [
+            { key: 'teacherId', label: 'Teacher ID', required: true },
+            { key: 'date', label: 'Date', type: 'date' },
+            { key: 'hours', label: 'Hours', type: 'number', required: true },
+            { key: 'description', label: 'Description', type: 'textarea' },
+        ],
+        feedback: [
+            { key: 'studentId', label: 'Student ID', required: true },
+            { key: 'teacherId', label: 'Teacher ID', required: true },
+            { key: 'rating', label: 'Rating (1-5)', type: 'number', required: true },
+            { key: 'comment', label: 'Comment', type: 'textarea' },
+        ],
+        broadcast: [
+            { key: 'title', label: 'Title', required: true },
+            { key: 'message', label: 'Message', type: 'textarea', required: true },
+            { key: 'sender', label: 'Sender', required: true },
+        ],
+    };
+    return maps[collection] || common;
+}
+
+function saveRecord(e) {
+    e.preventDefault();
+    const form = document.getElementById('crudForm');
+    const data = {};
+    const fields = form.querySelectorAll('.input-group input, .input-group select, .input-group textarea');
+    fields.forEach(el => {
+        if (el.type === 'file') return;
+        data[el.name] = el.value;
+    });
+    // For fees, convert paid string to boolean
+    if (currentCollection === 'fee' && data.paid) {
+        data.paid = data.paid === 'true';
+    }
+    if (currentCollection === 'salary' && data.paid) {
+        data.paid = data.paid === 'true';
+    }
+    // For attendance, ensure method is set
+    if (currentCollection === 'attendance' && !data.method) data.method = 'Manual';
+    // Add timestamp
+    data.updatedAt = new Date().toISOString();
+
+    const colRef = db.collection(currentCollection);
+    if (editingId) {
+        colRef.doc(editingId).update(data)
+            .then(() => { closeModal(); loadCollection(currentCollection); showToast('✅ Updated'); })
+            .catch(err => { showToast('❌ Error: '+err.message); });
+    } else {
+        colRef.add(data)
+            .then(() => { closeModal(); loadCollection(currentCollection); showToast('✅ Added'); })
+            .catch(err => { showToast('❌ Error: '+err.message); });
+    }
+}
+
+function deleteRecord(collection, id) {
+    if (!confirm('Delete this record?')) return;
+    db.collection(collection).doc(id).delete()
+        .then(() => { loadCollection(collection); showToast('✅ Deleted'); })
+        .catch(err => showToast('❌ '+err.message));
+}
+
+function editRecord(collection, id, data) {
+    openModal(collection, { ...data, id });
+}
+
+// ============================================================
+// LOAD DATA FOR EACH COLLECTION
+// ============================================================
+function loadCollection(collection) {
+    const map = {
+        students: 'studentsTableBody',
+        courses: 'coursesTableBody',
+        attendance: 'attendanceTableBody',
+        fees: 'feesTableBody',
+        marks: 'marksTableBody',
+        exams: 'examsTableBody',
+        batches: 'batchesTableBody',
+        homework: 'homeworkTableBody',
+        liveclasses: 'liveClassesTableBody',
+        grievances: 'grievancesTableBody',
+        payments: 'paymentsTableBody',
+        salary: 'salaryTableBody',
+        worklog: 'worklogTableBody',
+        feedback: 'feedbackTableBody',
+        broadcast: 'broadcastTableBody',
+    };
+    const tbody = document.getElementById(map[collection]);
+    if (!tbody) return;
+    db.collection(collection).orderBy('created_at', 'desc').onSnapshot(snap => {
+        tbody.innerHTML = '';
+        snap.forEach(doc => {
+            const data = { id: doc.id, ...doc.data() };
+            const tr = document.createElement('tr');
+            const cols = getColumns(collection, data);
+            cols.forEach(c => {
+                const td = document.createElement('td');
+                td.innerHTML = c;
+                tr.appendChild(td);
+            });
+            // Actions
+            const td = document.createElement('td');
+            td.innerHTML = `
+                <button class="btn btn-sm btn-outline" onclick="editRecord('${collection}','${doc.id}',${JSON.stringify(data).replace(/"/g,'&quot;')})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteRecord('${collection}','${doc.id}')"><i class="fas fa-trash"></i></button>
+            `;
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+        });
+    });
+}
+
+function getColumns(collection, data) {
+    const map = {
+        students: [`${data.firstName||''} ${data.lastName||''}`, data.email||'', data.phone||'', data.batch||''],
+        courses: [data.name||'', data.code||'', data.instructor||''],
+        attendance: [data.studentId||'', data.courseId||'', data.date||'', `<span class="badge ${data.status==='Present'?'badge-success':data.status==='Late'?'badge-warning':'badge-danger'}">${data.status||'Present'}</span>`, data.method||'Manual'],
+        fees: [data.studentId||'', '₹'+data.amount||'', data.dueDate||'', `<span class="badge ${data.paid?'badge-success':'badge-danger'}">${data.paid?'Paid':'Pending'}</span>`],
+        marks: [data.studentId||'', data.courseId||'', data.examType||'', data.subject||'', data.score||''],
+        exams: [data.title||'', data.courseId||'', data.exam_type||'', data.date||'', data.duration+'min'],
+        batches: [data.name||'', data.standard||''],
+        homework: [data.title||'', data.courseId||'', data.dueDate||'', data.assignedBy||'', data.file_path ? `<a href="${data.file_path}" target="_blank">📎</a>` : ''],
+        liveclasses: [data.title||'', data.type||'', data.date||'', data.time||'', `<button class="btn btn-sm btn-primary" onclick="window.open('${data.link||'#'}','_blank')">Join</button>`],
+        grievances: [data.teacherName||'', data.complaint||'', `<span class="badge ${data.status==='Resolved'?'badge-success':data.status==='In Progress'?'badge-warning':'badge-danger'}">${data.status||'Pending'}</span>`],
+        payments: [data.studentId||'', '₹'+data.amount||'', data.method||'', `<span class="badge ${data.status==='Completed'?'badge-success':data.status==='Failed'?'badge-danger':'badge-warning'}">${data.status||'Pending'}</span>`, data.date||''],
+        salary: [data.teacherId||'', '₹'+data.amount||'', data.month||'', `<span class="badge ${data.paid?'badge-success':'badge-danger'}">${data.paid?'Paid':'Pending'}</span>`],
+        worklog: [data.teacherId||'', data.date||'', data.hours||'', data.description||''],
+        feedback: [data.studentId||'', data.teacherId||'', data.rating||'', data.comment||''],
+        broadcast: [data.title||'', data.message||'', data.date||'', data.sender||''],
+    };
+    return map[collection] || [];
+}
+
+function loadAllData() {
+    const collections = ['students','courses','attendance','fees','marks','exams','batches','homework','liveclasses','grievances','payments','salary','worklog','feedback','broadcast'];
+    collections.forEach(c => loadCollection(c));
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function loadDashboard() {
+    const collections = ['students','courses','attendance','fees','marks','exams','batches','homework','liveclasses','grievances','payments'];
+    const stats = {};
+    let done = 0;
+    collections.forEach(c => {
+        db.collection(c).get().then(snap => {
+            stats[c] = snap.size;
+            done++;
+            if (done === collections.length) renderDashboard(stats);
+        }).catch(() => { done++; if (done === collections.length) renderDashboard(stats); });
+    });
+    // Also load marksheet dropdowns
+    loadMarksheetDropdowns();
+}
+
+function renderDashboard(stats) {
+    const container = document.getElementById('dashStats');
+    container.innerHTML = '';
+    const items = [
+        { key: 'students', label: 'Students', icon: '👨‍🎓' },
+        { key: 'courses', label: 'Courses', icon: '📚' },
+        { key: 'attendance', label: 'Attendance', icon: '📋' },
+        { key: 'fees', label: 'Fees', icon: '💰' },
+        { key: 'marks', label: 'Marks', icon: '📝' },
+        { key: 'exams', label: 'Exams', icon: '📅' },
+        { key: 'batches', label: 'Batches', icon: '📦' },
+        { key: 'homework', label: 'Homework', icon: '📄' },
+        { key: 'liveclasses', label: 'Live Classes', icon: '🎥' },
+        { key: 'grievances', label: 'Grievances', icon: '⚖️' },
+        { key: 'payments', label: 'Payments', icon: '💳' },
+    ];
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'stat-card';
+        div.innerHTML = `<div class="num">${stats[item.key]||0}</div><div class="label">${item.icon} ${item.label}</div>`;
+        container.appendChild(div);
+    });
+}
+
+// ============================================================
+// MARKSHEET
+// ============================================================
+function loadMarksheetDropdowns() {
+    db.collection('students').get().then(snap => {
+        const sel = document.getElementById('marksheetStudent');
+        sel.innerHTML = '<option value="">Select Student</option>';
+        snap.forEach(d => {
+            const data = d.data();
+            sel.innerHTML += `<option value="${d.id}">${data.firstName||''} ${data.lastName||''}</option>`;
+        });
+    });
+    // Exam types from marks collection distinct
+    db.collection('marks').get().then(snap => {
+        const types = new Set();
+        snap.forEach(d => { if (d.data().examType) types.add(d.data().examType); });
+        const sel = document.getElementById('marksheetExamType');
+        sel.innerHTML = '<option value="">Select Exam</option>';
+        types.forEach(t => sel.innerHTML += `<option value="${t}">${t}</option>`);
+    });
+}
+
+function generateMarksheet() {
+    const studentId = document.getElementById('marksheetStudent').value;
+    const examType = document.getElementById('marksheetExamType').value;
+    if (!studentId || !examType) { showToast('❌ Select student and exam'); return; }
+    db.collection('marks').where('studentId','==',studentId).where('examType','==',examType).get()
+        .then(snap => {
+            if (snap.empty) { document.getElementById('marksheetResult').innerHTML = '<p class="text-muted">No marks found.</p>'; return; }
+            let html = '<div class="card"><h4>📊 Marksheet</h4><table class="table-wrap"><thead><tr><th>Subject</th><th>Score</th></tr></thead><tbody>';
+            let total = 0, count = 0;
+            snap.forEach(d => {
+                const data = d.data();
+                html += `<tr><td>${data.subject||'N/A'}</td><td>${data.score||0}</td></tr>`;
+                total += parseFloat(data.score) || 0;
+                count++;
+            });
+            const avg = count ? (total/count).toFixed(2) : 0;
+            html += `<tr><td><strong>Total</strong></td><td><strong>${total}</strong></td></tr>`;
+            html += `<tr><td><strong>Average</strong></td><td><strong>${avg}</strong></td></tr>`;
+            html += `</tbody></table></div>`;
+            document.getElementById('marksheetResult').innerHTML = html;
+            showToast('✅ Marksheet generated');
+        });
+}
+
+// ============================================================
+// CLASSROOM
+// ============================================================
+function joinClassroom() {
+    const room = document.getElementById('classroomRoomId').value.trim() || 'default';
+    const frame = document.getElementById('classroomFrame');
+    frame.src = `https://meet.jit.si/AVPro-${room}`;
+    document.getElementById('classroomFrameContainer').style.display = 'block';
+}
+
+// ============================================================
+// THEME
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadAllSettings();
+    initFirebase(currentFirebaseConfig);
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        const html = document.documentElement;
+        const nt = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', nt);
+        localStorage.setItem('theme', nt);
+    });
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            const userEmail = currentUser.email.toLowerCase();
+            userRole = gmailRoles[userEmail] || 'student';
+            document.getElementById('userBadge').textContent = userRole.toUpperCase();
+            document.getElementById('userBadge').classList.remove('hidden');
+            document.getElementById('dashUser').textContent = currentUser.email;
+            showPage('dashboardPage');
+            loadDashboard();
+            loadAllData();
+            buildTabs();
+        } else {
+            currentUser = null;
+            userRole = 'student';
+            document.getElementById('userBadge').classList.add('hidden');
+            showPage('loginPage');
+        }
+    });
+});
+</script>
 </body>
-</html>
+    </html>
