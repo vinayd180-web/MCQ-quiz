@@ -84,9 +84,8 @@
         .navbar-right { display: flex; align-items: center; gap: 8px; }
         .navbar .theme-toggle { background: none; border: none; font-size: 1.2rem; color: var(--text); cursor: pointer; padding: 4px 8px; }
         .navbar .user-badge { font-size: 0.7rem; background: var(--gold); color: #fff; padding: 2px 10px; border-radius: 60px; font-weight: 600; }
-        .navbar .dev-badge { font-size: 0.6rem; background: var(--coral); color: #fff; padding: 2px 8px; border-radius: 60px; font-weight: 700; display: none; }
+        .navbar .dev-badge { font-size: 0.6rem; background: var(--coral); color: #fff; padding: 2px 8px; border-radius: 60px; font-weight: 700; }
         .navbar .notification-bell { position: relative; background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; padding: 4px; }
-        .navbar .notification-bell .badge-count { position: absolute; top: -4px; right: -4px; background: var(--coral); color: #fff; font-size: 0.6rem; font-weight: 700; border-radius: 50%; padding: 2px 6px; min-width: 18px; text-align: center; }
 
         .page-container { padding-bottom: 70px; }
         .page { display: none; padding: 1rem 1rem 1.5rem; animation: fadeUp 0.25s ease; }
@@ -188,6 +187,33 @@
         .modal .modal-header h3 { font-family: Georgia, serif; color: var(--gold); }
         .modal .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
 
+        .settings-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .settings-tabs .stab {
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: var(--bg);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .settings-tabs .stab.active {
+            background: var(--gold);
+            color: #fff;
+            border-color: var(--gold);
+        }
+        .settings-panel { display: none; }
+        .settings-panel.active { display: block; }
+
         .toast {
             position: fixed;
             bottom: 80px;
@@ -214,6 +240,31 @@
         .mb-2 { margin-bottom: 1rem; }
         .flex { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .text-muted { color: var(--text-muted); font-size: 0.8rem; }
+
+        .role-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .role-item select {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            width: auto;
+        }
+        .role-item .delete-btn {
+            background: var(--coral);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -227,6 +278,8 @@
                 <h3><i class="fas fa-cog"></i> Developer Settings</h3>
                 <button class="modal-close" onclick="closeSettings()">✕</button>
             </div>
+
+            <!-- Password Prompt -->
             <div id="settingsPasswordPrompt">
                 <p class="text-muted mb-2">Enter developer password:</p>
                 <div class="input-group">
@@ -235,13 +288,50 @@
                 <button class="btn btn-primary" onclick="verifySettingsPassword()"><i class="fas fa-unlock"></i> Unlock</button>
                 <p id="settingsPasswordError" class="text-muted" style="color:var(--coral);margin-top:0.5rem;display:none;">❌ Incorrect password</p>
             </div>
+
+            <!-- Settings Content -->
             <div id="settingsContent" style="display:none;">
-                <div class="input-group"><label>Firebase API Key</label><input type="text" id="setApiKey" /></div>
-                <div class="input-group"><label>Auth Domain</label><input type="text" id="setAuthDomain" /></div>
-                <div class="input-group"><label>Project ID</label><input type="text" id="setProjectId" /></div>
-                <div class="input-group"><label>Storage Bucket</label><input type="text" id="setStorageBucket" /></div>
-                <div class="input-group"><label>Messaging Sender ID</label><input type="text" id="setMessagingSenderId" /></div>
-                <div class="input-group"><label>App ID</label><input type="text" id="setAppId" /></div>
+                <div class="settings-tabs">
+                    <button class="stab active" data-tab="general" onclick="switchSettingsTab('general')">🏫 General</button>
+                    <button class="stab" data-tab="roles" onclick="switchSettingsTab('roles')">👥 Gmail Roles</button>
+                    <button class="stab" data-tab="firebase" onclick="switchSettingsTab('firebase')">🔥 Firebase</button>
+                </div>
+
+                <!-- General Tab -->
+                <div id="settings-general" class="settings-panel active">
+                    <div class="input-group"><label>Developer Password</label><input type="password" id="setPassword" placeholder="Change password" /></div>
+                    <div class="input-group"><label>Center Name</label><input type="text" id="setCenterName" placeholder="AV Pro" /></div>
+                    <div class="input-group"><label>Primary Color</label><input type="color" id="setPrimaryColor" value="#d4a843" /></div>
+                </div>
+
+                <!-- Gmail Roles Tab -->
+                <div id="settings-roles" class="settings-panel">
+                    <p class="text-muted" style="margin-bottom: 1rem;">Assign roles to Gmail addresses. Users with these emails will automatically get the assigned role.</p>
+                    
+                    <div class="input-group" style="display: flex; gap: 0.5rem;">
+                        <input type="email" id="newGmailEmail" placeholder="user@gmail.com" style="flex: 1;" />
+                        <select id="newGmailRole" style="flex: 1;">
+                            <option value="admin">Admin</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="student">Student</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm" onclick="addGmailRole()" style="flex: 0.5; width: auto;">Add</button>
+                    </div>
+
+                    <div id="gmailRolesList"></div>
+                </div>
+
+                <!-- Firebase Tab -->
+                <div id="settings-firebase" class="settings-panel">
+                    <div class="input-group"><label>API Key</label><input type="text" id="setApiKey" /></div>
+                    <div class="input-group"><label>Auth Domain</label><input type="text" id="setAuthDomain" /></div>
+                    <div class="input-group"><label>Project ID</label><input type="text" id="setProjectId" /></div>
+                    <div class="input-group"><label>Storage Bucket</label><input type="text" id="setStorageBucket" /></div>
+                    <div class="input-group"><label>Messaging Sender ID</label><input type="text" id="setMessagingSenderId" /></div>
+                    <div class="input-group"><label>App ID</label><input type="text" id="setAppId" /></div>
+                    <button class="btn btn-danger" onclick="reinitFirebase()"><i class="fas fa-sync"></i> Re-initialize Firebase</button>
+                </div>
+
                 <div class="flex mt-2" style="justify-content:flex-end;gap:0.5rem;">
                     <button class="btn btn-primary" onclick="saveSettings()" style="width:auto;"><i class="fas fa-save"></i> Save</button>
                     <button class="btn btn-outline" onclick="closeSettings()" style="width:auto;">Close</button>
@@ -288,13 +378,6 @@
                         <div class="input-group"><label>Full Name</label><input type="text" id="signupName" required /></div>
                         <div class="input-group"><label>Email</label><input type="email" id="signupEmail" required /></div>
                         <div class="input-group"><label>Password</label><input type="password" id="signupPassword" required /></div>
-                        <div class="input-group"><label>Role</label>
-                            <select id="signupRole">
-                                <option value="student">Student</option>
-                                <option value="teacher">Teacher</option>
-                                <option value="parent">Parent</option>
-                            </select>
-                        </div>
                         <div id="signupError" class="hidden" style="color:var(--coral);margin-bottom:0.5rem;"></div>
                         <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Sign Up</button>
                         <p style="margin-top:0.8rem;font-size:0.75rem;opacity:0.5;text-align:center;">
@@ -311,7 +394,8 @@
                 <h1 style="font-family: Georgia, serif; color: var(--gold); margin-bottom: 1rem;">Welcome to AV Pro</h1>
                 <div class="card">
                     <p>Welcome, <strong id="userName">User</strong>!</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Role: <span id="userRole">Student</span></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Email: <span id="userEmail">user@example.com</span></p>
+                    <p style="margin-top: 0.3rem; font-size: 0.9rem; color: var(--text-muted);">Role: <span id="userRole" style="background: var(--gold); color: white; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600;">Student</span></p>
                 </div>
                 <button class="btn btn-danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
@@ -334,13 +418,15 @@
             appId: "1:254111465995:web:89f3e1f7b1d2fb0bb67d0e"
         };
 
-        const DEVELOPER_PASSWORD = "admin@AV2024";
+        const DEFAULT_PASSWORD = "admin@AV2024";
 
         let auth, db, storage;
         let currentUser = null;
         let userRole = 'student';
         let settingsUnlocked = false;
         let currentFirebaseConfig = { ...DEFAULT_CONFIG };
+        let developerPassword = DEFAULT_PASSWORD;
+        let gmailRoles = {}; // { 'user@gmail.com': 'admin' }
 
         // ============================================================
         // INITIALIZE FIREBASE
@@ -365,6 +451,36 @@
         }
 
         // ============================================================
+        // LOAD SETTINGS FROM FIRESTORE
+        // ============================================================
+        function loadAllSettings() {
+            try {
+                const savedConfig = localStorage.getItem('av_firebase_config');
+                if (savedConfig) currentFirebaseConfig = JSON.parse(savedConfig);
+                
+                const savedPassword = localStorage.getItem('av_developer_password');
+                if (savedPassword) developerPassword = savedPassword;
+                
+                const savedRoles = localStorage.getItem('av_gmail_roles');
+                if (savedRoles) gmailRoles = JSON.parse(savedRoles);
+                
+                console.log('✅ Settings loaded');
+            } catch (e) {
+                console.warn('Settings load error:', e);
+            }
+        }
+
+        // ============================================================
+        // SAVE SETTINGS TO LOCALSTORAGE
+        // ============================================================
+        function saveAllSettings() {
+            localStorage.setItem('av_firebase_config', JSON.stringify(currentFirebaseConfig));
+            localStorage.setItem('av_developer_password', developerPassword);
+            localStorage.setItem('av_gmail_roles', JSON.stringify(gmailRoles));
+            showToast('✅ All settings saved successfully!');
+        }
+
+        // ============================================================
         // AUTHENTICATION FUNCTIONS
         // ============================================================
         function handleLogin(e) {
@@ -375,6 +491,16 @@
             auth.signInWithEmailAndPassword(email, password)
                 .then(userCredential => {
                     currentUser = userCredential.user;
+                    
+                    // Check Gmail role mapping
+                    const userEmail = currentUser.email.toLowerCase();
+                    if (gmailRoles[userEmail]) {
+                        userRole = gmailRoles[userEmail];
+                    } else {
+                        userRole = 'student'; // Default role
+                    }
+                    
+                    saveUserData(userEmail);
                     loadUserData();
                     showPage('homePage');
                     showToast('✅ Logged in successfully!');
@@ -391,13 +517,21 @@
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
-            const role = document.getElementById('signupRole').value;
 
             auth.createUserWithEmailAndPassword(email, password)
                 .then(userCredential => {
                     currentUser = userCredential.user;
-                    userRole = role;
-                    saveUserData(name, role);
+                    
+                    // Check Gmail role mapping
+                    const userEmail = currentUser.email.toLowerCase();
+                    if (gmailRoles[userEmail]) {
+                        userRole = gmailRoles[userEmail];
+                    } else {
+                        userRole = 'student'; // Default role
+                    }
+                    
+                    saveUserData(name);
+                    loadUserData();
                     showPage('homePage');
                     showToast('✅ Account created successfully!');
                 })
@@ -427,13 +561,13 @@
         // ============================================================
         // USER DATA FUNCTIONS
         // ============================================================
-        function saveUserData(name, role) {
+        function saveUserData(nameOrEmail) {
             if (!currentUser) return;
             
             db.collection('users').doc(currentUser.uid).set({
-                name: name,
-                email: currentUser.email,
-                role: role,
+                name: nameOrEmail,
+                email: currentUser.email.toLowerCase(),
+                role: userRole,
                 createdAt: new Date(),
                 lastLogin: new Date()
             }, { merge: true })
@@ -452,15 +586,73 @@
                 .then(doc => {
                     if (doc.exists) {
                         const data = doc.data();
-                        userRole = data.role || 'student';
                         document.getElementById('userName').textContent = data.name || 'User';
-                        document.getElementById('userRole').textContent = userRole;
-                    } else {
-                        document.getElementById('userName').textContent = currentUser.email;
-                        document.getElementById('userRole').textContent = userRole;
+                        document.getElementById('userEmail').textContent = data.email;
+                        document.getElementById('userRole').textContent = data.role.toUpperCase();
                     }
                 })
                 .catch(error => console.error('Error loading user data:', error));
+        }
+
+        // ============================================================
+        // SETTINGS FUNCTIONS - GMAIL ROLES
+        // ============================================================
+        function loadGmailRoles() {
+            const list = document.getElementById('gmailRolesList');
+            list.innerHTML = '';
+            
+            Object.entries(gmailRoles).forEach(([email, role]) => {
+                const item = document.createElement('div');
+                item.className = 'role-item';
+                item.innerHTML = `
+                    <span>${email}</span>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <select style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" onchange="updateGmailRole('${email}', this.value)">
+                            <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
+                            <option value="teacher" ${role === 'teacher' ? 'selected' : ''}>Teacher</option>
+                            <option value="student" ${role === 'student' ? 'selected' : ''}>Student</option>
+                        </select>
+                        <button class="delete-btn" onclick="deleteGmailRole('${email}')">Delete</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function addGmailRole() {
+            const email = document.getElementById('newGmailEmail').value.toLowerCase().trim();
+            const role = document.getElementById('newGmailRole').value;
+            
+            if (!email) {
+                showToast('❌ Please enter an email');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showToast('❌ Invalid email');
+                return;
+            }
+            
+            gmailRoles[email] = role;
+            saveAllSettings();
+            loadGmailRoles();
+            document.getElementById('newGmailEmail').value = '';
+            showToast(`✅ ${email} set as ${role}`);
+        }
+
+        function updateGmailRole(email, role) {
+            gmailRoles[email] = role;
+            saveAllSettings();
+            showToast(`✅ ${email} updated to ${role}`);
+        }
+
+        function deleteGmailRole(email) {
+            if (confirm(`Delete role for ${email}?`)) {
+                delete gmailRoles[email];
+                saveAllSettings();
+                loadGmailRoles();
+                showToast('✅ Role deleted');
+            }
         }
 
         // ============================================================
@@ -484,7 +676,7 @@
         }
 
         // ============================================================
-        // SETTINGS FUNCTIONS
+        // SETTINGS MODAL FUNCTIONS
         // ============================================================
         function openDeveloperSettings() {
             document.getElementById('settingsModal').classList.add('active');
@@ -500,7 +692,7 @@
 
         function verifySettingsPassword() {
             const pwd = document.getElementById('settingsPasswordInput').value;
-            if (pwd === DEVELOPER_PASSWORD) {
+            if (pwd === developerPassword) {
                 settingsUnlocked = true;
                 document.getElementById('settingsPasswordPrompt').style.display = 'none';
                 document.getElementById('settingsContent').style.display = 'block';
@@ -513,16 +705,36 @@
             }
         }
 
+        function switchSettingsTab(tab) {
+            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+            document.getElementById('settings-' + tab).classList.add('active');
+            document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+            
+            if (tab === 'roles') {
+                loadGmailRoles();
+            }
+        }
+
         function loadSettingsForm() {
+            document.getElementById('setPassword').value = '';
+            document.getElementById('setCenterName').value = 'AV Pro';
+            document.getElementById('setPrimaryColor').value = '#d4a843';
             document.getElementById('setApiKey').value = currentFirebaseConfig.apiKey || '';
             document.getElementById('setAuthDomain').value = currentFirebaseConfig.authDomain || '';
             document.getElementById('setProjectId').value = currentFirebaseConfig.projectId || '';
             document.getElementById('setStorageBucket').value = currentFirebaseConfig.storageBucket || '';
             document.getElementById('setMessagingSenderId').value = currentFirebaseConfig.messagingSenderId || '';
             document.getElementById('setAppId').value = currentFirebaseConfig.appId || '';
+            loadGmailRoles();
         }
 
         function saveSettings() {
+            const newPassword = document.getElementById('setPassword').value;
+            if (newPassword) {
+                developerPassword = newPassword;
+            }
+
             currentFirebaseConfig = {
                 apiKey: document.getElementById('setApiKey').value,
                 authDomain: document.getElementById('setAuthDomain').value,
@@ -531,15 +743,22 @@
                 messagingSenderId: document.getElementById('setMessagingSenderId').value,
                 appId: document.getElementById('setAppId').value
             };
-            
-            localStorage.setItem('av_firebase_config', JSON.stringify(currentFirebaseConfig));
-            showToast('✅ Settings saved! Reinitialize Firebase for changes to take effect.');
+
+            saveAllSettings();
+        }
+
+        function reinitFirebase() {
+            if (confirm('This will reinitialize Firebase with new settings. Continue?')) {
+                initFirebase(currentFirebaseConfig);
+                showToast('✅ Firebase reinitialized!');
+            }
         }
 
         // ============================================================
         // THEME TOGGLE
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
+            loadAllSettings();
             initFirebase(currentFirebaseConfig);
 
             // Theme toggle
