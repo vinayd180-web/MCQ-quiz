@@ -1,1 +1,528 @@
-http://AV-Pro-RT-2025-Full.zip
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>AV Pro ERP 2025</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#667eea" />
+    <style>
+        /* ===== COMPLETE STYLES ===== */
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+        :root{--p:#667eea;--g:#48bb78;--coral:#fc8181;--gold:#f6ad55;--bg:#f7fafc;--card:#ffffff;--text:#1a202c;--shadow:0 4px 15px rgba(0,0,0,0.05);--nav-gradient:linear-gradient(135deg,#667eea,#764ba2)}
+        [data-theme="dark"]{--bg:#1a202c;--card:#2d3748;--text:#e2e8f0;--shadow:0 4px 15px rgba(0,0,0,0.3);--nav-gradient:linear-gradient(135deg,#4c51bf,#6b46c1)}
+        body{background:var(--bg);color:var(--text);transition:background .3s,color .3s;overflow-x:hidden}
+        .navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--nav-gradient);color:#fff;position:sticky;top:0;z-index:100}
+        .sidebar{position:fixed;top:0;left:-280px;width:280px;height:100%;background:#2d3748;color:#fff;transition:0.3s;padding-top:20px;z-index:101;overflow-y:auto}
+        .sidebar.active{left:0}.sidebar a{display:block;padding:14px 20px;color:#fff;text-decoration:none;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05)}
+        .sidebar a:hover{background:rgba(255,255,255,0.1)}.logo{display:flex;align-items:center;gap:10px;padding:0 20px 20px;font-size:18px;font-weight:700}
+        .btn{padding:10px 16px;border:none;border-radius:10px;font-weight:600;cursor:pointer;transition:0.2s;width:100%;touch-action:manipulation}
+        .btn:active{transform:scale(0.96)}.btn-p{background:var(--p);color:#fff}.btn-g{background:var(--g);color:#fff}.btn-outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
+        .card{background:var(--card);border-radius:16px;padding:16px;margin:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+        .stat{text-align:center;padding:20px;border-radius:12px;color:#fff}
+        .input{width:100%;padding:10px;border:1.5px solid #ddd;border-radius:10px;margin-bottom:10px;background:var(--bg);color:var(--text)}
+        .input:focus{outline:none;border-color:var(--gold)}
+        .page{display:none;padding:12px;padding-bottom:80px;animation:fadeUp .3s ease}
+        .page.active{display:block}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        .login-card{max-width:400px;margin:60px auto}
+        .table{width:100%;border-collapse:collapse;font-size:0.9rem}
+        .table td,.table th{padding:8px;border-bottom:1px solid rgba(0,0,0,0.06);text-align:left}
+        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:999;font-size:0.9rem;text-align:center;max-width:90%}
+        .toast.show{display:block}
+        .theme-toggle{background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:34px;height:34px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .live-toggle{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+        .live-toggle button{flex:1;min-width:100px}
+        .hidden{display:none!important}
+        .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+        .text-muted{color:#718096;font-size:0.8rem}
+        @media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.stat{padding:12px}.navbar{padding:8px 12px}}
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo"><img src="assets/logo.png" width="35" alt="Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f6ad55%22/%3E%3Ctext x=%2250%22 y=%2268%22 font-family=%22Georgia%22 font-size=%2250%22 font-weight=%22bold%22 fill=%22%231a202c%22 text-anchor=%22middle%22%3EAV%3C/text%3E%3C/svg%3E'"> AV Pro</div>
+        <a onclick="showPage('homePage')"><i class="fas fa-home"></i> Dashboard</a>
+        <a onclick="showPage('studentsPage')"><i class="fas fa-user-graduate"></i> Students</a>
+        <a onclick="showPage('attendancePage')"><i class="fas fa-calendar-check"></i> Attendance</a>
+        <a onclick="showPage('feesPage')"><i class="fas fa-rupee-sign"></i> Fees</a>
+        <a onclick="showPage('examPage')"><i class="fas fa-file-alt"></i> Exam</a>
+        <a onclick="showPage('settingsPage')"><i class="fas fa-cog"></i> Settings</a>
+        <a onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <i class="fas fa-bars" onclick="document.getElementById('sidebar').classList.toggle('active')"></i>
+        <div>🌱 AV Pro ERP</div>
+        <div style="display:flex;gap:6px;align-items:center">
+            <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+            <i class="fas fa-sync" onclick="syncToSheet()" style="cursor:pointer;font-size:1.1rem;"></i>
+        </div>
+    </nav>
+
+    <!-- ===== PAGES ===== -->
+
+    <!-- LOGIN -->
+    <div id="authPage" class="page active">
+        <div class="card login-card">
+            <h2>🔐 Login</h2>
+            <input class="input" id="authEmail" placeholder="Email (e.g. admin@av.com)">
+            <input class="input" id="authPass" type="password" placeholder="Password (e.g. 1234)">
+            <select class="input" id="authRole">
+                <option value="admin">Admin</option>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+            </select>
+            <button class="btn btn-p" onclick="doLogin()">Sign In</button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="homePage" class="page">
+        <div class="grid">
+            <div class="stat" style="background:#667eea"><h2 id="totalStu">0</h2><p>Total Students</p></div>
+            <div class="stat" style="background:#48bb78"><h2 id="presentToday">0</h2><p>Present Today</p></div>
+            <div class="stat" style="background:#f56565"><h2 id="feesDue">0</h2><p>Fees Records</p></div>
+        </div>
+
+        <!-- LIVE CLASSES TOGGLE -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <h3><i class="fas fa-video"></i> Live Classes</h3>
+                <button class="btn btn-outline btn-sm" onclick="toggleLive()" style="width:auto;padding:4px 12px;font-size:0.7rem;">
+                    <i class="fas fa-sync-alt"></i> Toggle
+                </button>
+            </div>
+            <div id="liveContainer" class="live-toggle">
+                <button class="btn btn-p" onclick="window.open('https://meet.google.com/new','_blank')">
+                    <i class="fab fa-google"></i> Google Meet
+                </button>
+                <button class="btn btn-outline" onclick="window.open('https://meet.jit.si/AVProERP','_blank')">
+                    <i class="fas fa-video"></i> Jitsi Meet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div id="studentsPage" class="page">
+        <div class="card">
+            <h3>📝 Add / Edit Student</h3>
+            <input type="hidden" id="sId">
+            <input class="input" id="sName" placeholder="Student Name">
+            <input class="input" id="sClass" placeholder="Class (e.g. 10th)">
+            <input class="input" id="sPhone" placeholder="Phone Number">
+            <button class="btn btn-p" onclick="saveStu()">💾 Save Student</button>
+        </div>
+        <div class="card">
+            <h3>📋 Student List</h3>
+            <div style="overflow-x:auto;"><table class="table" id="stuTable"></table></div>
+        </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div id="attendancePage" class="page">
+        <div class="card">
+            <h3>📅 Mark Attendance - <span id="attDate"></span></h3>
+            <div id="attList"></div>
+            <button class="btn btn-g" onclick="saveAtt()">✅ Save Attendance</button>
+        </div>
+    </div>
+
+    <!-- FEES -->
+    <div id="feesPage" class="page">
+        <div class="card">
+            <h3>💰 Add Fees</h3>
+            <select class="input" id="fStu"></select>
+            <input class="input" id="fAmount" type="number" placeholder="Amount (₹)">
+            <button class="btn btn-p" onclick="saveFee()">➕ Add Fees</button>
+        </div>
+        <div class="card">
+            <h3>📊 Fee Records</h3>
+            <div id="feeList"></div>
+        </div>
+    </div>
+
+    <!-- EXAM -->
+    <div id="examPage" class="page">
+        <div class="card">
+            <h3>📝 Add Marks</h3>
+            <select class="input" id="eStu"></select>
+            <input class="input" id="eSub" placeholder="Subject (e.g. Maths)">
+            <input class="input" id="eMarks" type="number" placeholder="Marks">
+            <button class="btn btn-p" onclick="saveMark()">💾 Save Marks</button>
+            <div id="markList" style="margin-top:12px;"></div>
+        </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="settingsPage" class="page">
+        <div class="card">
+            <h3>⚙️ Settings</h3>
+            <h4>🔗 Google Sheet API URL (for Sync)</h4>
+            <input class="input" id="gsUrl" placeholder="Paste Apps Script Web App URL">
+            <button class="btn btn-p" onclick="saveGS()">Save API</button>
+            <hr style="margin:15px 0;">
+            <h4>💳 UPI ID (for Payment)</h4>
+            <input class="input" id="payKey" placeholder="yourname@upi">
+            <button class="btn btn-p" onclick="savePay()">Save UPI</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ============================================================
+        // 1. DATABASE (LocalStorage)
+        // ============================================================
+        let DB = JSON.parse(localStorage.getItem('avpro_db') || '{"students":[],"attendance":[],"fees":[],"marks":[]}');
+        let CU = null; // Current User
+        let API = localStorage.getItem('gs_api') || '';
+        let liveVisible = true;
+
+        // ============================================================
+        // 2. HELPER FUNCTIONS
+        // ============================================================
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        function saveDB() {
+            localStorage.setItem('avpro_db', JSON.stringify(DB));
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('sidebar').classList.remove('active');
+            loadPage(id);
+        }
+
+        function loadPage(id) {
+            if (id === 'homePage') loadDash();
+            if (id === 'studentsPage') renderStu();
+            if (id === 'attendancePage') loadAtt();
+            if (id === 'feesPage') loadFee();
+            if (id === 'examPage') loadMark();
+        }
+
+        function getStuName(id) {
+            const s = DB.students.find(x => x.id == id);
+            return s ? s.name : 'N/A';
+        }
+
+        // ============================================================
+        // 3. LOGIN
+        // ============================================================
+        function doLogin() {
+            CU = {
+                email: document.getElementById('authEmail').value.trim() || 'admin',
+                role: document.getElementById('authRole').value
+            };
+            if (!CU.email) { showToast('⚠️ Email डालो'); return; }
+            showPage('homePage');
+            showToast('✅ Welcome ' + CU.role);
+        }
+
+        function logout() {
+            CU = null;
+            showPage('authPage');
+            showToast('👋 Logged out');
+        }
+
+        // ============================================================
+        // 4. STUDENTS (CRUD)
+        // ============================================================
+        function saveStu() {
+            const id = document.getElementById('sId').value;
+            const name = document.getElementById('sName').value.trim();
+            const cls = document.getElementById('sClass').value.trim();
+            const phone = document.getElementById('sPhone').value.trim();
+            if (!name) { showToast('⚠️ Name डालो'); return; }
+            const obj = { id: id ? Number(id) : Date.now(), name, class: cls, phone };
+            if (id) {
+                DB.students = DB.students.map(x => x.id == id ? obj : x);
+            } else {
+                DB.students.push(obj);
+            }
+            saveDB();
+            clearStuForm();
+            renderStu();
+            showToast('✅ Student Saved');
+        }
+
+        function editStu(id) {
+            const s = DB.students.find(x => x.id == id);
+            if (!s) return;
+            document.getElementById('sId').value = s.id;
+            document.getElementById('sName').value = s.name;
+            document.getElementById('sClass').value = s.class;
+            document.getElementById('sPhone').value = s.phone;
+        }
+
+        function delStu(id) {
+            if (!confirm('Delete this student?')) return;
+            DB.students = DB.students.filter(x => x.id != id);
+            saveDB();
+            renderStu();
+            showToast('🗑️ Deleted');
+        }
+
+        function clearStuForm() {
+            ['sId', 'sName', 'sClass', 'sPhone'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        function renderStu() {
+            const table = document.getElementById('stuTable');
+            if (!DB.students.length) {
+                table.innerHTML = '<p class="text-muted">No students yet.</p>';
+                return;
+            }
+            let html = `<tr><th>Name</th><th>Class</th><th>Action</th></tr>`;
+            DB.students.forEach(s => {
+                html += `<tr>
+                    <td>${s.name}</td>
+                    <td>${s.class || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-p btn-sm" onclick="editStu(${s.id})" style="width:auto;padding:4px 8px;">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="delStu(${s.id})" style="width:auto;padding:4px 8px;background:var(--coral);color:#fff;">Del</button>
+                    </td>
+                </tr>`;
+            });
+            table.innerHTML = html;
+
+            // Populate dropdowns for fees & exam
+            const opt = DB.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            document.getElementById('fStu').innerHTML = opt;
+            document.getElementById('eStu').innerHTML = opt;
+        }
+
+        // ============================================================
+        // 5. ATTENDANCE
+        // ============================================================
+        function loadAtt() {
+            document.getElementById('attDate').innerText = new Date().toLocaleDateString();
+            const list = document.getElementById('attList');
+            if (!DB.students.length) {
+                list.innerHTML = '<p class="text-muted">पहले Students add करो</p>';
+                return;
+            }
+            list.innerHTML = DB.students.map(s =>
+                `<p><input type="checkbox" id="att${s.id}"> ${s.name}</p>`
+            ).join('');
+        }
+
+        function saveAtt() {
+            const date = new Date().toISOString().split('T')[0];
+            DB.students.forEach(s => {
+                const p = document.getElementById('att' + s.id).checked;
+                // Avoid duplicate entry for same student on same day
+                const exists = DB.attendance.some(a => a.date === date && a.sid == s.id);
+                if (!exists) {
+                    DB.attendance.push({ id: Date.now() + s.id, date, sid: s.id, present: p });
+                }
+            });
+            saveDB();
+            showToast('✅ Attendance Saved');
+            loadDash();
+        }
+
+        // ============================================================
+        // 6. FEES
+        // ============================================================
+        function saveFee() {
+            const sid = document.getElementById('fStu').value;
+            const amount = document.getElementById('fAmount').value;
+            if (!sid || !amount) { showToast('⚠️ Student और Amount डालो'); return; }
+            DB.fees.push({
+                id: Date.now(),
+                sid: Number(sid),
+                amount: Number(amount),
+                date: new Date().toISOString()
+            });
+            saveDB();
+            document.getElementById('fAmount').value = '';
+            loadFee();
+            showToast('✅ Fees Added');
+        }
+
+        function loadFee() {
+            const container = document.getElementById('feeList');
+            if (!DB.fees.length) {
+                container.innerHTML = '<p class="text-muted">No fees records.</p>';
+                return;
+            }
+            container.innerHTML = DB.fees.map(f =>
+                `<p style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;">
+                    <span>${getStuName(f.sid)} — ₹${f.amount}</span>
+                    <button onclick="delFee(${f.id})" style="background:var(--coral);color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">✕</button>
+                </p>`
+            ).join('');
+        }
+
+        function delFee(id) {
+            DB.fees = DB.fees.filter(x => x.id != id);
+            saveDB();
+            loadFee();
+            showToast('🗑️ Removed');
+        }
+
+        // ============================================================
+        // 7. EXAM / MARKS
+        // ============================================================
+        function saveMark() {
+            const sid = document.getElementById('eStu').value;
+            const sub = document.getElementById('eSub').value.trim();
+            const marks = document.getElementById('eMarks').value;
+            if (!sid || !sub || !marks) { showToast('⚠️ सभी fields भरो'); return; }
+            DB.marks.push({
+                id: Date.now(),
+                sid: Number(sid),
+                sub: sub,
+                marks: Number(marks),
+                date: new Date().toISOString()
+            });
+            saveDB();
+            document.getElementById('eSub').value = '';
+            document.getElementById('eMarks').value = '';
+            loadMark();
+            showToast('✅ Marks Saved');
+        }
+
+        function loadMark() {
+            const container = document.getElementById('markList');
+            if (!DB.marks.length) {
+                container.innerHTML = '<p class="text-muted">No marks yet.</p>';
+                return;
+            }
+            container.innerHTML = DB.marks.map(m =>
+                `<p style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;">
+                    <span>${getStuName(m.sid)} — ${m.sub}: ${m.marks}</span>
+                    <button onclick="delMark(${m.id})" style="background:var(--coral);color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">✕</button>
+                </p>`
+            ).join('');
+        }
+
+        function delMark(id) {
+            DB.marks = DB.marks.filter(x => x.id != id);
+            saveDB();
+            loadMark();
+            showToast('🗑️ Removed');
+        }
+
+        // ============================================================
+        // 8. DASHBOARD
+        // ============================================================
+        function loadDash() {
+            document.getElementById('totalStu').innerText = DB.students.length;
+            const today = new Date().toISOString().split('T')[0];
+            const present = DB.attendance.filter(a => a.date === today && a.present).length;
+            document.getElementById('presentToday').innerText = present;
+            document.getElementById('feesDue').innerText = DB.fees.length;
+        }
+
+        // ============================================================
+        // 9. LIVE CLASSES TOGGLE
+        // ============================================================
+        function toggleLive() {
+            liveVisible = !liveVisible;
+            document.getElementById('liveContainer').classList.toggle('hidden', !liveVisible);
+            showToast(liveVisible ? '✅ Live classes visible' : '⛔ Live classes hidden');
+        }
+
+        // ============================================================
+        // 10. SETTINGS & GOOGLE SHEET SYNC
+        // ============================================================
+        function saveGS() {
+            const url = document.getElementById('gsUrl').value.trim();
+            localStorage.setItem('gs_api', url);
+            API = url;
+            showToast('✅ API URL Saved');
+        }
+
+        function savePay() {
+            const upi = document.getElementById('payKey').value.trim();
+            localStorage.setItem('pay_key', upi);
+            showToast('✅ UPI Saved');
+        }
+
+        async function syncToSheet() {
+            if (!API) { showToast('⚠️ पहले Settings में API डालो'); return; }
+            showToast('⏳ Syncing...');
+            try {
+                await fetch(API, {
+                    method: 'POST',
+                    body: JSON.stringify(DB),
+                    mode: 'no-cors'
+                });
+                showToast('✅ Google Sheet में Sync हो गया');
+            } catch (e) {
+                showToast('❌ Sync failed: ' + e.message);
+            }
+        }
+
+        // ============================================================
+        // 11. THEME TOGGLE
+        // ============================================================
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('av_theme', next);
+            document.getElementById('themeToggle').innerHTML = next === 'light' ? '<i class="fas fa-moon"></i>' :
+                '<i class="fas fa-sun"></i>';
+        }
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // Load theme on start
+        (function() {
+            const theme = localStorage.getItem('av_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeToggle').innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' :
+                '<i class="fas fa-sun"></i>';
+        })();
+
+        // ============================================================
+        // 12. SERVICE WORKER (PWA)
+        // ============================================================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('✅ Service Worker registered'))
+                .catch(() => console.warn('SW registration skipped (sw.js missing)'));
+        }
+
+        // ============================================================
+        // 13. ON LOAD
+        // ============================================================
+        window.onload = function() {
+            document.getElementById('gsUrl').value = localStorage.getItem('gs_api') || '';
+            document.getElementById('payKey').value = localStorage.getItem('pay_key') || '';
+            // Auto-show dashboard if already logged in (dummy)
+            if (localStorage.getItem('avpro_logged')) {
+                CU = { role: 'admin' };
+                showPage('homePage');
+            }
+        };
+
+        // Optional: keep login state across refresh
+        document.addEventListener('visibilitychange', function() {
+            if (CU) localStorage.setItem('avpro_logged', 'true');
+            else localStorage.removeItem('avpro_logged');
+        });
+
+        console.log('🚀 AV Pro ERP 2025 Loaded');
+        console.log('📦 DB:', DB);
+        console.log('🔗 API:', API);
+    </script>
+</body>
+</html>
