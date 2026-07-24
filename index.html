@@ -1,438 +1,978 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>AV Pro ERP 2025</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#667eea" />
     <style>
         /* ===== COMPLETE STYLES ===== */
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-        :root{--p:#667eea;--g:#48bb78;--coral:#fc8181;--gold:#f6ad55;--bg:#f7fafc;--card:#ffffff;--text:#1a202c;--shadow:0 4px 15px rgba(0,0,0,0.05);--nav-gradient:linear-gradient(135deg,#667eea,#764ba2)}
-        [data-theme="dark"]{--bg:#1a202c;--card:#2d3748;--text:#e2e8f0;--shadow:0 4px 15px rgba(0,0,0,0.3);--nav-gradient:linear-gradient(135deg,#4c51bf,#6b46c1)}
-        body{background:var(--bg);color:var(--text);transition:background .3s,color .3s;overflow-x:hidden}
-        .navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--nav-gradient);color:#fff;position:sticky;top:0;z-index:100}
-        .sidebar{position:fixed;top:0;left:-280px;width:280px;height:100%;background:#2d3748;color:#fff;transition:0.3s;padding-top:20px;z-index:101;overflow-y:auto}
-        .sidebar.active{left:0}.sidebar a{display:block;padding:14px 20px;color:#fff;text-decoration:none;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05)}
-        .sidebar a:hover{background:rgba(255,255,255,0.1)}.logo{display:flex;align-items:center;gap:10px;padding:0 20px 20px;font-size:18px;font-weight:700}
-        .btn{padding:10px 16px;border:none;border-radius:10px;font-weight:600;cursor:pointer;transition:0.2s;width:100%;touch-action:manipulation}
-        .btn:active{transform:scale(0.96)}.btn-p{background:var(--p);color:#fff}.btn-g{background:var(--g);color:#fff}.btn-outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
-        .card{background:var(--card);border-radius:16px;padding:16px;margin:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-        .stat{text-align:center;padding:20px;border-radius:12px;color:#fff}
-        .input{width:100%;padding:10px;border:1.5px solid #ddd;border-radius:10px;margin-bottom:10px;background:var(--bg);color:var(--text)}
-        .input:focus{outline:none;border-color:var(--gold)}
-        .page{display:none;padding:12px;padding-bottom:80px;animation:fadeUp .3s ease}
+        :root{--primary:#667eea;--primary-dark:#5a67d8;--primary-gradient:linear-gradient(135deg,#667eea,#764ba2);--gold:#f6ad55;--green:#48bb78;--coral:#fc8181;--purple:#9f7aea;--teal:#4fd1c5;--bg:#f7fafc;--card:#ffffff;--text:#1a202c;--text-muted:#4a5568;--shadow:0 4px 15px rgba(0,0,0,0.05);--radius:16px;--radius-sm:10px;--nav-height:60px;--sidebar-width:280px}
+        [data-theme="dark"]{--bg:#1a202c;--card:#2d3748;--text:#e2e8f0;--text-muted:#a0aec0;--shadow:0 4px 15px rgba(0,0,0,0.3);--primary-gradient:linear-gradient(135deg,#4c51bf,#6b46c1)}
+        body{background:var(--bg);color:var(--text);transition:all .3s ease;overflow-x:hidden;min-height:100vh;padding-top:var(--nav-height)}
+        
+        /* ===== NAVBAR ===== */
+        .navbar{position:fixed;top:0;left:0;width:100%;height:var(--nav-height);display:flex;justify-content:space-between;align-items:center;padding:0 20px;background:var(--primary-gradient);color:#fff;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+        .navbar-left{display:flex;align-items:center;gap:12px}
+        .navbar-left i{font-size:1.3rem;cursor:pointer}
+        .navbar-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.1rem}
+        .navbar-logo img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+        .navbar-right{display:flex;align-items:center;gap:10px}
+        .navbar-right .theme-btn,.navbar-right .notif-btn{background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:34px;height:34px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+        .navbar-right .theme-btn:hover,.navbar-right .notif-btn:hover{background:rgba(255,255,255,0.25)}
+        .notif-btn{position:relative}
+        .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--coral);color:#fff;font-size:0.6rem;font-weight:700;border-radius:50%;padding:2px 6px;min-width:18px;text-align:center}
+        .user-badge{font-size:0.6rem;background:rgba(255,255,255,0.2);color:#fff;padding:2px 10px;border-radius:60px;font-weight:600;text-transform:uppercase}
+        
+        /* ===== SIDEBAR ===== */
+        .sidebar{position:fixed;top:0;left:-280px;width:280px;height:100%;background:#2d3748;color:#fff;transition:0.3s cubic-bezier(.4,0,.2,1);z-index:999;overflow-y:auto;padding-top:var(--nav-height)}
+        .sidebar.active{left:0}
+        .sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:998;backdrop-filter:blur(2px)}
+        .sidebar-overlay.active{display:block}
+        .sidebar a{display:block;padding:14px 20px;color:#fff;text-decoration:none;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);transition:all .2s}
+        .sidebar a:hover{background:rgba(255,255,255,0.1);padding-left:28px}
+        .sidebar a i{width:24px;text-align:center}
+        .sidebar .menu-section{font-size:0.7rem;padding:10px 20px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px}
+        
+        /* ===== PAGE CONTAINER ===== */
+        .page-container{padding:20px;padding-bottom:80px;max-width:1000px;margin:0 auto}
+        .page{display:none;animation:fadeUp .3s ease}
         .page.active{display:block}
         @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-        .login-card{max-width:400px;margin:60px auto}
+        
+        /* ===== CARDS & GRID ===== */
+        .card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
+        .card-gold{border-left:4px solid var(--gold)}
+        .card-green{border-left:4px solid var(--green)}
+        .card-purple{border-left:4px solid var(--purple)}
+        .card-teal{border-left:4px solid var(--teal)}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+        .stat{text-align:center;padding:24px;border-radius:var(--radius-sm);color:#fff;box-shadow:var(--shadow)}
+        .stat h2{font-size:2rem}
+        .stat p{font-size:0.85rem;opacity:0.9}
+        
+        /* ===== BUTTONS ===== */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .2s;width:100%;touch-action:manipulation}
+        .btn:active{transform:scale(0.96)}
+        .btn-primary{background:var(--primary-gradient);color:#fff}
+        .btn-green{background:var(--green);color:#fff}
+        .btn-outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
+        .btn-danger{background:var(--coral);color:#fff}
+        .btn-sm{padding:4px 12px;width:auto;font-size:0.75rem}
+        .btn-block{width:100%}
+        
+        /* ===== INPUTS ===== */
+        .input{width:100%;padding:10px 14px;border:1.5px solid #ddd;border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:0.95rem;margin-bottom:10px;transition:border .2s}
+        .input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(246,173,85,.2)}
+        .input-group{margin-bottom:12px}
+        .input-group label{display:block;font-weight:600;font-size:0.8rem;color:var(--text-muted);margin-bottom:4px}
+        
+        /* ===== TABLE ===== */
+        .table-wrap{overflow-x:auto}
         .table{width:100%;border-collapse:collapse;font-size:0.9rem}
-        .table td,.table th{padding:8px;border-bottom:1px solid rgba(0,0,0,0.06);text-align:left}
-        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:999;font-size:0.9rem;text-align:center;max-width:90%}
-        .toast.show{display:block}
-        .theme-toggle{background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:34px;height:34px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
-        .live-toggle{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-        .live-toggle button{flex:1;min-width:100px}
+        .table td,.table th{padding:10px;border-bottom:1px solid rgba(0,0,0,0.06);text-align:left}
+        .table th{font-weight:600;color:var(--text-muted)}
+        .table tr:hover{background:rgba(0,0,0,0.02)}
+        
+        /* ===== TOAST ===== */
+        .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);color:var(--text);padding:12px 20px;border-radius:var(--radius-sm);box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:9999;border-left:4px solid var(--gold);opacity:0;transition:all .4s ease;max-width:90%;font-size:0.9rem;text-align:center}
+        .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+        
+        /* ===== LOGIN ===== */
+        .login-wrapper{display:flex;align-items:center;justify-content:center;min-height:80vh;padding:20px}
+        .login-card{width:100%;max-width:400px;background:var(--card);border-radius:var(--radius);padding:30px;box-shadow:var(--shadow)}
+        .login-card h2{font-family:Georgia,serif;text-align:center;margin-bottom:8px}
+        .login-card .sub{text-align:center;color:var(--text-muted);font-size:0.85rem;margin-bottom:20px}
+        
+        /* ===== NOTIFICATION PANEL ===== */
+        .notif-panel{position:fixed;top:var(--nav-height);right:0;width:300px;max-height:70vh;background:var(--card);border-radius:var(--radius) 0 0 var(--radius);box-shadow:-4px 0 20px rgba(0,0,0,0.15);z-index:999;overflow-y:auto;display:none;padding:16px}
+        .notif-panel.open{display:block}
+        .notif-panel .notif-item{padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:0.85rem}
+        .notif-panel .notif-item .time{font-size:0.65rem;color:var(--text-muted)}
+        .notif-panel .notif-item.unread{border-left:3px solid var(--gold);padding-left:12px}
+        
+        /* ===== MODAL ===== */
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+        .modal-overlay.active{display:flex}
+        .modal{background:var(--card);border-radius:var(--radius);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--gold)}
+        .modal-header h3{font-family:Georgia,serif;color:var(--gold)}
+        .modal-close{background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer}
+        
+        /* ===== SETTINGS ===== */
+        .settings-tabs{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+        .settings-tabs .stab{padding:6px 14px;border-radius:var(--radius-sm);border:1px solid rgba(0,0,0,0.06);background:var(--bg);color:var(--text-muted);font-size:0.7rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+        .settings-tabs .stab.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
+        .settings-panel{display:none}
+        .settings-panel.active{display:block}
+        .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+        .toggle-switch{position:relative;width:44px;height:24px;background:#ddd;border-radius:12px;cursor:pointer;transition:all .3s}
+        .toggle-switch.active{background:var(--green)}
+        .toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:all .3s}
+        .toggle-switch.active::after{left:22px}
+        
+        /* ===== UTILITY ===== */
         .hidden{display:none!important}
         .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-        .text-muted{color:#718096;font-size:0.8rem}
-        @media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.stat{padding:12px}.navbar{padding:8px 12px}}
+        .flex-between{display:flex;justify-content:space-between;align-items:center}
+        .text-center{text-align:center}
+        .text-muted{color:var(--text-muted);font-size:0.8rem}
+        .mt-1{margin-top:8px}.mt-2{margin-top:16px}
+        .mb-1{margin-bottom:8px}.mb-2{margin-bottom:16px}
+        .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;color:#fff}
+        .badge-green{background:var(--green)}
+        .badge-red{background:var(--coral)}
+        .badge-gold{background:var(--gold)}
+        
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:600px){.grid{grid-template-columns:1fr 1fr}.stat{padding:16px}.navbar-logo span{display:none}.notif-panel{width:90%;right:5%}}
+        @media(min-width:768px){.grid{grid-template-columns:repeat(3,1fr)}}
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
+    <!-- ===== SIDEBAR OVERLAY ===== -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- ===== SIDEBAR ===== -->
     <div class="sidebar" id="sidebar">
-        <div class="logo"><img src="assets/logo.png" width="35" alt="Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f6ad55%22/%3E%3Ctext x=%2250%22 y=%2268%22 font-family=%22Georgia%22 font-size=%2250%22 font-weight=%22bold%22 fill=%22%231a202c%22 text-anchor=%22middle%22%3EAV%3C/text%3E%3C/svg%3E'"> AV Pro</div>
-        <a onclick="showPage('homePage')"><i class="fas fa-home"></i> Dashboard</a>
-        <a onclick="showPage('studentsPage')"><i class="fas fa-user-graduate"></i> Students</a>
-        <a onclick="showPage('attendancePage')"><i class="fas fa-calendar-check"></i> Attendance</a>
-        <a onclick="showPage('feesPage')"><i class="fas fa-rupee-sign"></i> Fees</a>
-        <a onclick="showPage('examPage')"><i class="fas fa-file-alt"></i> Exam</a>
-        <a onclick="showPage('settingsPage')"><i class="fas fa-cog"></i> Settings</a>
-        <a onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <div id="sidebarMenu"></div>
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <i class="fas fa-bars" onclick="document.getElementById('sidebar').classList.toggle('active')"></i>
-        <div>🌱 AV Pro ERP</div>
-        <div style="display:flex;gap:6px;align-items:center">
-            <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
-            <i class="fas fa-sync" onclick="syncToSheet()" style="cursor:pointer;font-size:1.1rem;"></i>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="mainNavbar">
+        <div class="navbar-left">
+            <i class="fas fa-bars" onclick="toggleSidebar()"></i>
+            <div class="navbar-logo">
+                <img id="navLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f6ad55'/%3E%3Ctext x='50' y='68' font-family='Georgia' font-size='50' font-weight='bold' fill='%231a202c' text-anchor='middle'%3EAV%3C/text%3E%3C/svg%3E" alt="Logo" />
+                <span id="navTitle">AV Pro ERP</span>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <span class="user-badge" id="userBadge">GUEST</span>
+            <button class="notif-btn" onclick="toggleNotifications()" id="notifBell">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge" id="notifCount">0</span>
+            </button>
+            <button class="theme-btn" id="themeToggle"><i class="fas fa-moon"></i></button>
         </div>
     </nav>
 
-    <!-- ===== PAGES ===== -->
-
-    <!-- LOGIN -->
-    <div id="authPage" class="page active">
-        <div class="card login-card">
-            <h2>🔐 Login</h2>
-            <input class="input" id="authEmail" placeholder="Email (e.g. admin@av.com)">
-            <input class="input" id="authPass" type="password" placeholder="Password (e.g. 1234)">
-            <select class="input" id="authRole">
-                <option value="admin">Admin</option>
-                <option value="teacher">Teacher</option>
-                <option value="student">Student</option>
-            </select>
-            <button class="btn btn-p" onclick="doLogin()">Sign In</button>
+    <!-- ===== NOTIFICATION PANEL ===== -->
+    <div class="notif-panel" id="notifPanel">
+        <div class="flex-between" style="margin-bottom:8px;">
+            <span style="font-weight:700;">Notifications</span>
+            <button class="btn btn-sm btn-outline" onclick="markAllRead()" style="width:auto;">Mark all read</button>
         </div>
+        <div id="notifList"></div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="homePage" class="page">
-        <div class="grid">
-            <div class="stat" style="background:#667eea"><h2 id="totalStu">0</h2><p>Total Students</p></div>
-            <div class="stat" style="background:#48bb78"><h2 id="presentToday">0</h2><p>Present Today</p></div>
-            <div class="stat" style="background:#f56565"><h2 id="feesDue">0</h2><p>Fees Records</p></div>
-        </div>
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"><span id="toastMessage">Success!</span></div>
 
-        <!-- LIVE CLASSES TOGGLE -->
-        <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <h3><i class="fas fa-video"></i> Live Classes</h3>
-                <button class="btn btn-outline btn-sm" onclick="toggleLive()" style="width:auto;padding:4px 12px;font-size:0.7rem;">
-                    <i class="fas fa-sync-alt"></i> Toggle
-                </button>
-            </div>
-            <div id="liveContainer" class="live-toggle">
-                <button class="btn btn-p" onclick="window.open('https://meet.google.com/new','_blank')">
-                    <i class="fab fa-google"></i> Google Meet
-                </button>
-                <button class="btn btn-outline" onclick="window.open('https://meet.jit.si/AVProERP','_blank')">
-                    <i class="fas fa-video"></i> Jitsi Meet
-                </button>
+    <!-- ===== PAGE CONTAINER ===== -->
+    <div class="page-container">
+
+        <!-- ===== LOGIN PAGE ===== -->
+        <div id="loginPage" class="page active">
+            <div class="login-wrapper">
+                <div class="login-card">
+                    <h2>🔐 Sign In</h2>
+                    <p class="sub">Enter your credentials</p>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input class="input" id="loginEmail" placeholder="email@example.com" />
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input class="input" id="loginPassword" type="password" placeholder="••••••••" />
+                    </div>
+                    <div id="loginError" class="hidden" style="color:var(--coral);margin-bottom:8px;font-size:0.85rem;"></div>
+                    <button class="btn btn-primary" onclick="doLogin()"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- STUDENTS -->
-    <div id="studentsPage" class="page">
-        <div class="card">
-            <h3>📝 Add / Edit Student</h3>
-            <input type="hidden" id="sId">
-            <input class="input" id="sName" placeholder="Student Name">
-            <input class="input" id="sClass" placeholder="Class (e.g. 10th)">
-            <input class="input" id="sPhone" placeholder="Phone Number">
-            <button class="btn btn-p" onclick="saveStu()">💾 Save Student</button>
+        <!-- ===== DASHBOARD PAGE ===== -->
+        <div id="homePage" class="page">
+            <div class="grid">
+                <div class="stat" style="background:var(--primary-gradient)"><h2 id="totalStu">0</h2><p>Total Students</p></div>
+                <div class="stat" style="background:var(--green)"><h2 id="presentToday">0</h2><p>Present Today</p></div>
+                <div class="stat" style="background:var(--coral)"><h2 id="feesDue">0</h2><p>Fees Collected</p></div>
+                <div class="stat" style="background:var(--purple)"><h2 id="totalExams">0</h2><p>Exams Created</p></div>
+            </div>
+            <div class="card card-gold">
+                <div class="flex-between">
+                    <h3><i class="fas fa-bullhorn"></i> Notice Board</h3>
+                    <button class="btn btn-sm btn-outline" onclick="showPage('noticePage')" style="width:auto;">View All</button>
+                </div>
+                <div id="noticeDisplay" style="margin-top:8px;font-size:0.9rem;">No notices yet.</div>
+            </div>
+            <div class="card">
+                <div class="flex-between">
+                    <h3><i class="fas fa-video"></i> Live Classes</h3>
+                    <button class="btn btn-sm btn-outline" onclick="toggleLive()" style="width:auto;padding:2px 10px;">Toggle</button>
+                </div>
+                <div id="liveContainer" class="flex" style="margin-top:8px;">
+                    <button class="btn btn-primary btn-sm" onclick="window.open('https://meet.google.com/new','_blank')"><i class="fab fa-google"></i> Google Meet</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.open('https://meet.jit.si/AVProERP','_blank')"><i class="fas fa-video"></i> Jitsi Meet</button>
+                </div>
+            </div>
         </div>
-        <div class="card">
-            <h3>📋 Student List</h3>
-            <div style="overflow-x:auto;"><table class="table" id="stuTable"></table></div>
-        </div>
-    </div>
 
-    <!-- ATTENDANCE -->
-    <div id="attendancePage" class="page">
-        <div class="card">
-            <h3>📅 Mark Attendance - <span id="attDate"></span></h3>
-            <div id="attList"></div>
-            <button class="btn btn-g" onclick="saveAtt()">✅ Save Attendance</button>
+        <!-- ===== STUDENTS PAGE ===== -->
+        <div id="studentsPage" class="page">
+            <div class="card">
+                <h3>📝 Add / Edit Student</h3>
+                <input type="hidden" id="sId" />
+                <div class="input-group"><label>Full Name</label><input class="input" id="sName" placeholder="Student Name" /></div>
+                <div class="input-group"><label>Email (Login ID)</label><input class="input" id="sEmail" placeholder="student@example.com" /></div>
+                <div class="input-group"><label>Password</label><input class="input" id="sPass" type="password" placeholder="••••••••" /></div>
+                <div class="input-group"><label>Class</label><input class="input" id="sClass" placeholder="e.g. 10th" /></div>
+                <div class="input-group"><label>Phone</label><input class="input" id="sPhone" placeholder="Phone Number" /></div>
+                <button class="btn btn-primary" onclick="saveStudent()"><i class="fas fa-save"></i> Save Student</button>
+            </div>
+            <div class="card">
+                <h3>📋 Student List</h3>
+                <div class="table-wrap"><table class="table" id="stuTable"></table></div>
+            </div>
         </div>
-    </div>
 
-    <!-- FEES -->
-    <div id="feesPage" class="page">
-        <div class="card">
-            <h3>💰 Add Fees</h3>
-            <select class="input" id="fStu"></select>
-            <input class="input" id="fAmount" type="number" placeholder="Amount (₹)">
-            <button class="btn btn-p" onclick="saveFee()">➕ Add Fees</button>
+        <!-- ===== TEACHERS PAGE ===== -->
+        <div id="teachersPage" class="page">
+            <div class="card">
+                <h3>📝 Add / Edit Teacher</h3>
+                <input type="hidden" id="tId" />
+                <div class="input-group"><label>Full Name</label><input class="input" id="tName" placeholder="Teacher Name" /></div>
+                <div class="input-group"><label>Email (Login ID)</label><input class="input" id="tEmail" placeholder="teacher@example.com" /></div>
+                <div class="input-group"><label>Password</label><input class="input" id="tPass" type="password" placeholder="••••••••" /></div>
+                <div class="input-group"><label>Subject</label><input class="input" id="tSubject" placeholder="e.g. Maths" /></div>
+                <button class="btn btn-primary" onclick="saveTeacher()"><i class="fas fa-save"></i> Save Teacher</button>
+            </div>
+            <div class="card">
+                <h3>👨‍🏫 Teacher List</h3>
+                <div class="table-wrap"><table class="table" id="teacherTable"></table></div>
+            </div>
         </div>
-        <div class="card">
-            <h3>📊 Fee Records</h3>
-            <div id="feeList"></div>
-        </div>
-    </div>
 
-    <!-- EXAM -->
-    <div id="examPage" class="page">
-        <div class="card">
-            <h3>📝 Add Marks</h3>
-            <select class="input" id="eStu"></select>
-            <input class="input" id="eSub" placeholder="Subject (e.g. Maths)">
-            <input class="input" id="eMarks" type="number" placeholder="Marks">
-            <button class="btn btn-p" onclick="saveMark()">💾 Save Marks</button>
-            <div id="markList" style="margin-top:12px;"></div>
+        <!-- ===== ATTENDANCE PAGE ===== -->
+        <div id="attendancePage" class="page">
+            <div class="card">
+                <h3>📅 Mark Attendance — <span id="attDate"></span></h3>
+                <div id="attList"></div>
+                <button class="btn btn-green" onclick="saveAttendance()"><i class="fas fa-check"></i> Save Attendance</button>
+            </div>
         </div>
-    </div>
 
-    <!-- SETTINGS -->
-    <div id="settingsPage" class="page">
-        <div class="card">
-            <h3>⚙️ Settings</h3>
-            <h4>🔗 Google Sheet API URL (for Sync)</h4>
-            <input class="input" id="gsUrl" placeholder="Paste Apps Script Web App URL">
-            <button class="btn btn-p" onclick="saveGS()">Save API</button>
-            <hr style="margin:15px 0;">
-            <h4>💳 UPI ID (for Payment)</h4>
-            <input class="input" id="payKey" placeholder="yourname@upi">
-            <button class="btn btn-p" onclick="savePay()">Save UPI</button>
+        <!-- ===== FEES PAGE ===== -->
+        <div id="feesPage" class="page">
+            <div class="card">
+                <h3>💰 Add Fees</h3>
+                <div class="input-group"><label>Student</label><select class="input" id="fStu"></select></div>
+                <div class="input-group"><label>Amount (₹)</label><input class="input" id="fAmount" type="number" placeholder="Amount" /></div>
+                <div class="input-group"><label>Payment Mode</label><select class="input" id="fMode"><option>Cash</option><option>UPI</option><option>Card</option></select></div>
+                <button class="btn btn-primary" onclick="saveFee()"><i class="fas fa-plus"></i> Add Fees</button>
+            </div>
+            <div class="card">
+                <h3>📊 Fee Records</h3>
+                <div id="feeList"></div>
+            </div>
         </div>
-    </div>
 
-    <!-- TOAST -->
-    <div id="toast" class="toast"></div>
+        <!-- ===== EXAMS PAGE ===== -->
+        <div id="examPage" class="page">
+            <div class="card">
+                <h3>📝 Create Exam</h3>
+                <div class="input-group"><label>Exam Title</label><input class="input" id="examTitle" placeholder="e.g. Mid-Term Exam" /></div>
+                <div class="input-group"><label>Exam Type</label><select class="input" id="examType"><option value="mcq">MCQ (Multiple Choice)</option><option value="unit">Unit Test / Subjective</option></select></div>
+                <div id="mcqSection">
+                    <div class="input-group"><label>Question (One per line)</label><textarea class="input" id="mcqQuestions" rows="4" placeholder="What is 2+2?&#10;A) 3&#10;B) 4&#10;C) 5&#10;D) 6&#10;Answer: B"></textarea></div>
+                    <div class="input-group"><label>OR Paste Bulk Format (Q|A|B|C|D|Answer)</label><textarea class="input" id="mcqBulk" rows="4" placeholder="What is 2+2?|3|4|5|6|B"></textarea></div>
+                </div>
+                <div id="unitSection" class="hidden">
+                    <div class="input-group"><label>Subject</label><input class="input" id="unitSubject" placeholder="e.g. Maths" /></div>
+                    <div class="input-group"><label>Total Marks</label><input class="input" id="unitMarks" type="number" placeholder="100" /></div>
+                </div>
+                <button class="btn btn-primary" onclick="createExam()"><i class="fas fa-plus"></i> Create Exam</button>
+            </div>
+            <div class="card">
+                <h3>📋 All Exams</h3>
+                <div id="examList"></div>
+            </div>
+        </div>
+
+        <!-- ===== MCQ EXAM PAGE (Student View) ===== -->
+        <div id="mcqExamPage" class="page">
+            <div class="card">
+                <h3 id="mcqExamTitle">MCQ Exam</h3>
+                <div id="mcqQuestionsContainer"></div>
+                <button class="btn btn-green" onclick="submitMCQ()"><i class="fas fa-check"></i> Submit Exam</button>
+            </div>
+        </div>
+
+        <!-- ===== HOMEWORK PAGE ===== -->
+        <div id="homeworkPage" class="page">
+            <div class="card">
+                <h3>📚 Assign Homework</h3>
+                <div class="input-group"><label>Subject</label><input class="input" id="hwSubject" placeholder="e.g. Maths" /></div>
+                <div class="input-group"><label>Description</label><textarea class="input" id="hwDesc" rows="3" placeholder="Homework details..."></textarea></div>
+                <div class="input-group"><label>Due Date</label><input class="input" id="hwDue" type="date" /></div>
+                <button class="btn btn-primary" onclick="assignHomework()"><i class="fas fa-plus"></i> Assign Homework</button>
+            </div>
+            <div class="card">
+                <h3>📋 Homework List</h3>
+                <div id="hwList"></div>
+            </div>
+        </div>
+
+        <!-- ===== DOUBTS PAGE ===== -->
+        <div id="doubtsPage" class="page">
+            <div class="card">
+                <h3>❓ Ask a Doubt</h3>
+                <div class="input-group"><label>Subject</label><input class="input" id="doubtSubject" placeholder="e.g. Science" /></div>
+                <div class="input-group"><label>Your Question</label><textarea class="input" id="doubtQuestion" rows="3" placeholder="Describe your doubt..."></textarea></div>
+                <button class="btn btn-primary" onclick="askDoubt()"><i class="fas fa-paper-plane"></i> Submit Doubt</button>
+            </div>
+            <div class="card">
+                <h3>📋 Your Doubts</h3>
+                <div id="doubtList"></div>
+            </div>
+        </div>
+
+        <!-- ===== NOTICE PAGE ===== -->
+        <div id="noticePage" class="page">
+            <div class="card">
+                <h3>📢 Post Notice</h3>
+                <div class="input-group"><label>Title</label><input class="input" id="noticeTitle" placeholder="Notice Title" /></div>
+                <div class="input-group"><label>Message</label><textarea class="input" id="noticeMsg" rows="3" placeholder="Notice Message..."></textarea></div>
+                <button class="btn btn-primary" onclick="postNotice()"><i class="fas fa-bullhorn"></i> Post Notice</button>
+            </div>
+            <div class="card">
+                <h3>📋 All Notices</h3>
+                <div id="noticeList"></div>
+            </div>
+        </div>
+
+        <!-- ===== SETTINGS PAGE ===== -->
+        <div id="settingsPage" class="page">
+            <div class="card">
+                <h3>⚙️ General Settings</h3>
+                <div class="settings-tabs">
+                    <button class="stab active" onclick="switchSettingsTab('general')">General</button>
+                    <button class="stab" onclick="switchSettingsTab('branding')">Branding</button>
+                    <button class="stab" onclick="switchSettingsTab('menu')">Menu Toggle</button>
+                    <button class="stab" onclick="switchSettingsTab('backup')">Cloud Backup</button>
+                </div>
+                
+                <div id="settings-general" class="settings-panel active">
+                    <div class="input-group"><label>App Name</label><input class="input" id="setAppName" placeholder="AV Pro ERP" /></div>
+                    <div class="input-group"><label>Primary Color</label><input class="input" id="setPrimaryColor" type="color" value="#667eea" /></div>
+                    <div class="input-group"><label>Dark Mode Color</label><input class="input" id="setDarkColor" type="color" value="#4c51bf" /></div>
+                    <button class="btn btn-primary" onclick="saveGeneralSettings()"><i class="fas fa-save"></i> Save Settings</button>
+                </div>
+
+                <div id="settings-branding" class="settings-panel">
+                    <div class="input-group"><label>Logo URL</label><input class="input" id="setLogoUrl" placeholder="https://example.com/logo.png" /></div>
+                    <div class="input-group"><label>Favicon URL</label><input class="input" id="setFavicon" placeholder="https://example.com/favicon.ico" /></div>
+                    <button class="btn btn-primary" onclick="saveBranding()"><i class="fas fa-save"></i> Save Branding</button>
+                </div>
+
+                <div id="settings-menu" class="settings-panel">
+                    <h4>Enable / Disable Menu Items</h4>
+                    <div id="menuToggleContainer"></div>
+                    <button class="btn btn-primary mt-2" onclick="saveMenuSettings()"><i class="fas fa-save"></i> Save Menu Settings</button>
+                </div>
+
+                <div id="settings-backup" class="settings-panel">
+                    <h4>☁️ Cloud Backup & Restore</h4>
+                    <div class="input-group"><label>Google Apps Script Web App URL</label><input class="input" id="backupApiUrl" placeholder="https://script.google.com/macros/s/..." /></div>
+                    <div class="flex" style="gap:12px;margin-top:8px;">
+                        <button class="btn btn-primary" onclick="backupToCloud()" style="flex:1;"><i class="fas fa-cloud-upload-alt"></i> Backup to Cloud</button>
+                        <button class="btn btn-outline" onclick="restoreFromCloud()" style="flex:1;"><i class="fas fa-cloud-download-alt"></i> Restore from Cloud</button>
+                    </div>
+                    <p class="text-muted mt-1">All data (Students, Teachers, Attendance, Fees, Exams, Homework, Doubts, Notices) will be backed up.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <script>
         // ============================================================
         // 1. DATABASE (LocalStorage)
         // ============================================================
-        let DB = JSON.parse(localStorage.getItem('avpro_db') || '{"students":[],"attendance":[],"fees":[],"marks":[]}');
+        let DB = JSON.parse(localStorage.getItem('avpro_db') || '{"students":[],"teachers":[],"attendance":[],"fees":[],"exams":[],"homework":[],"doubts":[],"notices":[],"notifications":[],"settings":{"appName":"AV Pro ERP","primaryColor":"#667eea","darkColor":"#4c51bf","logoUrl":"","faviconUrl":"","menu":{}}}');
         let CU = null; // Current User
-        let API = localStorage.getItem('gs_api') || '';
         let liveVisible = true;
+        let notifCount = 0;
 
         // ============================================================
-        // 2. HELPER FUNCTIONS
+        // 2. HELPERS
         // ============================================================
         function showToast(m) {
             const t = document.getElementById('toast');
-            t.innerText = m;
+            document.getElementById('toastMessage').textContent = m;
             t.classList.add('show');
             clearTimeout(t._timer);
-            t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+            t._timer = setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        function saveDB() {
-            localStorage.setItem('avpro_db', JSON.stringify(DB));
+        function saveDB() { localStorage.setItem('avpro_db', JSON.stringify(DB)); }
+
+        function getStuName(id) { const s = DB.students.find(x => x.id == id); return s ? s.name : 'Unknown'; }
+        function getTeacherName(id) { const t = DB.teachers.find(x => x.id == id); return t ? t.name : 'Unknown'; }
+
+        function addNotification(msg) {
+            DB.notifications.push({ id: Date.now(), msg, read: false, time: new Date().toISOString() });
+            saveDB();
+            updateNotifBadge();
+        }
+
+        function updateNotifBadge() {
+            const unread = DB.notifications.filter(n => !n.read).length;
+            document.getElementById('notifCount').textContent = unread;
+        }
+
+        // ============================================================
+        // 3. SIDEBAR & NAVIGATION
+        // ============================================================
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
         }
 
         function showPage(id) {
+            if (!CU && id !== 'loginPage') { showToast('⚠️ Please login first'); return; }
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('sidebar').classList.remove('active');
-            loadPage(id);
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            loadPageData(id);
         }
 
-        function loadPage(id) {
-            if (id === 'homePage') loadDash();
-            if (id === 'studentsPage') renderStu();
-            if (id === 'attendancePage') loadAtt();
-            if (id === 'feesPage') loadFee();
-            if (id === 'examPage') loadMark();
+        function loadPageData(id) {
+            if (id === 'homePage') loadDashboard();
+            if (id === 'studentsPage') renderStudents();
+            if (id === 'teachersPage') renderTeachers();
+            if (id === 'attendancePage') loadAttendance();
+            if (id === 'feesPage') loadFees();
+            if (id === 'examPage') loadExams();
+            if (id === 'homeworkPage') loadHomework();
+            if (id === 'doubtsPage') loadDoubts();
+            if (id === 'noticePage') loadNotices();
+            if (id === 'settingsPage') loadSettings();
         }
 
-        function getStuName(id) {
-            const s = DB.students.find(x => x.id == id);
-            return s ? s.name : 'N/A';
+        function renderSidebar() {
+            const menu = document.getElementById('sidebarMenu');
+            const settings = DB.settings.menu || {};
+            let html = '<div class="menu-section">Main</div>';
+            html += `<a onclick="showPage('homePage')"><i class="fas fa-home"></i> Dashboard</a>`;
+            if (settings.students !== false) html += `<a onclick="showPage('studentsPage')"><i class="fas fa-user-graduate"></i> Students</a>`;
+            if (settings.teachers !== false) html += `<a onclick="showPage('teachersPage')"><i class="fas fa-chalkboard-teacher"></i> Teachers</a>`;
+            if (settings.attendance !== false) html += `<a onclick="showPage('attendancePage')"><i class="fas fa-calendar-check"></i> Attendance</a>`;
+            if (settings.fees !== false) html += `<a onclick="showPage('feesPage')"><i class="fas fa-rupee-sign"></i> Fees</a>`;
+            if (settings.exams !== false) html += `<a onclick="showPage('examPage')"><i class="fas fa-file-alt"></i> Exams</a>`;
+            if (settings.homework !== false) html += `<a onclick="showPage('homeworkPage')"><i class="fas fa-book-open"></i> Homework</a>`;
+            if (settings.doubts !== false) html += `<a onclick="showPage('doubtsPage')"><i class="fas fa-question-circle"></i> Doubts</a>`;
+            if (settings.notices !== false) html += `<a onclick="showPage('noticePage')"><i class="fas fa-bullhorn"></i> Notice Board</a>`;
+            if (CU && CU.role === 'admin') html += `<a onclick="showPage('settingsPage')"><i class="fas fa-cog"></i> Settings</a>`;
+            if (CU) html += `<a onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
+            menu.innerHTML = html;
         }
 
         // ============================================================
-        // 3. LOGIN
+        // 4. LOGIN (Admin + Created Users)
         // ============================================================
+        const ADMIN_EMAIL = 'vinayd180@gmail.com';
+        const ADMIN_PASS = '56175617';
+
         function doLogin() {
-            CU = {
-                email: document.getElementById('authEmail').value.trim() || 'admin',
-                role: document.getElementById('authRole').value
-            };
-            if (!CU.email) { showToast('⚠️ Email डालो'); return; }
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+            const errorEl = document.getElementById('loginError');
+            errorEl.classList.add('hidden');
+
+            // Check Admin
+            if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+                CU = { email, role: 'admin', name: 'Admin' };
+                afterLogin();
+                return;
+            }
+
+            // Check Students
+            const student = DB.students.find(s => s.email === email && s.pass === pass);
+            if (student) {
+                CU = { email, role: 'student', name: student.name, id: student.id };
+                afterLogin();
+                return;
+            }
+
+            // Check Teachers
+            const teacher = DB.teachers.find(t => t.email === email && t.pass === pass);
+            if (teacher) {
+                CU = { email, role: 'teacher', name: teacher.name, id: teacher.id };
+                afterLogin();
+                return;
+            }
+
+            errorEl.textContent = '❌ Invalid email or password';
+            errorEl.classList.remove('hidden');
+        }
+
+        function afterLogin() {
+            document.getElementById('userBadge').textContent = CU.role.toUpperCase();
+            renderSidebar();
             showPage('homePage');
-            showToast('✅ Welcome ' + CU.role);
+            showToast('✅ Welcome ' + CU.name);
+            updateNotifBadge();
         }
 
         function logout() {
             CU = null;
-            showPage('authPage');
+            document.getElementById('userBadge').textContent = 'GUEST';
+            renderSidebar();
+            showPage('loginPage');
             showToast('👋 Logged out');
         }
 
         // ============================================================
-        // 4. STUDENTS (CRUD)
+        // 5. STUDENTS CRUD (Admin only)
         // ============================================================
-        function saveStu() {
+        function saveStudent() {
             const id = document.getElementById('sId').value;
             const name = document.getElementById('sName').value.trim();
+            const email = document.getElementById('sEmail').value.trim();
+            const pass = document.getElementById('sPass').value.trim();
             const cls = document.getElementById('sClass').value.trim();
             const phone = document.getElementById('sPhone').value.trim();
-            if (!name) { showToast('⚠️ Name डालो'); return; }
-            const obj = { id: id ? Number(id) : Date.now(), name, class: cls, phone };
+            if (!name || !email || !pass) { showToast('⚠️ Name, Email & Password required'); return; }
             if (id) {
-                DB.students = DB.students.map(x => x.id == id ? obj : x);
+                DB.students = DB.students.map(s => s.id == id ? { ...s, name, email, pass, class: cls, phone } : s);
+                showToast('✅ Student updated');
             } else {
-                DB.students.push(obj);
+                DB.students.push({ id: Date.now(), name, email, pass, class: cls, phone });
+                showToast('✅ Student added');
+                addNotification('New student registered: ' + name);
             }
             saveDB();
-            clearStuForm();
-            renderStu();
-            showToast('✅ Student Saved');
+            document.getElementById('sId').value = '';
+            ['sName','sEmail','sPass','sClass','sPhone'].forEach(i => document.getElementById(i).value = '');
+            renderStudents();
         }
 
-        function editStu(id) {
+        function editStudent(id) {
             const s = DB.students.find(x => x.id == id);
             if (!s) return;
             document.getElementById('sId').value = s.id;
             document.getElementById('sName').value = s.name;
-            document.getElementById('sClass').value = s.class;
-            document.getElementById('sPhone').value = s.phone;
+            document.getElementById('sEmail').value = s.email;
+            document.getElementById('sPass').value = s.pass;
+            document.getElementById('sClass').value = s.class || '';
+            document.getElementById('sPhone').value = s.phone || '';
         }
 
-        function delStu(id) {
+        function deleteStudent(id) {
             if (!confirm('Delete this student?')) return;
-            DB.students = DB.students.filter(x => x.id != id);
+            DB.students = DB.students.filter(s => s.id != id);
             saveDB();
-            renderStu();
-            showToast('🗑️ Deleted');
+            renderStudents();
+            showToast('🗑️ Student deleted');
         }
 
-        function clearStuForm() {
-            ['sId', 'sName', 'sClass', 'sPhone'].forEach(id => document.getElementById(id).value = '');
-        }
-
-        function renderStu() {
+        function renderStudents() {
             const table = document.getElementById('stuTable');
-            if (!DB.students.length) {
-                table.innerHTML = '<p class="text-muted">No students yet.</p>';
-                return;
-            }
-            let html = `<tr><th>Name</th><th>Class</th><th>Action</th></tr>`;
+            if (!DB.students.length) { table.innerHTML = '<p class="text-muted">No students yet.</p>'; return; }
+            let html = `<tr><th>Name</th><th>Email</th><th>Class</th><th>Actions</th></tr>`;
             DB.students.forEach(s => {
                 html += `<tr>
                     <td>${s.name}</td>
+                    <td>${s.email}</td>
                     <td>${s.class || 'N/A'}</td>
                     <td>
-                        <button class="btn btn-p btn-sm" onclick="editStu(${s.id})" style="width:auto;padding:4px 8px;">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="delStu(${s.id})" style="width:auto;padding:4px 8px;background:var(--coral);color:#fff;">Del</button>
+                        <button class="btn btn-sm btn-outline" onclick="editStudent(${s.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteStudent(${s.id})">Del</button>
                     </td>
                 </tr>`;
             });
             table.innerHTML = html;
-
-            // Populate dropdowns for fees & exam
+            // Populate fees dropdown
             const opt = DB.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             document.getElementById('fStu').innerHTML = opt;
-            document.getElementById('eStu').innerHTML = opt;
         }
 
         // ============================================================
-        // 5. ATTENDANCE
+        // 6. TEACHERS CRUD (Admin only)
         // ============================================================
-        function loadAtt() {
+        function saveTeacher() {
+            const id = document.getElementById('tId').value;
+            const name = document.getElementById('tName').value.trim();
+            const email = document.getElementById('tEmail').value.trim();
+            const pass = document.getElementById('tPass').value.trim();
+            const subject = document.getElementById('tSubject').value.trim();
+            if (!name || !email || !pass) { showToast('⚠️ Name, Email & Password required'); return; }
+            if (id) {
+                DB.teachers = DB.teachers.map(t => t.id == id ? { ...t, name, email, pass, subject } : t);
+                showToast('✅ Teacher updated');
+            } else {
+                DB.teachers.push({ id: Date.now(), name, email, pass, subject });
+                showToast('✅ Teacher added');
+                addNotification('New teacher registered: ' + name);
+            }
+            saveDB();
+            document.getElementById('tId').value = '';
+            ['tName','tEmail','tPass','tSubject'].forEach(i => document.getElementById(i).value = '');
+            renderTeachers();
+        }
+
+        function editTeacher(id) {
+            const t = DB.teachers.find(x => x.id == id);
+            if (!t) return;
+            document.getElementById('tId').value = t.id;
+            document.getElementById('tName').value = t.name;
+            document.getElementById('tEmail').value = t.email;
+            document.getElementById('tPass').value = t.pass;
+            document.getElementById('tSubject').value = t.subject || '';
+        }
+
+        function deleteTeacher(id) {
+            if (!confirm('Delete this teacher?')) return;
+            DB.teachers = DB.teachers.filter(t => t.id != id);
+            saveDB();
+            renderTeachers();
+            showToast('🗑️ Teacher deleted');
+        }
+
+        function renderTeachers() {
+            const table = document.getElementById('teacherTable');
+            if (!DB.teachers.length) { table.innerHTML = '<p class="text-muted">No teachers yet.</p>'; return; }
+            let html = `<tr><th>Name</th><th>Email</th><th>Subject</th><th>Actions</th></tr>`;
+            DB.teachers.forEach(t => {
+                html += `<tr>
+                    <td>${t.name}</td>
+                    <td>${t.email}</td>
+                    <td>${t.subject || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="editTeacher(${t.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTeacher(${t.id})">Del</button>
+                    </td>
+                </tr>`;
+            });
+            table.innerHTML = html;
+        }
+
+        // ============================================================
+        // 7. ATTENDANCE
+        // ============================================================
+        function loadAttendance() {
             document.getElementById('attDate').innerText = new Date().toLocaleDateString();
             const list = document.getElementById('attList');
-            if (!DB.students.length) {
-                list.innerHTML = '<p class="text-muted">पहले Students add करो</p>';
-                return;
-            }
-            list.innerHTML = DB.students.map(s =>
-                `<p><input type="checkbox" id="att${s.id}"> ${s.name}</p>`
+            if (!DB.students.length) { list.innerHTML = '<p class="text-muted">No students.</p>'; return; }
+            list.innerHTML = DB.students.map(s => 
+                `<div style="display:flex;align-items:center;gap:12px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <input type="checkbox" id="att${s.id}" /> 
+                    <span>${s.name}</span>
+                </div>`
             ).join('');
         }
 
-        function saveAtt() {
+        function saveAttendance() {
             const date = new Date().toISOString().split('T')[0];
             DB.students.forEach(s => {
                 const p = document.getElementById('att' + s.id).checked;
-                // Avoid duplicate entry for same student on same day
                 const exists = DB.attendance.some(a => a.date === date && a.sid == s.id);
-                if (!exists) {
-                    DB.attendance.push({ id: Date.now() + s.id, date, sid: s.id, present: p });
-                }
+                if (!exists) DB.attendance.push({ id: Date.now() + s.id, date, sid: s.id, present: p });
             });
             saveDB();
-            showToast('✅ Attendance Saved');
-            loadDash();
+            showToast('✅ Attendance saved');
+            loadDashboard();
+            addNotification('Attendance marked for ' + new Date().toLocaleDateString());
         }
 
         // ============================================================
-        // 6. FEES
+        // 8. FEES
         // ============================================================
         function saveFee() {
             const sid = document.getElementById('fStu').value;
             const amount = document.getElementById('fAmount').value;
-            if (!sid || !amount) { showToast('⚠️ Student और Amount डालो'); return; }
-            DB.fees.push({
-                id: Date.now(),
-                sid: Number(sid),
-                amount: Number(amount),
-                date: new Date().toISOString()
-            });
+            const mode = document.getElementById('fMode').value;
+            if (!sid || !amount) { showToast('⚠️ Select student and enter amount'); return; }
+            DB.fees.push({ id: Date.now(), sid: Number(sid), amount: Number(amount), mode, date: new Date().toISOString() });
             saveDB();
             document.getElementById('fAmount').value = '';
-            loadFee();
-            showToast('✅ Fees Added');
+            loadFees();
+            showToast('✅ Fees added');
+            addNotification('Fees collected: ₹' + amount + ' from ' + getStuName(sid));
         }
 
-        function loadFee() {
+        function loadFees() {
             const container = document.getElementById('feeList');
-            if (!DB.fees.length) {
-                container.innerHTML = '<p class="text-muted">No fees records.</p>';
-                return;
-            }
-            container.innerHTML = DB.fees.map(f =>
-                `<p style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;">
-                    <span>${getStuName(f.sid)} — ₹${f.amount}</span>
-                    <button onclick="delFee(${f.id})" style="background:var(--coral);color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">✕</button>
-                </p>`
+            if (!DB.fees.length) { container.innerHTML = '<p class="text-muted">No fees records.</p>'; return; }
+            container.innerHTML = DB.fees.map(f => 
+                `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <span>${getStuName(f.sid)} — ₹${f.amount} <span class="badge badge-gold">${f.mode}</span></span>
+                    <span style="font-size:0.7rem;color:var(--text-muted);">${new Date(f.date).toLocaleDateString()}</span>
+                    <button class="btn btn-sm btn-danger" onclick="deleteFee(${f.id})">✕</button>
+                </div>`
             ).join('');
         }
 
-        function delFee(id) {
-            DB.fees = DB.fees.filter(x => x.id != id);
+        function deleteFee(id) {
+            DB.fees = DB.fees.filter(f => f.id != id);
             saveDB();
-            loadFee();
-            showToast('🗑️ Removed');
+            loadFees();
+            showToast('🗑️ Fee record deleted');
         }
 
         // ============================================================
-        // 7. EXAM / MARKS
+        // 9. EXAMS (MCQ + Unit Test)
         // ============================================================
-        function saveMark() {
-            const sid = document.getElementById('eStu').value;
-            const sub = document.getElementById('eSub').value.trim();
-            const marks = document.getElementById('eMarks').value;
-            if (!sid || !sub || !marks) { showToast('⚠️ सभी fields भरो'); return; }
-            DB.marks.push({
-                id: Date.now(),
-                sid: Number(sid),
-                sub: sub,
-                marks: Number(marks),
-                date: new Date().toISOString()
+        function createExam() {
+            const title = document.getElementById('examTitle').value.trim();
+            const type = document.getElementById('examType').value;
+            if (!title) { showToast('⚠️ Enter exam title'); return; }
+            let exam = { id: Date.now(), title, type, created: new Date().toISOString() };
+            if (type === 'mcq') {
+                const questions = [];
+                // Parse from textarea
+                const lines = document.getElementById('mcqQuestions').value.split('\n').filter(l => l.trim());
+                // Or parse from bulk
+                const bulk = document.getElementById('mcqBulk').value.split('\n').filter(l => l.trim());
+                if (bulk.length) {
+                    bulk.forEach(line => {
+                        const parts = line.split('|').map(x => x.trim());
+                        if (parts.length >= 6) {
+                            questions.push({ q: parts[0], a: parts[1], b: parts[2], c: parts[3], d: parts[4], answer: parts[5] });
+                        }
+                    });
+                } else {
+                    for (let i = 0; i < lines.length; i += 6) {
+                        if (lines[i] && lines[i+1] && lines[i+2] && lines[i+3] && lines[i+4] && lines[i+5]) {
+                            questions.push({
+                                q: lines[i].replace(/^\d+\.\s*/, ''),
+                                a: lines[i+1].replace(/^[A-D]\)\s*/, ''),
+                                b: lines[i+2].replace(/^[A-D]\)\s*/, ''),
+                                c: lines[i+3].replace(/^[A-D]\)\s*/, ''),
+                                d: lines[i+4].replace(/^[A-D]\)\s*/, ''),
+                                answer: lines[i+5].replace(/^Answer:\s*/i, '')
+                            });
+                        }
+                    }
+                }
+                if (!questions.length) { showToast('⚠️ No valid questions found'); return; }
+                exam.questions = questions;
+                exam.totalQuestions = questions.length;
+            } else {
+                exam.subject = document.getElementById('unitSubject').value.trim();
+                exam.totalMarks = Number(document.getElementById('unitMarks').value) || 100;
+                if (!exam.subject) { showToast('⚠️ Enter subject'); return; }
+            }
+            DB.exams.push(exam);
+            saveDB();
+            document.getElementById('examTitle').value = '';
+            document.getElementById('mcqQuestions').value = '';
+            document.getElementById('mcqBulk').value = '';
+            document.getElementById('unitSubject').value = '';
+            document.getElementById('unitMarks').value = '';
+            loadExams();
+            showToast('✅ Exam created: ' + title);
+            addNotification('New exam created: ' + title);
+        }
+
+        function loadExams() {
+            const container = document.getElementById('examList');
+            if (!DB.exams.length) { container.innerHTML = '<p class="text-muted">No exams created.</p>'; return; }
+            container.innerHTML = DB.exams.map(e => 
+                `<div style="padding:10px;border:1px solid rgba(0,0,0,0.04);border-radius:8px;margin-bottom:8px;">
+                    <div class="flex-between">
+                        <div>
+                            <strong>${e.title}</strong> 
+                            <span class="badge ${e.type === 'mcq' ? 'badge-gold' : 'badge-green'}">${e.type === 'mcq' ? 'MCQ' : 'Unit Test'}</span>
+                        </div>
+                        <div>
+                            ${e.type === 'mcq' ? `<button class="btn btn-sm btn-primary" onclick="startMCQExam(${e.id})">Start</button>` : `<button class="btn btn-sm btn-outline" onclick="showToast('Unit test coming soon')">View</button>`}
+                            <button class="btn btn-sm btn-danger" onclick="deleteExam(${e.id})">✕</button>
+                        </div>
+                    </div>
+                    ${e.type === 'mcq' ? `<p class="text-muted">${e.totalQuestions} questions</p>` : `<p class="text-muted">${e.subject} — ${e.totalMarks} marks</p>`}
+                </div>`
+            ).join('');
+        }
+
+        function deleteExam(id) {
+            if (!confirm('Delete this exam?')) return;
+            DB.exams = DB.exams.filter(e => e.id != id);
+            saveDB();
+            loadExams();
+            showToast('🗑️ Exam deleted');
+        }
+
+        function startMCQExam(id) {
+            const exam = DB.exams.find(e => e.id == id);
+            if (!exam || exam.type !== 'mcq') return;
+            document.getElementById('mcqExamTitle').textContent = exam.title;
+            const container = document.getElementById('mcqQuestionsContainer');
+            let html = '';
+            exam.questions.forEach((q, i) => {
+                html += `<div class="mcq-question">
+                    <div class="q-text">${i+1}. ${q.q}</div>
+                    <div class="q-options">
+                        <label><input type="radio" name="q${i}" value="A" /> A) ${q.a}</label>
+                        <label><input type="radio" name="q${i}" value="B" /> B) ${q.b}</label>
+                        <label><input type="radio" name="q${i}" value="C" /> C) ${q.c}</label>
+                        <label><input type="radio" name="q${i}" value="D" /> D) ${q.d}</label>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            container.dataset.examId = id;
+            showPage('mcqExamPage');
+        }
+
+        function submitMCQ() {
+            const container = document.getElementById('mcqQuestionsContainer');
+            const examId = Number(container.dataset.examId);
+            const exam = DB.exams.find(e => e.id == examId);
+            if (!exam) { showToast('⚠️ Exam not found'); return; }
+            let score = 0;
+            exam.questions.forEach((q, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected && selected.value === q.answer) score++;
+            });
+            showToast('✅ Score: ' + score + '/' + exam.questions.length);
+            // Save result
+            DB.exams = DB.exams.map(e => {
+                if (e.id == examId) {
+                    e.results = e.results || [];
+                    e.results.push({ studentId: CU.id, score, total: exam.questions.length, date: new Date().toISOString() });
+                }
+                return e;
             });
             saveDB();
-            document.getElementById('eSub').value = '';
-            document.getElementById('eMarks').value = '';
-            loadMark();
-            showToast('✅ Marks Saved');
+            showPage('examPage');
         }
 
-        function loadMark() {
-            const container = document.getElementById('markList');
-            if (!DB.marks.length) {
-                container.innerHTML = '<p class="text-muted">No marks yet.</p>';
-                return;
-            }
-            container.innerHTML = DB.marks.map(m =>
-                `<p style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;">
-                    <span>${getStuName(m.sid)} — ${m.sub}: ${m.marks}</span>
-                    <button onclick="delMark(${m.id})" style="background:var(--coral);color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">✕</button>
-                </p>`
+        // ============================================================
+        // 10. HOMEWORK
+        // ============================================================
+        function assignHomework() {
+            const subject = document.getElementById('hwSubject').value.trim();
+            const desc = document.getElementById('hwDesc').value.trim();
+            const due = document.getElementById('hwDue').value;
+            if (!subject || !desc) { showToast('⚠️ Fill all fields'); return; }
+            DB.homework.push({ id: Date.now(), subject, desc, due, assigned: new Date().toISOString(), status: 'pending' });
+            saveDB();
+            document.getElementById('hwSubject').value = '';
+            document.getElementById('hwDesc').value = '';
+            document.getElementById('hwDue').value = '';
+            loadHomework();
+            showToast('✅ Homework assigned');
+            addNotification('New homework: ' + subject);
+        }
+
+        function loadHomework() {
+            const container = document.getElementById('hwList');
+            if (!DB.homework.length) { container.innerHTML = '<p class="text-muted">No homework assigned.</p>'; return; }
+            container.innerHTML = DB.homework.map(h => 
+                `<div style="padding:8px;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <strong>${h.subject}</strong> — ${h.desc}
+                    <div class="flex-between">
+                        <span class="text-muted">Due: ${h.due || 'N/A'}</span>
+                        <span class="badge ${h.status === 'completed' ? 'badge-green' : 'badge-gold'}">${h.status}</span>
+                    </div>
+                </div>`
             ).join('');
         }
 
-        function delMark(id) {
-            DB.marks = DB.marks.filter(x => x.id != id);
+        // ============================================================
+        // 11. DOUBTS
+        // ============================================================
+        function askDoubt() {
+            const subject = document.getElementById('doubtSubject').value.trim();
+            const question = document.getElementById('doubtQuestion').value.trim();
+            if (!subject || !question) { showToast('⚠️ Fill all fields'); return; }
+            DB.doubts.push({ id: Date.now(), studentId: CU.id, subject, question, answer: '', status: 'pending', date: new Date().toISOString() });
             saveDB();
-            loadMark();
-            showToast('🗑️ Removed');
+            document.getElementById('doubtSubject').value = '';
+            document.getElementById('doubtQuestion').value = '';
+            loadDoubts();
+            showToast('✅ Doubt submitted');
+            addNotification('New doubt from ' + CU.name);
+        }
+
+        function loadDoubts() {
+            const container = document.getElementById('doubtList');
+            if (!DB.doubts.length) { container.innerHTML = '<p class="text-muted">No doubts.</p>'; return; }
+            container.innerHTML = DB.doubts.map(d => 
+                `<div style="padding:8px;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <strong>${d.subject}</strong> — ${d.question}
+                    <div class="flex-between">
+                        <span class="text-muted">${d.status}</span>
+                        ${d.answer ? `<span class="text-muted">Answer: ${d.answer}</span>` : ''}
+                    </div>
+                </div>`
+            ).join('');
         }
 
         // ============================================================
-        // 8. DASHBOARD
+        // 12. NOTICES
         // ============================================================
-        function loadDash() {
-            document.getElementById('totalStu').innerText = DB.students.length;
+        function postNotice() {
+            const title = document.getElementById('noticeTitle').value.trim();
+            const msg = document.getElementById('noticeMsg').value.trim();
+            if (!title || !msg) { showToast('⚠️ Fill all fields'); return; }
+            DB.notices.push({ id: Date.now(), title, msg, date: new Date().toISOString(), postedBy: CU.name });
+            saveDB();
+            document.getElementById('noticeTitle').value = '';
+            document.getElementById('noticeMsg').value = '';
+            loadNotices();
+            showToast('✅ Notice posted');
+            addNotification('New notice: ' + title);
+        }
+
+        function loadNotices() {
+            const container = document.getElementById('noticeList');
+            const display = document.getElementById('noticeDisplay');
+            if (!DB.notices.length) {
+                container.innerHTML = '<p class="text-muted">No notices.</p>';
+                display.innerHTML = 'No notices yet.';
+                return;
+            }
+            let html = '';
+            DB.notices.slice().reverse().forEach(n => {
+                html += `<div style="padding:10px;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <h4>${n.title}</h4>
+                    <p>${n.msg}</p>
+                    <span class="text-muted">${new Date(n.date).toLocaleDateString()} by ${n.postedBy}</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+            display.innerHTML = DB.notices[DB.notices.length-1].title + ' — ' + DB.notices[DB.notices.length-1].msg;
+        }
+
+        // ============================================================
+        // 13. DASHBOARD
+        // ============================================================
+        function loadDashboard() {
+            document.getElementById('totalStu').textContent = DB.students.length;
             const today = new Date().toISOString().split('T')[0];
             const present = DB.attendance.filter(a => a.date === today && a.present).length;
-            document.getElementById('presentToday').innerText = present;
-            document.getElementById('feesDue').innerText = DB.fees.length;
+            document.getElementById('presentToday').textContent = present;
+            document.getElementById('feesDue').textContent = DB.fees.length;
+            document.getElementById('totalExams').textContent = DB.exams.length;
+            // Load notices on dashboard
+            const display = document.getElementById('noticeDisplay');
+            if (DB.notices.length) {
+                const n = DB.notices[DB.notices.length-1];
+                display.innerHTML = `<strong>${n.title}</strong> — ${n.msg} <span class="text-muted">(${new Date(n.date).toLocaleDateString()})</span>`;
+            } else {
+                display.innerHTML = 'No notices yet.';
+            }
         }
 
         // ============================================================
-        // 9. LIVE CLASSES TOGGLE
+        // 14. LIVE CLASS TOGGLE
         // ============================================================
         function toggleLive() {
             liveVisible = !liveVisible;
@@ -441,88 +981,203 @@
         }
 
         // ============================================================
-        // 10. SETTINGS & GOOGLE SHEET SYNC
+        // 15. NOTIFICATIONS
         // ============================================================
-        function saveGS() {
-            const url = document.getElementById('gsUrl').value.trim();
-            localStorage.setItem('gs_api', url);
-            API = url;
-            showToast('✅ API URL Saved');
+        function toggleNotifications() {
+            document.getElementById('notifPanel').classList.toggle('open');
+            renderNotifications();
         }
 
-        function savePay() {
-            const upi = document.getElementById('payKey').value.trim();
-            localStorage.setItem('pay_key', upi);
-            showToast('✅ UPI Saved');
+        function renderNotifications() {
+            const container = document.getElementById('notifList');
+            if (!DB.notifications.length) { container.innerHTML = '<p class="text-muted">No notifications.</p>'; return; }
+            container.innerHTML = DB.notifications.slice().reverse().map(n => 
+                `<div class="notif-item ${n.read ? '' : 'unread'}">
+                    <div>${n.msg}</div>
+                    <div class="time">${new Date(n.time).toLocaleString()}</div>
+                </div>`
+            ).join('');
         }
 
-        async function syncToSheet() {
-            if (!API) { showToast('⚠️ पहले Settings में API डालो'); return; }
-            showToast('⏳ Syncing...');
-            try {
-                await fetch(API, {
-                    method: 'POST',
-                    body: JSON.stringify(DB),
-                    mode: 'no-cors'
-                });
-                showToast('✅ Google Sheet में Sync हो गया');
-            } catch (e) {
-                showToast('❌ Sync failed: ' + e.message);
-            }
+        function markAllRead() {
+            DB.notifications.forEach(n => n.read = true);
+            saveDB();
+            updateNotifBadge();
+            renderNotifications();
+            showToast('✅ All marked read');
         }
 
         // ============================================================
-        // 11. THEME TOGGLE
+        // 16. SETTINGS
         // ============================================================
-        function toggleTheme() {
+        function loadSettings() {
+            const s = DB.settings;
+            document.getElementById('setAppName').value = s.appName || 'AV Pro ERP';
+            document.getElementById('setPrimaryColor').value = s.primaryColor || '#667eea';
+            document.getElementById('setDarkColor').value = s.darkColor || '#4c51bf';
+            document.getElementById('setLogoUrl').value = s.logoUrl || '';
+            document.getElementById('setFavicon').value = s.faviconUrl || '';
+            document.getElementById('backupApiUrl').value = localStorage.getItem('backup_api_url') || '';
+            renderMenuToggles();
+        }
+
+        function renderMenuToggles() {
+            const container = document.getElementById('menuToggleContainer');
+            const menu = DB.settings.menu || {};
+            const items = [
+                { key: 'students', label: 'Students' },
+                { key: 'teachers', label: 'Teachers' },
+                { key: 'attendance', label: 'Attendance' },
+                { key: 'fees', label: 'Fees' },
+                { key: 'exams', label: 'Exams' },
+                { key: 'homework', label: 'Homework' },
+                { key: 'doubts', label: 'Doubts' },
+                { key: 'notices', label: 'Notice Board' },
+            ];
+            let html = '';
+            items.forEach(item => {
+                const checked = menu[item.key] !== false;
+                html += `<div class="toggle-row">
+                    <span>${item.label}</span>
+                    <div class="toggle-switch ${checked ? 'active' : ''}" onclick="toggleMenuItem('${item.key}')"></div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleMenuItem(key) {
+            if (!DB.settings.menu) DB.settings.menu = {};
+            DB.settings.menu[key] = DB.settings.menu[key] === false ? true : false;
+            saveDB();
+            renderMenuToggles();
+            renderSidebar();
+            showToast('✅ Menu updated');
+        }
+
+        function saveMenuSettings() {
+            saveDB();
+            renderSidebar();
+            showToast('✅ Menu settings saved');
+        }
+
+        function switchSettingsTab(tab) {
+            document.querySelectorAll('.settings-tabs .stab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.settings-tabs .stab[onclick="switchSettingsTab('${tab}')"]`).classList.add('active');
+            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('settings-' + tab).classList.add('active');
+        }
+
+        function saveGeneralSettings() {
+            DB.settings.appName = document.getElementById('setAppName').value.trim();
+            DB.settings.primaryColor = document.getElementById('setPrimaryColor').value;
+            DB.settings.darkColor = document.getElementById('setDarkColor').value;
+            saveDB();
+            applyBranding();
+            showToast('✅ General settings saved');
+        }
+
+        function saveBranding() {
+            DB.settings.logoUrl = document.getElementById('setLogoUrl').value.trim();
+            DB.settings.faviconUrl = document.getElementById('setFavicon').value.trim();
+            saveDB();
+            applyBranding();
+            showToast('✅ Branding saved');
+        }
+
+        function applyBranding() {
+            const s = DB.settings;
+            document.getElementById('navTitle').textContent = s.appName || 'AV Pro ERP';
+            document.documentElement.style.setProperty('--primary', s.primaryColor || '#667eea');
+            document.documentElement.style.setProperty('--primary-gradient', `linear-gradient(135deg, ${s.primaryColor || '#667eea'}, ${s.darkColor || '#764ba2'})`);
+            if (s.logoUrl) document.getElementById('navLogo').src = s.logoUrl;
+            if (s.faviconUrl) document.querySelector('link[rel="icon"]').href = s.faviconUrl;
+        }
+
+        // ============================================================
+        // 17. CLOUD BACKUP (Google Apps Script)
+        // ============================================================
+        function backupToCloud() {
+            const apiUrl = document.getElementById('backupApiUrl').value.trim();
+            if (!apiUrl) { showToast('⚠️ Enter Apps Script URL in settings'); return; }
+            localStorage.setItem('backup_api_url', apiUrl);
+            showToast('⏳ Backing up...');
+            fetch(apiUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'backup', data: DB })
+            })
+            .then(() => showToast('✅ Backup initiated! Check your Google Sheet.'))
+            .catch(() => showToast('❌ Backup failed. Check URL and internet.'));
+        }
+
+        function restoreFromCloud() {
+            const apiUrl = document.getElementById('backupApiUrl').value.trim();
+            if (!apiUrl) { showToast('⚠️ Enter Apps Script URL in settings'); return; }
+            localStorage.setItem('backup_api_url', apiUrl);
+            showToast('⏳ Fetching data...');
+            fetch(apiUrl + '?action=restore', { mode: 'no-cors' })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.data) {
+                    DB = data.data;
+                    saveDB();
+                    applyBranding();
+                    renderSidebar();
+                    showToast('✅ Restored successfully! Refreshing...');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('⚠️ No data found in cloud.');
+                }
+            })
+            .catch(() => showToast('❌ Restore failed. Check URL and internet.'));
+        }
+
+        // ============================================================
+        // 18. THEME TOGGLE
+        // ============================================================
+        document.getElementById('themeToggle').addEventListener('click', function() {
             const current = document.documentElement.getAttribute('data-theme') || 'light';
             const next = current === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('av_theme', next);
-            document.getElementById('themeToggle').innerHTML = next === 'light' ? '<i class="fas fa-moon"></i>' :
-                '<i class="fas fa-sun"></i>';
-        }
-        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            this.innerHTML = next === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        });
 
-        // Load theme on start
+        // Load theme
         (function() {
             const theme = localStorage.getItem('av_theme') || 'light';
             document.documentElement.setAttribute('data-theme', theme);
-            document.getElementById('themeToggle').innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' :
-                '<i class="fas fa-sun"></i>';
+            document.getElementById('themeToggle').innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
         })();
 
         // ============================================================
-        // 12. SERVICE WORKER (PWA)
+        // 19. INIT
+        // ============================================================
+        window.onload = function() {
+            applyBranding();
+            renderSidebar();
+            updateNotifBadge();
+            // If already logged in (demo)
+            if (localStorage.getItem('avpro_logged')) {
+                CU = { email: ADMIN_EMAIL, role: 'admin', name: 'Admin' };
+                document.getElementById('userBadge').textContent = 'ADMIN';
+                showPage('homePage');
+            }
+            document.getElementById('backupApiUrl').value = localStorage.getItem('backup_api_url') || '';
+        };
+
+        // ============================================================
+        // 20. SERVICE WORKER (PWA)
         // ============================================================
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(() => console.log('✅ Service Worker registered'))
-                .catch(() => console.warn('SW registration skipped (sw.js missing)'));
+                .catch(() => console.warn('SW not registered (sw.js missing)'));
         }
-
-        // ============================================================
-        // 13. ON LOAD
-        // ============================================================
-        window.onload = function() {
-            document.getElementById('gsUrl').value = localStorage.getItem('gs_api') || '';
-            document.getElementById('payKey').value = localStorage.getItem('pay_key') || '';
-            // Auto-show dashboard if already logged in (dummy)
-            if (localStorage.getItem('avpro_logged')) {
-                CU = { role: 'admin' };
-                showPage('homePage');
-            }
-        };
-
-        // Optional: keep login state across refresh
-        document.addEventListener('visibilitychange', function() {
-            if (CU) localStorage.setItem('avpro_logged', 'true');
-            else localStorage.removeItem('avpro_logged');
-        });
 
         console.log('🚀 AV Pro ERP 2025 Loaded');
         console.log('📦 DB:', DB);
-        console.log('🔗 API:', API);
     </script>
 </body>
 </html>
