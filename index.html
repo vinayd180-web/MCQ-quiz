@@ -475,10 +475,21 @@
 
                 <div id="settings-backup" class="settings-panel">
                     <h4>☁️ Cloud Backup & Restore</h4>
-                    <div class="input-group"><label>Google Apps Script Web App URL</label><input class="input" id="backupApiUrl" placeholder="https://script.google.com/macros/s/..." /></div>
-                    <div class="flex" style="gap:12px;margin-top:8px;">
-                        <button class="btn btn-primary" onclick="backupToCloud()" style="flex:1;"><i class="fas fa-cloud-upload-alt"></i> Backup to Cloud</button>
-                        <button class="btn btn-outline" onclick="restoreFromCloud()" style="flex:1;"><i class="fas fa-cloud-download-alt"></i> Restore from Cloud</button>
+                    <div class="input-group">
+                        <label>Google Apps Script Web App URL</label>
+                        <input class="input" id="backupApiUrl" placeholder="https://script.google.com/macros/s/..." />
+                    </div>
+                    <!-- ✅ SAVE BUTTON -->
+                    <button class="btn btn-primary" onclick="saveBackupUrl()">
+                        <i class="fas fa-save"></i> Save API URL
+                    </button>
+                    <div class="flex" style="gap:12px;margin-top:16px;">
+                        <button class="btn btn-primary" onclick="backupToCloud()" style="flex:1;">
+                            <i class="fas fa-cloud-upload-alt"></i> Backup to Cloud
+                        </button>
+                        <button class="btn btn-outline" onclick="restoreFromCloud()" style="flex:1;">
+                            <i class="fas fa-cloud-download-alt"></i> Restore from Cloud
+                        </button>
                     </div>
                     <p class="text-muted mt-1">All data (Students, Teachers, Attendance, Fees, Exams, Homework, Doubts, Notices, Live Classes, Complaints, Feedback) will be backed up.</p>
                 </div>
@@ -498,28 +509,58 @@
 
     <script>
         // ============================================================
-        // 1. DATABASE (LocalStorage)
+        // 1. DATABASE (LocalStorage) WITH DEMO DATA
         // ============================================================
         let DB = JSON.parse(localStorage.getItem('avpro_db') || JSON.stringify({
-            students: [],
-            teachers: [],
-            attendance: [],
-            fees: [],
-            exams: [],
-            liveClasses: [],
-            homework: [],
+            students: [
+                { id: 1001, name: "Rahul Sharma", email: "rahul@example.com", pass: "123456", class: "10th", phone: "9876543210", photo: "" },
+                { id: 1002, name: "Priya Patel", email: "priya@example.com", pass: "123456", class: "9th", phone: "9876543211", photo: "" },
+                { id: 1003, name: "Amit Kumar", email: "amit@example.com", pass: "123456", class: "11th", phone: "9876543212", photo: "" }
+            ],
+            teachers: [
+                { id: 2001, name: "Mr. Singh", email: "singh@example.com", pass: "123456", subject: "Maths" },
+                { id: 2002, name: "Ms. Gupta", email: "gupta@example.com", pass: "123456", subject: "Science" }
+            ],
+            attendance: [
+                { id: 3001, date: new Date().toISOString().split('T')[0], sid: 1001, present: true },
+                { id: 3002, date: new Date().toISOString().split('T')[0], sid: 1002, present: true },
+                { id: 3003, date: new Date().toISOString().split('T')[0], sid: 1003, present: false }
+            ],
+            fees: [
+                { id: 4001, sid: 1001, amount: 5000, mode: "UPI", date: new Date().toISOString() },
+                { id: 4002, sid: 1002, amount: 3500, mode: "Cash", date: new Date().toISOString() }
+            ],
+            exams: [
+                { id: 5001, title: "Maths Mid-Term", type: "mcq", totalQuestions: 10, questions: [
+                    { q: "What is 2+2?", a: "3", b: "4", c: "5", d: "6", answer: "B" },
+                    { q: "What is 5x5?", a: "20", b: "25", c: "30", d: "35", answer: "B" },
+                    { q: "What is 10/2?", a: "3", b: "4", c: "5", d: "6", answer: "C" }
+                ], results: [] },
+                { id: 5002, title: "Science Unit Test", type: "unit", subject: "Science", totalMarks: 100 }
+            ],
+            liveClasses: [
+                { id: 6001, title: "Maths Revision", date: new Date().toISOString().split('T')[0], time: "16:00", platform: "meet", link: "", createdBy: "Admin" },
+                { id: 6002, title: "Science Lab Demo", date: new Date(Date.now() + 86400000).toISOString().split('T')[0], time: "15:00", platform: "jitsi", link: "", createdBy: "Admin" }
+            ],
+            homework: [
+                { id: 7001, subject: "Maths", desc: "Solve exercise 5.1", due: new Date(Date.now() + 86400000*2).toISOString().split('T')[0], file: "", assigned: new Date().toISOString(), status: "pending" }
+            ],
             doubts: [],
-            notices: [],
+            notices: [
+                { id: 8001, title: "Welcome to AV Pro", msg: "All students must complete registration by Friday.", date: new Date().toISOString(), postedBy: "Admin" }
+            ],
             complaints: [],
             feedback: [],
-            notifications: [],
+            notifications: [
+                { id: 9001, msg: "Welcome to AV Pro ERP!", read: false, time: new Date().toISOString() }
+            ],
             settings: {
                 appName: 'AV Pro ERP',
                 primaryColor: '#667eea',
                 darkColor: '#4c51bf',
                 logoUrl: '',
                 faviconUrl: '',
-                upiId: '',
+                upiId: 'avinash@upi',
                 menu: {}
             }
         }));
@@ -1532,6 +1573,16 @@
         // ============================================================
         // 20. CLOUD BACKUP (Google Apps Script)
         // ============================================================
+        function saveBackupUrl() {
+            const url = document.getElementById('backupApiUrl').value.trim();
+            if (!url) {
+                showToast('⚠️ Please enter a valid Web App URL');
+                return;
+            }
+            localStorage.setItem('backup_api_url', url);
+            showToast('✅ Backup API URL saved successfully!');
+        }
+
         function backupToCloud() {
             const apiUrl = document.getElementById('backupApiUrl').value.trim();
             if (!apiUrl) { showToast('⚠️ Enter Apps Script URL in settings'); return; }
@@ -1609,4 +1660,4 @@
         console.log('📦 DB:', DB);
     </script>
 </body>
-                    </html>
+                            </html>
