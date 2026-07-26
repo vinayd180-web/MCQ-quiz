@@ -6,13 +6,11 @@
     <title>AV Pro ERP 2025 — Ultimate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        /* ===== ROOT & THEMING ===== */
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
         :root{--primary:#667eea;--primary-dark:#5a67d8;--primary-gradient:linear-gradient(135deg,#667eea,#764ba2);--gold:#f6ad55;--green:#48bb78;--coral:#fc8181;--purple:#9f7aea;--teal:#4fd1c5;--bg:#f7fafc;--card:#ffffff;--text:#1a202c;--text-muted:#4a5568;--shadow:0 4px 15px rgba(0,0,0,0.05);--radius:16px;--radius-sm:10px;--nav-height:60px;--sidebar-width:280px}
         [data-theme="dark"]{--bg:#1a202c;--card:#2d3748;--text:#e2e8f0;--text-muted:#a0aec0;--shadow:0 4px 15px rgba(0,0,0,0.3);--primary-gradient:linear-gradient(135deg,#4c51bf,#6b46c1)}
         body{background:var(--bg);color:var(--text);transition:all .3s ease;overflow-x:hidden;min-height:100vh;padding-top:var(--nav-height)}
         
-        /* ===== NAVBAR ===== */
         .navbar{position:fixed;top:0;left:0;width:100%;height:var(--nav-height);display:flex;justify-content:space-between;align-items:center;padding:0 20px;background:var(--primary-gradient);color:#fff;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
         .navbar-left{display:flex;align-items:center;gap:12px}
         .navbar-left i{font-size:1.3rem;cursor:pointer}
@@ -25,7 +23,6 @@
         .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--coral);color:#fff;font-size:0.6rem;font-weight:700;border-radius:50%;padding:2px 6px;min-width:18px;text-align:center}
         .user-badge{font-size:0.6rem;background:rgba(255,255,255,0.2);color:#fff;padding:2px 10px;border-radius:60px;font-weight:600;text-transform:uppercase}
         
-        /* ===== SIDEBAR ===== */
         .sidebar{position:fixed;top:0;left:-280px;width:280px;height:100%;background:#2d3748;color:#fff;transition:0.3s cubic-bezier(.4,0,.2,1);z-index:999;overflow-y:auto;padding-top:var(--nav-height)}
         .sidebar.active{left:0}
         .sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:998;backdrop-filter:blur(2px)}
@@ -35,13 +32,11 @@
         .sidebar a i{width:24px;text-align:center}
         .sidebar .menu-section{font-size:0.7rem;padding:10px 20px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px}
         
-        /* ===== PAGE CONTAINER ===== */
         .page-container{padding:20px;padding-bottom:80px;max-width:1000px;margin:0 auto}
         .page{display:none;animation:fadeUp .3s ease}
         .page.active{display:block}
         @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
         
-        /* ===== CARDS & GRID ===== */
         .card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
         .card-gold{border-left:4px solid var(--gold)}
         .card-green{border-left:4px solid var(--green)}
@@ -52,7 +47,6 @@
         .stat h2{font-size:2rem}
         .stat p{font-size:0.85rem;opacity:0.9}
         
-        /* ===== BUTTONS ===== */
         .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .2s;width:100%;touch-action:manipulation}
         .btn:active{transform:scale(0.96)}
         .btn-primary{background:var(--primary-gradient);color:#fff}
@@ -62,21 +56,18 @@
         .btn-sm{padding:4px 12px;width:auto;font-size:0.75rem}
         .btn-block{width:100%}
         
-        /* ===== INPUTS ===== */
         .input{width:100%;padding:10px 14px;border:1.5px solid #ddd;border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:0.95rem;margin-bottom:10px;transition:border .2s}
         .input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(246,173,85,.2)}
         .input-group{margin-bottom:12px}
         .input-group label{display:block;font-weight:600;font-size:0.8rem;color:var(--text-muted);margin-bottom:4px}
         textarea.input{resize:vertical;min-height:80px}
         
-        /* ===== TABLE ===== */
         .table-wrap{overflow-x:auto}
         .table{width:100%;border-collapse:collapse;font-size:0.9rem}
         .table td,.table th{padding:10px;border-bottom:1px solid rgba(0,0,0,0.06);text-align:left}
         .table th{font-weight:600;color:var(--text-muted)}
         .table tr:hover{background:rgba(0,0,0,0.02)}
         
-        /* ===== CALENDAR ===== */
         .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
         .calendar-grid .day-header{font-weight:600;color:var(--text-muted);padding:8px 0}
         .calendar-grid .day-cell{padding:8px;border-radius:var(--radius-sm);background:var(--bg);cursor:pointer;transition:all .2s}
@@ -85,24 +76,20 @@
         .calendar-grid .day-cell.today{border:2px solid var(--primary)}
         .calendar-grid .day-cell.empty{background:transparent;cursor:default}
         
-        /* ===== TOAST ===== */
         .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);color:var(--text);padding:12px 20px;border-radius:var(--radius-sm);box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:9999;border-left:4px solid var(--gold);opacity:0;transition:all .4s ease;max-width:90%;font-size:0.9rem;text-align:center}
         .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
         
-        /* ===== LOGIN ===== */
         .login-wrapper{display:flex;align-items:center;justify-content:center;min-height:80vh;padding:20px}
         .login-card{width:100%;max-width:400px;background:var(--card);border-radius:var(--radius);padding:30px;box-shadow:var(--shadow)}
         .login-card h2{font-family:Georgia,serif;text-align:center;margin-bottom:8px}
         .login-card .sub{text-align:center;color:var(--text-muted);font-size:0.85rem;margin-bottom:20px}
         
-        /* ===== NOTIFICATION PANEL ===== */
         .notif-panel{position:fixed;top:var(--nav-height);right:0;width:300px;max-height:70vh;background:var(--card);border-radius:var(--radius) 0 0 var(--radius);box-shadow:-4px 0 20px rgba(0,0,0,0.15);z-index:999;overflow-y:auto;display:none;padding:16px}
         .notif-panel.open{display:block}
         .notif-panel .notif-item{padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:0.85rem}
         .notif-panel .notif-item .time{font-size:0.65rem;color:var(--text-muted)}
         .notif-panel .notif-item.unread{border-left:3px solid var(--gold);padding-left:12px}
         
-        /* ===== MODAL ===== */
         .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
         .modal-overlay.active{display:flex}
         .modal{background:var(--card);border-radius:var(--radius);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
@@ -110,7 +97,6 @@
         .modal-header h3{font-family:Georgia,serif;color:var(--gold)}
         .modal-close{background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer}
         
-        /* ===== SETTINGS ===== */
         .settings-tabs{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
         .settings-tabs .stab{padding:6px 14px;border-radius:var(--radius-sm);border:1px solid rgba(0,0,0,0.06);background:var(--bg);color:var(--text-muted);font-size:0.7rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
         .settings-tabs .stab.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
@@ -122,12 +108,10 @@
         .toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:all .3s}
         .toggle-switch.active::after{left:22px}
         
-        /* ===== MEDIA UPLOAD ===== */
         .media-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
         .media-preview img{width:80px;height:80px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid rgba(0,0,0,0.06)}
         .media-preview .file-preview{background:var(--bg);padding:8px;border-radius:var(--radius-sm);font-size:0.7rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         
-        /* ===== UTILITY ===== */
         .hidden{display:none!important}
         .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
         .flex-between{display:flex;justify-content:space-between;align-items:center}
@@ -140,22 +124,18 @@
         .badge-red{background:var(--coral)}
         .badge-gold{background:var(--gold)}
         
-        /* ===== RESPONSIVE ===== */
         @media(max-width:600px){.grid{grid-template-columns:1fr 1fr}.stat{padding:16px}.navbar-logo span{display:none}.notif-panel{width:90%;right:5%}}
         @media(min-width:768px){.grid{grid-template-columns:repeat(3,1fr)}}
     </style>
 </head>
 <body>
 
-    <!-- ===== SIDEBAR OVERLAY ===== -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <!-- ===== SIDEBAR ===== -->
     <div class="sidebar" id="sidebar">
         <div id="sidebarMenu"></div>
     </div>
 
-    <!-- ===== NAVBAR ===== -->
     <nav class="navbar" id="mainNavbar">
         <div class="navbar-left">
             <i class="fas fa-bars" onclick="toggleSidebar()"></i>
@@ -174,7 +154,6 @@
         </div>
     </nav>
 
-    <!-- ===== NOTIFICATION PANEL ===== -->
     <div class="notif-panel" id="notifPanel">
         <div class="flex-between" style="margin-bottom:8px;">
             <span style="font-weight:700;">Notifications</span>
@@ -183,13 +162,10 @@
         <div id="notifList"></div>
     </div>
 
-    <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"><span id="toastMessage">Success!</span></div>
 
-    <!-- ===== PAGE CONTAINER ===== -->
     <div class="page-container">
 
-        <!-- ===== LOGIN PAGE ===== -->
         <div id="loginPage" class="page active">
             <div class="login-wrapper">
                 <div class="login-card">
@@ -209,7 +185,6 @@
             </div>
         </div>
 
-        <!-- ===== DASHBOARD PAGE ===== -->
         <div id="homePage" class="page">
             <div class="grid">
                 <div class="stat" style="background:var(--primary-gradient)"><h2 id="totalStu">0</h2><p>Total Students</p></div>
@@ -233,7 +208,6 @@
             </div>
         </div>
 
-        <!-- ===== STUDENTS PAGE ===== -->
         <div id="studentsPage" class="page">
             <div class="card">
                 <h3>📝 Add / Edit Student</h3>
@@ -259,7 +233,6 @@
             </div>
         </div>
 
-        <!-- ===== TEACHERS PAGE ===== -->
         <div id="teachersPage" class="page">
             <div class="card">
                 <h3>📝 Add / Edit Teacher</h3>
@@ -279,7 +252,6 @@
             </div>
         </div>
 
-        <!-- ===== ATTENDANCE PAGE ===== -->
         <div id="attendancePage" class="page">
             <div class="card">
                 <h3>📅 Mark Attendance — <span id="attDate"></span></h3>
@@ -292,7 +264,6 @@
             </div>
         </div>
 
-        <!-- ===== FEES PAGE ===== -->
         <div id="feesPage" class="page">
             <div class="card">
                 <h3>💰 Add Fees</h3>
@@ -308,9 +279,13 @@
                 </div>
                 <div id="feeList"></div>
             </div>
+            <div class="card">
+                <h3>🧾 PDF Receipt</h3>
+                <div class="input-group"><label>Select Fee Record</label><select class="input" id="receiptFee"></select></div>
+                <button class="btn btn-primary" onclick="printReceipt()"><i class="fas fa-print"></i> Print Receipt</button>
+            </div>
         </div>
 
-        <!-- ===== EXAMS PAGE ===== -->
         <div id="examPage" class="page">
             <div class="card">
                 <h3>📝 Create Exam</h3>
@@ -330,18 +305,19 @@
                 <h3>📋 All Exams</h3>
                 <div id="examList"></div>
             </div>
-        </div>
-
-        <!-- ===== MCQ EXAM PAGE (Student View) ===== -->
-        <div id="mcqExamPage" class="page">
             <div class="card">
-                <h3 id="mcqExamTitle">MCQ Exam</h3>
-                <div id="mcqQuestionsContainer"></div>
-                <button class="btn btn-green" onclick="submitMCQ()"><i class="fas fa-check"></i> Submit Exam</button>
+                <h3>📊 Report Card</h3>
+                <div class="input-group"><label>Select Student</label><select class="input" id="reportStu"></select></div>
+                <button class="btn btn-primary" onclick="printReportCard()"><i class="fas fa-print"></i> Print Report Card</button>
+            </div>
+            <div class="card">
+                <h3>⏱️ Online Exam with Timer</h3>
+                <div class="input-group"><label>Select Exam</label><select class="input" id="timerExam"></select></div>
+                <div class="input-group"><label>Timer (minutes)</label><input class="input" id="timerMinutes" type="number" value="10" /></div>
+                <button class="btn btn-primary" onclick="startTimedExam()"><i class="fas fa-play"></i> Start Timed Exam</button>
             </div>
         </div>
 
-        <!-- ===== LIVE CLASSES PAGE ===== -->
         <div id="livePage" class="page">
             <div class="card">
                 <h3><i class="fas fa-calendar-alt"></i> Live Classes Calendar</h3>
@@ -367,7 +343,6 @@
             </div>
         </div>
 
-        <!-- ===== HOMEWORK PAGE ===== -->
         <div id="homeworkPage" class="page">
             <div class="card">
                 <h3>📚 Assign Homework</h3>
@@ -384,7 +359,6 @@
             </div>
         </div>
 
-        <!-- ===== DOUBTS PAGE ===== -->
         <div id="doubtsPage" class="page">
             <div class="card">
                 <h3>❓ Ask a Doubt</h3>
@@ -398,7 +372,6 @@
             </div>
         </div>
 
-        <!-- ===== NOTICE PAGE ===== -->
         <div id="noticePage" class="page">
             <div class="card">
                 <h3>📢 Post Notice</h3>
@@ -412,7 +385,6 @@
             </div>
         </div>
 
-        <!-- ===== COMPLAINTS PAGE ===== -->
         <div id="complaintsPage" class="page">
             <div class="card">
                 <h3>📝 Submit Complaint</h3>
@@ -426,7 +398,6 @@
             </div>
         </div>
 
-        <!-- ===== FEEDBACK PAGE ===== -->
         <div id="feedbackPage" class="page">
             <div class="card">
                 <h3>⭐ Give Feedback</h3>
@@ -441,7 +412,50 @@
             </div>
         </div>
 
-        <!-- ===== SETTINGS PAGE ===== -->
+        <div id="salaryPage" class="page">
+            <div class="card">
+                <h3>💰 Teacher Salary</h3>
+                <div class="input-group"><label>Teacher</label><select class="input" id="salTeacher"></select></div>
+                <div class="input-group"><label>Month</label><input class="input" id="salMonth" type="month" /></div>
+                <div class="input-group"><label>Amount (₹)</label><input class="input" id="salAmount" type="number" placeholder="Amount" /></div>
+                <button class="btn btn-primary" onclick="saveSalary()"><i class="fas fa-plus"></i> Add Salary</button>
+            </div>
+            <div class="card">
+                <h3>📋 Salary Records</h3>
+                <div id="salList"></div>
+            </div>
+        </div>
+
+        <div id="smsPage" class="page">
+            <div class="card">
+                <h3>📱 SMS / WhatsApp Alert</h3>
+                <div class="input-group"><label>Phone Number</label><input class="input" id="smsPhone" placeholder="+91XXXXXXXXXX" /></div>
+                <div class="input-group"><label>Message</label><textarea class="input" id="smsMsg" rows="3" placeholder="Type your message..."></textarea></div>
+                <button class="btn btn-primary" onclick="sendSMS()"><i class="fas fa-paper-plane"></i> Send SMS</button>
+            </div>
+            <div class="card">
+                <h3>📋 SMS History</h3>
+                <div id="smsList"></div>
+            </div>
+        </div>
+
+        <!-- ===== NEW: RESOURCES PAGE ===== -->
+        <div id="resourcesPage" class="page">
+            <div class="card">
+                <h3>📚 Study Resources</h3>
+                <div class="input-group"><label>Title</label><input class="input" id="resTitle" placeholder="e.g. Chapter 1 Notes" /></div>
+                <div class="input-group"><label>Type</label><select class="input" id="resType"><option value="pdf">PDF / Document</option><option value="image">Image</option><option value="video">Video (YouTube / Vimeo)</option><option value="link">Link / URL</option></select></div>
+                <div class="input-group"><label>Upload File (PDF / Image / Video)</label><input class="input" id="resFile" type="file" onchange="previewFile(this, 'resFilePreview')" /></div>
+                <div class="media-preview" id="resFilePreview"></div>
+                <div class="input-group"><label>OR Paste Embed URL (YouTube / Vimeo / Google Drive)</label><input class="input" id="resEmbedUrl" placeholder="https://www.youtube.com/embed/..." /></div>
+                <button class="btn btn-primary" onclick="uploadResource()"><i class="fas fa-upload"></i> Upload Resource</button>
+            </div>
+            <div class="card">
+                <h3>📋 All Resources</h3>
+                <div id="resList"></div>
+            </div>
+        </div>
+
         <div id="settingsPage" class="page">
             <div class="card">
                 <h3>⚙️ Settings</h3>
@@ -451,6 +465,7 @@
                     <button class="stab" onclick="switchSettingsTab('menu')">Menu Toggle</button>
                     <button class="stab" onclick="switchSettingsTab('backup')">Cloud Backup</button>
                     <button class="stab" onclick="switchSettingsTab('import')">Import/Export</button>
+                    <button class="stab" onclick="switchSettingsTab('media')">Media & Resources</button>
                 </div>
                 
                 <div id="settings-general" class="settings-panel active">
@@ -479,11 +494,10 @@
                         <label>Google Apps Script Web App URL</label>
                         <input class="input" id="backupApiUrl" placeholder="https://script.google.com/macros/s/..." />
                     </div>
-                    <!-- ✅ SAVE BUTTON -->
                     <button class="btn btn-primary" onclick="saveBackupUrl()">
                         <i class="fas fa-save"></i> Save API URL
                     </button>
-                    <div class="flex" style="gap:12px;margin-top:16px;">
+                    <div class="flex" style="gap:12px; margin-top:16px;">
                         <button class="btn btn-primary" onclick="backupToCloud()" style="flex:1;">
                             <i class="fas fa-cloud-upload-alt"></i> Backup to Cloud
                         </button>
@@ -491,16 +505,44 @@
                             <i class="fas fa-cloud-download-alt"></i> Restore from Cloud
                         </button>
                     </div>
-                    <p class="text-muted mt-1">All data (Students, Teachers, Attendance, Fees, Exams, Homework, Doubts, Notices, Live Classes, Complaints, Feedback) will be backed up.</p>
+                    <p class="text-muted mt-1">All data will be backed up to your Google Sheet.</p>
                 </div>
 
                 <div id="settings-import" class="settings-panel">
                     <h4>📂 Import / Export Data</h4>
-                    <div class="flex" style="gap:12px;margin-top:8px;">
-                        <button class="btn btn-primary" onclick="exportAllData()" style="flex:1;"><i class="fas fa-file-export"></i> Export All Data (JSON)</button>
-                        <button class="btn btn-outline" onclick="importAllData()" style="flex:1;"><i class="fas fa-file-import"></i> Import Data (JSON)</button>
+                    <div class="flex" style="gap:12px; margin-top:8px;">
+                        <button class="btn btn-primary" onclick="exportAllData()" style="flex:1;">
+                            <i class="fas fa-file-export"></i> Export All Data (JSON)
+                        </button>
+                        <button class="btn btn-outline" onclick="importAllData()" style="flex:1;">
+                            <i class="fas fa-file-import"></i> Import Data (JSON)
+                        </button>
+                        <button class="btn btn-danger" onclick="clearAllData()" style="flex:1;">
+                            <i class="fas fa-trash-alt"></i> Clear All Data
+                        </button>
                     </div>
                     <p class="text-muted mt-1">Export/Import your entire database as a JSON file for local backup.</p>
+                </div>
+
+                <div id="settings-media" class="settings-panel">
+                    <h4>🎬 Media & Resources Settings</h4>
+                    <div class="toggle-row">
+                        <span>Enable Resources Page</span>
+                        <div class="toggle-switch active" onclick="toggleMediaSetting('resources')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <span>Allow Video Embed (YouTube/Vimeo)</span>
+                        <div class="toggle-switch active" onclick="toggleMediaSetting('video')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <span>Allow Image Upload</span>
+                        <div class="toggle-switch active" onclick="toggleMediaSetting('image')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <span>Allow File Upload (PDF/Docs)</span>
+                        <div class="toggle-switch active" onclick="toggleMediaSetting('file')"></div>
+                    </div>
+                    <button class="btn btn-primary mt-2" onclick="saveMediaSettings()"><i class="fas fa-save"></i> Save Media Settings</button>
                 </div>
             </div>
         </div>
@@ -509,65 +551,45 @@
 
     <script>
         // ============================================================
-        // 1. DATABASE (LocalStorage) WITH DEMO DATA
+        // 1. DATABASE
         // ============================================================
         let DB = JSON.parse(localStorage.getItem('avpro_db') || JSON.stringify({
-            students: [
-                { id: 1001, name: "Rahul Sharma", email: "rahul@example.com", pass: "123456", class: "10th", phone: "9876543210", photo: "" },
-                { id: 1002, name: "Priya Patel", email: "priya@example.com", pass: "123456", class: "9th", phone: "9876543211", photo: "" },
-                { id: 1003, name: "Amit Kumar", email: "amit@example.com", pass: "123456", class: "11th", phone: "9876543212", photo: "" }
-            ],
-            teachers: [
-                { id: 2001, name: "Mr. Singh", email: "singh@example.com", pass: "123456", subject: "Maths" },
-                { id: 2002, name: "Ms. Gupta", email: "gupta@example.com", pass: "123456", subject: "Science" }
-            ],
-            attendance: [
-                { id: 3001, date: new Date().toISOString().split('T')[0], sid: 1001, present: true },
-                { id: 3002, date: new Date().toISOString().split('T')[0], sid: 1002, present: true },
-                { id: 3003, date: new Date().toISOString().split('T')[0], sid: 1003, present: false }
-            ],
-            fees: [
-                { id: 4001, sid: 1001, amount: 5000, mode: "UPI", date: new Date().toISOString() },
-                { id: 4002, sid: 1002, amount: 3500, mode: "Cash", date: new Date().toISOString() }
-            ],
-            exams: [
-                { id: 5001, title: "Maths Mid-Term", type: "mcq", totalQuestions: 10, questions: [
-                    { q: "What is 2+2?", a: "3", b: "4", c: "5", d: "6", answer: "B" },
-                    { q: "What is 5x5?", a: "20", b: "25", c: "30", d: "35", answer: "B" },
-                    { q: "What is 10/2?", a: "3", b: "4", c: "5", d: "6", answer: "C" }
-                ], results: [] },
-                { id: 5002, title: "Science Unit Test", type: "unit", subject: "Science", totalMarks: 100 }
-            ],
-            liveClasses: [
-                { id: 6001, title: "Maths Revision", date: new Date().toISOString().split('T')[0], time: "16:00", platform: "meet", link: "", createdBy: "Admin" },
-                { id: 6002, title: "Science Lab Demo", date: new Date(Date.now() + 86400000).toISOString().split('T')[0], time: "15:00", platform: "jitsi", link: "", createdBy: "Admin" }
-            ],
-            homework: [
-                { id: 7001, subject: "Maths", desc: "Solve exercise 5.1", due: new Date(Date.now() + 86400000*2).toISOString().split('T')[0], file: "", assigned: new Date().toISOString(), status: "pending" }
-            ],
+            students: [],
+            teachers: [],
+            attendance: [],
+            fees: [],
+            exams: [],
+            liveClasses: [],
+            homework: [],
             doubts: [],
-            notices: [
-                { id: 8001, title: "Welcome to AV Pro", msg: "All students must complete registration by Friday.", date: new Date().toISOString(), postedBy: "Admin" }
-            ],
+            notices: [],
             complaints: [],
             feedback: [],
-            notifications: [
-                { id: 9001, msg: "Welcome to AV Pro ERP!", read: false, time: new Date().toISOString() }
-            ],
+            salary: [],
+            sms: [],
+            resources: [],
+            notifications: [],
             settings: {
                 appName: 'AV Pro ERP',
                 primaryColor: '#667eea',
                 darkColor: '#4c51bf',
                 logoUrl: '',
                 faviconUrl: '',
-                upiId: 'avinash@upi',
-                menu: {}
+                upiId: '',
+                menu: {},
+                media: {
+                    resources: true,
+                    video: true,
+                    image: true,
+                    file: true
+                }
             }
         }));
-        let CU = null; // Current User
+        let CU = null;
         let calendarMonth = new Date().getMonth();
         let calendarYear = new Date().getFullYear();
         let notifCount = 0;
+        let examTimer = null;
 
         // ============================================================
         // 2. HELPERS
@@ -658,18 +680,24 @@
             if (id === 'noticePage') loadNotices();
             if (id === 'complaintsPage') loadComplaints();
             if (id === 'feedbackPage') loadFeedback();
+            if (id === 'salaryPage') loadSalary();
+            if (id === 'smsPage') loadSMS();
+            if (id === 'resourcesPage') loadResources();
             if (id === 'settingsPage') loadSettings();
         }
 
         function renderSidebar() {
             const menu = document.getElementById('sidebarMenu');
             const settings = DB.settings.menu || {};
+            const media = DB.settings.media || {};
             let html = '<div class="menu-section">Main</div>';
             html += `<a onclick="showPage('homePage')"><i class="fas fa-home"></i> Dashboard</a>`;
             if (settings.students !== false) html += `<a onclick="showPage('studentsPage')"><i class="fas fa-user-graduate"></i> Students</a>`;
             if (settings.teachers !== false) html += `<a onclick="showPage('teachersPage')"><i class="fas fa-chalkboard-teacher"></i> Teachers</a>`;
             if (settings.attendance !== false) html += `<a onclick="showPage('attendancePage')"><i class="fas fa-calendar-check"></i> Attendance</a>`;
-            if (settings.fees !== false) html += `<a onclick="showPage('feesPage')"><i class="fas fa-rupee-sign"></i> Fees</a>`;
+            if (CU && CU.role === 'admin' && settings.fees !== false) {
+                html += `<a onclick="showPage('feesPage')"><i class="fas fa-rupee-sign"></i> Fees</a>`;
+            }
             if (settings.exams !== false) html += `<a onclick="showPage('examPage')"><i class="fas fa-file-alt"></i> Exams</a>`;
             if (settings.live !== false) html += `<a onclick="showPage('livePage')"><i class="fas fa-video"></i> Live Classes</a>`;
             if (settings.homework !== false) html += `<a onclick="showPage('homeworkPage')"><i class="fas fa-book-open"></i> Homework</a>`;
@@ -677,13 +705,23 @@
             if (settings.notices !== false) html += `<a onclick="showPage('noticePage')"><i class="fas fa-bullhorn"></i> Notice Board</a>`;
             if (settings.complaints !== false) html += `<a onclick="showPage('complaintsPage')"><i class="fas fa-exclamation-triangle"></i> Complaints</a>`;
             if (settings.feedback !== false) html += `<a onclick="showPage('feedbackPage')"><i class="fas fa-star"></i> Feedback</a>`;
+            if (CU && CU.role === 'admin' && settings.salary !== false) {
+                html += `<a onclick="showPage('salaryPage')"><i class="fas fa-money-bill-wave"></i> Salary</a>`;
+            }
+            if (CU && CU.role === 'admin' && settings.sms !== false) {
+                html += `<a onclick="showPage('smsPage')"><i class="fas fa-sms"></i> SMS</a>`;
+            }
+            // ✅ RESOURCES PAGE (visible to all if enabled)
+            if (media.resources !== false) {
+                html += `<a onclick="showPage('resourcesPage')"><i class="fas fa-book"></i> Resources</a>`;
+            }
             if (CU && CU.role === 'admin') html += `<a onclick="showPage('settingsPage')"><i class="fas fa-cog"></i> Settings</a>`;
             if (CU) html += `<a onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
             menu.innerHTML = html;
         }
 
         // ============================================================
-        // 4. LOGIN (Admin + Created Users)
+        // 4. LOGIN
         // ============================================================
         const ADMIN_EMAIL = 'vinayd180@gmail.com';
         const ADMIN_PASS = '56175617';
@@ -721,6 +759,7 @@
         function afterLogin() {
             document.getElementById('userBadge').textContent = CU.role.toUpperCase();
             renderSidebar();
+            document.getElementById('backupApiUrl').value = localStorage.getItem('backup_api_url') || '';
             showPage('homePage');
             showToast('✅ Welcome ' + CU.name);
             updateNotifBadge();
@@ -735,7 +774,7 @@
         }
 
         // ============================================================
-        // 5. STUDENTS CRUD (Admin only)
+        // 5. STUDENTS
         // ============================================================
         function saveStudent() {
             const id = document.getElementById('sId').value;
@@ -803,10 +842,12 @@
             const opt = DB.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             document.getElementById('fStu').innerHTML = opt;
             document.getElementById('fbTeacher').innerHTML = DB.teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            document.getElementById('reportStu').innerHTML = opt;
+            document.getElementById('salTeacher').innerHTML = DB.teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
 
         // ============================================================
-        // 6. TEACHERS CRUD (Admin only)
+        // 6. TEACHERS
         // ============================================================
         function saveTeacher() {
             const id = document.getElementById('tId').value;
@@ -864,6 +905,7 @@
             });
             table.innerHTML = html;
             document.getElementById('fbTeacher').innerHTML = DB.teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            document.getElementById('salTeacher').innerHTML = DB.teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
 
         // ============================================================
@@ -911,6 +953,11 @@
         }
 
         function loadFees() {
+            // Restrict to Admin only
+            if (!CU || CU.role !== 'admin') {
+                document.getElementById('feeList').innerHTML = '<p class="text-muted" style="color:var(--coral);">⛔ Access denied. Only Admin can view fees.</p>';
+                return;
+            }
             const container = document.getElementById('feeList');
             if (!DB.fees.length) { container.innerHTML = '<p class="text-muted">No fees records.</p>'; return; }
             container.innerHTML = DB.fees.map(f => 
@@ -920,6 +967,8 @@
                     <button class="btn btn-sm btn-danger" onclick="deleteFee(${f.id})">✕</button>
                 </div>`
             ).join('');
+            const opt = DB.fees.map(f => `<option value="${f.id}">${getStuName(f.sid)} - ₹${f.amount} (${new Date(f.date).toLocaleDateString()})</option>`).join('');
+            document.getElementById('receiptFee').innerHTML = opt;
         }
 
         function deleteFee(id) {
@@ -929,8 +978,32 @@
             showToast('🗑️ Fee record deleted');
         }
 
+        function printReceipt() {
+            const feeId = document.getElementById('receiptFee').value;
+            const fee = DB.fees.find(f => f.id == feeId);
+            if (!fee) { showToast('⚠️ Select a fee record'); return; }
+            const student = DB.students.find(s => s.id == fee.sid);
+            const receipt = `
+            <div style="border:2px solid #667eea;border-radius:12px;padding:20px;max-width:400px;margin:auto;background:white;font-family:sans-serif;">
+                <h2 style="text-align:center;color:#667eea;">AV Pro ERP</h2>
+                <h3 style="text-align:center;">Fee Receipt</h3>
+                <hr />
+                <p><strong>Student:</strong> ${student ? student.name : 'N/A'}</p>
+                <p><strong>Amount:</strong> ₹${fee.amount}</p>
+                <p><strong>Mode:</strong> ${fee.mode}</p>
+                <p><strong>Date:</strong> ${new Date(fee.date).toLocaleDateString()}</p>
+                <p><strong>Receipt #:</strong> ${fee.id}</p>
+                <hr />
+                <p style="text-align:center;font-size:0.8rem;color:#718096;">Thank you for your payment!</p>
+            </div>
+            `;
+            const win = window.open('', '_blank');
+            win.document.write('<html><head><title>Fee Receipt</title></head><body>' + receipt + '</body></html>');
+            win.print();
+        }
+
         // ============================================================
-        // 9. EXAMS (MCQ + Unit Test)
+        // 9. EXAMS + REPORT CARD + TIMED EXAM
         // ============================================================
         function createExam() {
             const title = document.getElementById('examTitle').value.trim();
@@ -1000,6 +1073,8 @@
                     ${e.type === 'mcq' ? `<p class="text-muted">${e.totalQuestions} questions</p>` : `<p class="text-muted">${e.subject} — ${e.totalMarks} marks</p>`}
                 </div>`
             ).join('');
+            const opt = DB.exams.filter(e => e.type === 'mcq').map(e => `<option value="${e.id}">${e.title}</option>`).join('');
+            document.getElementById('timerExam').innerHTML = opt || '<option>No MCQ exams available</option>';
         }
 
         function deleteExam(id) {
@@ -1054,8 +1129,54 @@
             showPage('examPage');
         }
 
+        function printReportCard() {
+            const sid = document.getElementById('reportStu').value;
+            const student = DB.students.find(s => s.id == sid);
+            if (!student) { showToast('⚠️ Select a student'); return; }
+            const marks = DB.marks ? DB.marks.filter(m => m.sid == sid) : [];
+            let html = `
+            <div style="border:2px solid #667eea;border-radius:12px;padding:20px;max-width:500px;margin:auto;background:white;font-family:sans-serif;">
+                <h2 style="text-align:center;color:#667eea;">AV Pro ERP</h2>
+                <h3 style="text-align:center;">Report Card</h3>
+                <hr />
+                <p><strong>Student:</strong> ${student.name}</p>
+                <p><strong>Class:</strong> ${student.class || 'N/A'}</p>
+                <p><strong>Email:</strong> ${student.email}</p>
+                <hr />
+                <h4>Marks</h4>
+            `;
+            if (marks.length) {
+                marks.forEach(m => {
+                    html += `<p><strong>${m.sub}:</strong> ${m.marks}</p>`;
+                });
+            } else {
+                html += `<p class="text-muted">No marks available.</p>`;
+            }
+            html += `<hr /><p style="text-align:center;font-size:0.8rem;color:#718096;">Generated on ${new Date().toLocaleDateString()}</p></div>`;
+            const win = window.open('', '_blank');
+            win.document.write('<html><head><title>Report Card</title></head><body>' + html + '</body></html>');
+            win.print();
+        }
+
+        function startTimedExam() {
+            const examId = document.getElementById('timerExam').value;
+            const minutes = Number(document.getElementById('timerMinutes').value) || 10;
+            if (!examId) { showToast('⚠️ Select an exam'); return; }
+            showToast('⏱️ Exam started! You have ' + minutes + ' minutes.');
+            startMCQExam(examId);
+            let seconds = minutes * 60;
+            examTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(examTimer);
+                    showToast('⏰ Time is up! Submitting automatically...');
+                    submitMCQ();
+                }
+            }, 1000);
+        }
+
         // ============================================================
-        // 10. LIVE CLASSES WITH CALENDAR
+        // 10. LIVE CLASSES
         // ============================================================
         function addLiveClass() {
             const title = document.getElementById('lcTitle').value.trim();
@@ -1096,7 +1217,6 @@
                     </div>
                 </div>`
             ).join('');
-            // Update dashboard
             const todayClasses = DB.liveClasses.filter(lc => lc.date === today);
             document.getElementById('todayLiveClasses').innerHTML = todayClasses.length ? 
                 todayClasses.map(lc => `<div>📌 ${lc.title} at ${lc.time} (${lc.platform})</div>`).join('') : 
@@ -1112,7 +1232,6 @@
             showToast('🗑️ Live class deleted');
         }
 
-        // ===== CALENDAR =====
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             const monthYear = document.getElementById('calendarMonthYear');
@@ -1314,17 +1433,84 @@
         }
 
         // ============================================================
-        // 16. DASHBOARD
+        // 16. SALARY
+        // ============================================================
+        function saveSalary() {
+            const teacherId = document.getElementById('salTeacher').value;
+            const month = document.getElementById('salMonth').value;
+            const amount = document.getElementById('salAmount').value;
+            if (!teacherId || !month || !amount) { showToast('⚠️ Fill all fields'); return; }
+            DB.salary.push({ id: Date.now(), teacherId: Number(teacherId), month, amount: Number(amount), date: new Date().toISOString() });
+            saveDB();
+            document.getElementById('salAmount').value = '';
+            loadSalary();
+            showToast('✅ Salary added');
+            addNotification('Salary added for ' + getTeacherName(teacherId));
+        }
+
+        function loadSalary() {
+            const container = document.getElementById('salList');
+            if (!DB.salary.length) { container.innerHTML = '<p class="text-muted">No salary records.</p>'; return; }
+            container.innerHTML = DB.salary.map(s => 
+                `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <span>${getTeacherName(s.teacherId)} — ${s.month}: ₹${s.amount}</span>
+                    <button class="btn btn-sm btn-danger" onclick="deleteSalary(${s.id})">✕</button>
+                </div>`
+            ).join('');
+        }
+
+        function deleteSalary(id) {
+            DB.salary = DB.salary.filter(s => s.id != id);
+            saveDB();
+            loadSalary();
+            showToast('🗑️ Salary record deleted');
+        }
+
+        // ============================================================
+        // 17. SMS
+        // ============================================================
+        function sendSMS() {
+            const phone = document.getElementById('smsPhone').value.trim();
+            const msg = document.getElementById('smsMsg').value.trim();
+            if (!phone || !msg) { showToast('⚠️ Fill all fields'); return; }
+            DB.sms.push({ id: Date.now(), phone, msg, date: new Date().toISOString() });
+            saveDB();
+            document.getElementById('smsPhone').value = '';
+            document.getElementById('smsMsg').value = '';
+            loadSMS();
+            showToast('✅ SMS sent (simulated)');
+            addNotification('SMS sent to ' + phone);
+        }
+
+        function loadSMS() {
+            const container = document.getElementById('smsList');
+            if (!DB.sms.length) { container.innerHTML = '<p class="text-muted">No SMS history.</p>'; return; }
+            container.innerHTML = DB.sms.map(s => 
+                `<div style="padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <div><strong>${s.phone}</strong></div>
+                    <div>${s.msg}</div>
+                    <span class="text-muted">${new Date(s.date).toLocaleString()}</span>
+                </div>`
+            ).join('');
+        }
+
+        // ============================================================
+        // 18. DASHBOARD
         // ============================================================
         function loadDashboard() {
             document.getElementById('totalStu').textContent = DB.students.length;
             const today = new Date().toISOString().split('T')[0];
             const present = DB.attendance.filter(a => a.date === today && a.present).length;
             document.getElementById('presentToday').textContent = present;
-            const totalFees = DB.fees.reduce((sum, f) => sum + f.amount, 0);
-            document.getElementById('feesCollected').textContent = '₹' + totalFees;
             document.getElementById('totalExams').textContent = DB.exams.length;
-            // Update today's live classes
+            const feesCollectedEl = document.getElementById('feesCollected');
+            if (CU && CU.role === 'admin') {
+                const totalFees = DB.fees.reduce((sum, f) => sum + f.amount, 0);
+                feesCollectedEl.textContent = '₹' + totalFees;
+                feesCollectedEl.parentElement.style.display = 'block';
+            } else {
+                feesCollectedEl.parentElement.style.display = 'none';
+            }
             const todayClasses = DB.liveClasses.filter(lc => lc.date === today);
             document.getElementById('todayLiveClasses').innerHTML = todayClasses.length ? 
                 todayClasses.map(lc => `<div>📌 ${lc.title} at ${lc.time} (${lc.platform})</div>`).join('') : 
@@ -1332,7 +1518,62 @@
         }
 
         // ============================================================
-        // 17. EXPORT / IMPORT
+        // 19. RESOURCES (NEW)
+        // ============================================================
+        function uploadResource() {
+            const title = document.getElementById('resTitle').value.trim();
+            const type = document.getElementById('resType').value;
+            const fileData = document.getElementById('resFile').dataset.base64 || '';
+            const embedUrl = document.getElementById('resEmbedUrl').value.trim();
+            if (!title) { showToast('⚠️ Enter a title'); return; }
+            if (!fileData && !embedUrl) { showToast('⚠️ Upload a file OR paste an embed URL'); return; }
+            DB.resources.push({
+                id: Date.now(),
+                title: title,
+                type: type,
+                file: fileData,
+                embedUrl: embedUrl,
+                uploadedBy: CU.name,
+                date: new Date().toISOString()
+            });
+            saveDB();
+            document.getElementById('resTitle').value = '';
+            document.getElementById('resFile').value = '';
+            document.getElementById('resFilePreview').innerHTML = '';
+            document.getElementById('resEmbedUrl').value = '';
+            loadResources();
+            showToast('✅ Resource uploaded: ' + title);
+            addNotification('New resource: ' + title);
+        }
+
+        function loadResources() {
+            const container = document.getElementById('resList');
+            if (!DB.resources.length) { container.innerHTML = '<p class="text-muted">No resources uploaded yet.</p>'; return; }
+            container.innerHTML = DB.resources.map(r => 
+                `<div style="padding:10px;border:1px solid rgba(0,0,0,0.04);border-radius:8px;margin-bottom:8px;">
+                    <div class="flex-between">
+                        <div>
+                            <strong>${r.title}</strong>
+                            <div class="text-muted">${r.type} • Uploaded by ${r.uploadedBy} on ${new Date(r.date).toLocaleDateString()}</div>
+                            ${r.file ? `<div class="text-muted"><i class="fas fa-paperclip"></i> File attached</div>` : ''}
+                            ${r.embedUrl ? `<div class="text-muted"><i class="fas fa-video"></i> <a href="${r.embedUrl}" target="_blank">View Video/Embed</a></div>` : ''}
+                        </div>
+                        <button class="btn btn-sm btn-danger" onclick="deleteResource(${r.id})">✕</button>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        function deleteResource(id) {
+            if (!confirm('Delete this resource?')) return;
+            DB.resources = DB.resources.filter(r => r.id != id);
+            saveDB();
+            loadResources();
+            showToast('🗑️ Resource deleted');
+        }
+
+        // ============================================================
+        // 20. EXPORT / IMPORT
         // ============================================================
         function exportStudents() {
             const data = DB.students.map(s => ({ Name: s.name, Email: s.email, Class: s.class, Phone: s.phone }));
@@ -1452,8 +1693,16 @@
             input.click();
         }
 
+        function clearAllData() {
+            if (!confirm('⚠️ This will delete ALL data! Are you sure?')) return;
+            if (!confirm('⚠️ REALLY sure? This cannot be undone!')) return;
+            localStorage.removeItem('avpro_db');
+            location.reload();
+            showToast('🗑️ All data cleared');
+        }
+
         // ============================================================
-        // 18. NOTIFICATIONS
+        // 21. NOTIFICATIONS
         // ============================================================
         function toggleNotifications() {
             document.getElementById('notifPanel').classList.toggle('open');
@@ -1480,7 +1729,7 @@
         }
 
         // ============================================================
-        // 19. SETTINGS
+        // 22. SETTINGS
         // ============================================================
         function loadSettings() {
             const s = DB.settings;
@@ -1492,6 +1741,7 @@
             document.getElementById('setUpi').value = s.upiId || '';
             document.getElementById('backupApiUrl').value = localStorage.getItem('backup_api_url') || '';
             renderMenuToggles();
+            renderMediaToggles();
         }
 
         function renderMenuToggles() {
@@ -1509,6 +1759,8 @@
                 { key: 'notices', label: 'Notice Board' },
                 { key: 'complaints', label: 'Complaints' },
                 { key: 'feedback', label: 'Feedback' },
+                { key: 'salary', label: 'Salary' },
+                { key: 'sms', label: 'SMS' },
             ];
             let html = '';
             items.forEach(item => {
@@ -1521,6 +1773,27 @@
             container.innerHTML = html;
         }
 
+        function renderMediaToggles() {
+            const container = document.getElementById('settings-media');
+            const media = DB.settings.media || {};
+            const items = [
+                { key: 'resources', label: 'Resources Page' },
+                { key: 'video', label: 'Video Embed (YouTube/Vimeo)' },
+                { key: 'image', label: 'Image Upload' },
+                { key: 'file', label: 'File Upload (PDF/Docs)' },
+            ];
+            let html = '<h4>🎬 Media & Resources Settings</h4>';
+            items.forEach(item => {
+                const checked = media[item.key] !== false;
+                html += `<div class="toggle-row">
+                    <span>${item.label}</span>
+                    <div class="toggle-switch ${checked ? 'active' : ''}" onclick="toggleMediaSetting('${item.key}')"></div>
+                </div>`;
+            });
+            html += `<button class="btn btn-primary mt-2" onclick="saveMediaSettings()"><i class="fas fa-save"></i> Save Media Settings</button>`;
+            container.innerHTML = html;
+        }
+
         function toggleMenuItem(key) {
             if (!DB.settings.menu) DB.settings.menu = {};
             DB.settings.menu[key] = DB.settings.menu[key] === false ? true : false;
@@ -1530,10 +1803,25 @@
             showToast('✅ Menu updated');
         }
 
+        function toggleMediaSetting(key) {
+            if (!DB.settings.media) DB.settings.media = {};
+            DB.settings.media[key] = DB.settings.media[key] === false ? true : false;
+            saveDB();
+            renderMediaToggles();
+            renderSidebar();
+            showToast('✅ Media setting updated');
+        }
+
         function saveMenuSettings() {
             saveDB();
             renderSidebar();
             showToast('✅ Menu settings saved');
+        }
+
+        function saveMediaSettings() {
+            saveDB();
+            renderSidebar();
+            showToast('✅ Media settings saved');
         }
 
         function switchSettingsTab(tab) {
@@ -1571,7 +1859,7 @@
         }
 
         // ============================================================
-        // 20. CLOUD BACKUP (Google Apps Script)
+        // 23. CLOUD BACKUP
         // ============================================================
         function saveBackupUrl() {
             const url = document.getElementById('backupApiUrl').value.trim();
@@ -1621,7 +1909,7 @@
         }
 
         // ============================================================
-        // 21. THEME TOGGLE
+        // 24. THEME TOGGLE
         // ============================================================
         document.getElementById('themeToggle').addEventListener('click', function() {
             const current = document.documentElement.getAttribute('data-theme') || 'light';
@@ -1638,7 +1926,7 @@
         })();
 
         // ============================================================
-        // 22. INIT
+        // 25. INIT
         // ============================================================
         window.onload = function() {
             applyBranding();
@@ -1648,7 +1936,7 @@
         };
 
         // ============================================================
-        // 23. SERVICE WORKER (PWA)
+        // 26. SERVICE WORKER
         // ============================================================
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
